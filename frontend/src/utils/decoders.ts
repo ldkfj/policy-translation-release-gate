@@ -51,6 +51,7 @@ export const VALID_DIMENSIONAL_STATUSES: ReadonlySet<DimensionStatus> = new Set(
   'EQUIVALENT',
   'CHANGED',
   'LOST',
+  'NOT_APPLICABLE',
 ]);
 
 export const VALID_CANONICAL_STATES: ReadonlySet<CanonicalState> = new Set([
@@ -94,25 +95,26 @@ export function toStrictU32(val: unknown, fieldName: string): number {
   throw new DecoderError(`Field '${fieldName}' is not a valid u32. Received: ${String(val)}`);
 }
 
-export function toStrictU64(val: unknown, fieldName: string): number {
+export function toStrictU64(val: unknown, fieldName: string): string {
+  const max = 18446744073709551615n;
   if (typeof val === 'number') {
     if (!Number.isInteger(val) || val < 0 || !Number.isSafeInteger(val)) {
-      throw new DecoderError(`Field '${fieldName}' must be a safe integer between 0 and 2^53-1. Received: ${val}`);
+      throw new DecoderError(`Field '${fieldName}' must be a non-negative safe integer number. Received: ${val}`);
     }
-    return val;
+    return String(val);
   }
   if (typeof val === 'bigint') {
-    if (val < 0n || val > BigInt(Number.MAX_SAFE_INTEGER)) {
-      throw new DecoderError(`Field '${fieldName}' bigint exceeds safe integer range: ${val.toString()}`);
+    if (val < 0n || val > max) {
+      throw new DecoderError(`Field '${fieldName}' bigint exceeds u64 range: ${val.toString()}`);
     }
-    return Number(val);
+    return val.toString();
   }
   if (typeof val === 'string') {
     const trimmed = val.trim();
     if (/^\d+$/.test(trimmed)) {
       const b = BigInt(trimmed);
-      if (b >= 0n && b <= BigInt(Number.MAX_SAFE_INTEGER)) {
-        return Number(b);
+      if (b >= 0n && b <= max) {
+        return b.toString();
       }
     }
   }
@@ -173,7 +175,7 @@ export function decodeActiveCanonical(raw: unknown): ActiveCanonicalSummary {
       digest: '',
       language: 'en',
       state: 'REGISTERED',
-      created_at: 0,
+      created_at: '0',
     };
   }
 
@@ -387,7 +389,7 @@ export function decodeConsumerBinding(raw: unknown): ConsumerBinding {
       candidate_id: 0,
       canonical_id: 0,
       candidate_state: '',
-      bound_at: 0,
+      bound_at: '0',
     };
   }
 

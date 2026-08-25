@@ -76,6 +76,27 @@ def test_register_translation_nonce_replay(contract_factory, admin_address, loca
     assert "NONCE_REUSED_WITH_DIFFERENT_PAYLOAD" in str(exc.value)
 
 
+def test_nonce_cannot_cross_entity_domains(contract_factory, admin_address, localizer_address):
+    contract = contract_factory()
+    set_caller(admin_address)
+    c1 = contract.register_canonical("shared-nonce", "a" * 40, "terms.md", "1" * 64)
+
+    set_caller(localizer_address)
+    with pytest.raises(gl.UserError, match="NONCE_REUSED_FOR_DIFFERENT_ENTITY"):
+        contract.register_translation(
+            "shared-nonce", u32(c1), "es", "b" * 40, "terms_es.md", "2" * 64
+        )
+
+    contract.register_translation(
+        "translation-nonce", u32(c1), "es", "b" * 40, "terms_es.md", "2" * 64
+    )
+    set_caller(admin_address)
+    with pytest.raises(gl.UserError, match="NONCE_REUSED_FOR_DIFFERENT_ENTITY"):
+        contract.register_canonical(
+            "translation-nonce", "c" * 40, "next.md", "3" * 64
+        )
+
+
 def test_duplicate_candidate_rejection(contract_factory, admin_address, localizer_address):
     contract = contract_factory()
     set_caller(admin_address)

@@ -5,6 +5,7 @@ import {
   toStrictString,
   toStrictBoolean,
   DecoderError,
+  VALID_DIMENSIONAL_STATUSES,
   decodePublisherProfile,
   decodeActiveCanonical,
   decodeCanonicalRevision,
@@ -38,16 +39,21 @@ describe('Decoders and Type Boundary', () => {
     });
 
     it('toStrictU64 parses valid numbers and bigints', () => {
-      expect(toStrictU64(0, 'f')).toBe(0);
-      expect(toStrictU64(1700000000, 'f')).toBe(1700000000);
-      expect(toStrictU64(BigInt(1700000000), 'f')).toBe(1700000000);
-      expect(toStrictU64('1700000000', 'f')).toBe(1700000000);
+      expect(toStrictU64(0, 'f')).toBe('0');
+      expect(toStrictU64(1700000000, 'f')).toBe('1700000000');
+      expect(toStrictU64(BigInt(1700000000), 'f')).toBe('1700000000');
+      expect(toStrictU64('1700000000', 'f')).toBe('1700000000');
+      expect(toStrictU64('18446744073709551615', 'f')).toBe('18446744073709551615');
     });
 
     it('toStrictU64 rejects negative numbers and non-integers', () => {
       expect(() => toStrictU64(-10, 'f')).toThrow(DecoderError);
       expect(() => toStrictU64(12.34, 'f')).toThrow(DecoderError);
       expect(() => toStrictU64(null, 'f')).toThrow(DecoderError);
+    });
+
+    it('accepts the contract dimensional NOT_APPLICABLE status', () => {
+      expect(VALID_DIMENSIONAL_STATUSES.has('NOT_APPLICABLE')).toBe(true);
     });
 
     it('toStrictString parses valid strings', () => {

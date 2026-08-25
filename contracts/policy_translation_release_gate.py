@@ -780,6 +780,7 @@ class PolicyTranslationReleaseGate(gl.Contract):
                     ):
                         raise gl.UserError("NONCE_REUSED_WITH_DIFFERENT_PAYLOAD")
                 return existing_id
+            raise gl.UserError("NONCE_REUSED_FOR_DIFFERENT_ENTITY")
 
         commit_clean = commit.strip().lower()
         if not _is_safe_sha(commit_clean):
@@ -888,6 +889,7 @@ class PolicyTranslationReleaseGate(gl.Contract):
                     ):
                         raise gl.UserError("NONCE_REUSED_WITH_DIFFERENT_PAYLOAD")
                 return existing_id
+            raise gl.UserError("NONCE_REUSED_FOR_DIFFERENT_ENTITY")
 
         can_id_int = int(canonical_id)
         if can_id_int == 0 or canonical_id not in self.canonical_revisions:

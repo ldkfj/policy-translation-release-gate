@@ -24,7 +24,9 @@ export type AssessmentOutcome =
 
 export type SourceStatus = 'AVAILABLE' | 'MISSING' | 'UNAVAILABLE' | 'INVALID';
 
-export type DimensionStatus = 'EQUIVALENT' | 'CHANGED' | 'LOST';
+export type DimensionStatus = 'EQUIVALENT' | 'CHANGED' | 'LOST' | 'NOT_APPLICABLE';
+
+export type U64String = string;
 
 export const CONSEQUENCE_DIMENSIONS = [
   'rights',
@@ -70,7 +72,7 @@ export interface ActiveCanonicalSummary {
   digest: string;
   language: string;
   state: CanonicalState;
-  created_at: number;
+  created_at: U64String;
 }
 
 export interface CanonicalRevision {
@@ -80,7 +82,7 @@ export interface CanonicalRevision {
   digest: string;
   language: string;
   state: CanonicalState;
-  created_at: number;
+  created_at: U64String;
 }
 
 export interface TranslationCandidate {
@@ -92,9 +94,9 @@ export interface TranslationCandidate {
   path: string;
   digest: string;
   state: CandidateState;
-  created_at: number;
+  created_at: U64String;
   attempts: number;
-  last_assessed_at: number;
+  last_assessed_at: U64String;
   has_assessment: boolean;
 }
 
@@ -126,7 +128,7 @@ export interface ObjectionRecord {
   objection_digest: string;
   digest?: string;
   reason: string;
-  created_at: number;
+  created_at: U64String;
 }
 
 export interface ConsumerBinding {
@@ -137,7 +139,7 @@ export interface ConsumerBinding {
   candidate_id: number;
   canonical_id: number;
   candidate_state: string;
-  bound_at: number;
+  bound_at: U64String;
   reason?: string;
 }
 
@@ -164,7 +166,7 @@ export interface ContractEvent {
   event_type: string;
   payload_json: string;
   payload: Record<string, unknown> | null;
-  timestamp: number;
+  timestamp: U64String;
 }
 
 export interface PaginatedResponse<T> {

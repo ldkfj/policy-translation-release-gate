@@ -14,12 +14,13 @@ export function formatSha(sha: string, chars: number = 7): string {
   return sha.substring(0, chars);
 }
 
-export function formatTimestamp(timestamp: number): { formatted: string; iso: string; raw: number } {
-  if (!timestamp || timestamp <= 0) {
+export function formatTimestamp(timestamp: string | number): { formatted: string; iso: string; raw: string | number } {
+  const numeric = Number(timestamp);
+  if (!timestamp || !Number.isSafeInteger(numeric) || numeric <= 0) {
     return { formatted: '-', iso: '', raw: timestamp };
   }
   // If timestamp is in seconds, convert to ms
-  const ms = timestamp < 1e12 ? timestamp * 1000 : timestamp;
+  const ms = numeric < 1e12 ? numeric * 1000 : numeric;
   const date = new Date(ms);
   return {
     formatted: date.toLocaleString('en-US', {
@@ -36,16 +37,17 @@ export function formatCoverageBps(bps: number, includeBps: boolean = false): str
   return includeBps ? `${pct}% (${bps} bps)` : `${pct}%`;
 }
 
-export function formatCooldownRemaining(lastAssessedAt: number, cooldownSeconds: number = 600): {
+export function formatCooldownRemaining(lastAssessedAt: string | number, cooldownSeconds: number = 600): {
   isCoolingDown: boolean;
   remainingSeconds: number;
   remainingFormatted: string;
 } {
-  if (!lastAssessedAt || lastAssessedAt <= 0) {
+  const numeric = Number(lastAssessedAt);
+  if (!lastAssessedAt || !Number.isSafeInteger(numeric) || numeric <= 0) {
     return { isCoolingDown: false, remainingSeconds: 0, remainingFormatted: 'Ready' };
   }
   const nowSec = Math.floor(Date.now() / 1000);
-  const lastSec = lastAssessedAt > 1e12 ? Math.floor(lastAssessedAt / 1000) : lastAssessedAt;
+  const lastSec = numeric > 1e12 ? Math.floor(numeric / 1000) : numeric;
   const elapsed = nowSec - lastSec;
   const remaining = Math.max(0, cooldownSeconds - elapsed);
   if (remaining <= 0) {

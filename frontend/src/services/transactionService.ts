@@ -39,7 +39,7 @@ export interface PendingOperation {
   args: unknown[];
   clientNonce?: string;
   preAttempts?: number;
-  preLastAssessedAt?: number;
+  preLastAssessedAt?: string;
   createdTime: number;
   txHash?: string;
   phase: TxPhase;
@@ -124,7 +124,6 @@ export function classifyReceipt(receipt: Record<string, unknown> | null | undefi
   // 4. Finalized/Decided state
   const isFinalized =
     rawStatus === 'FINALIZED' ||
-    rawStatus === 'SUCCESS' ||
     finality === 'FINALIZED' ||
     rawStatus === 'CANCELED';
 
@@ -309,7 +308,7 @@ export class TransactionService {
 
     // 3. Capture pre-write state for retry_unresolved
     let preAttempts: number | undefined;
-    let preLastAssessedAt: number | undefined;
+    let preLastAssessedAt: string | undefined;
     if (method === 'retry_unresolved' && typeof args[0] === 'number') {
       try {
         const cand = await contractReadService.getTranslationCandidate(args[0], 'assess', true);
@@ -432,7 +431,7 @@ export class TransactionService {
     account: string,
     clientNonce?: string,
     preAttempts?: number,
-    preLastAssessedAt?: number
+    preLastAssessedAt?: string
   ): Promise<boolean> {
     const client = createClient({
       chain: chains.studionet,
@@ -451,9 +450,13 @@ export class TransactionService {
       }
 
       try {
-        const receipt = (await client.getTransactionReceipt({
-          hash: txHash as `0x${string}`,
-        })) as Record<string, unknown> | null;
+        const receipt = await rpcExecutor.execute(
+          `receipt:${txHash}`,
+          async () => (await client.getTransactionReceipt({
+            hash: txHash as `0x${string}`,
+          })) as Record<string, unknown> | null,
+          { bypassCache: true, journey: 'transaction' }
+        );
 
         const classification = classifyReceipt(receipt);
 
@@ -555,7 +558,7 @@ export class TransactionService {
     account: string,
     clientNonce?: string,
     preAttempts?: number,
-    preLastAssessedAt?: number
+    preLastAssessedAt?: string
   ): Promise<boolean> {
     rpcExecutor.invalidate();
 
@@ -667,7 +670,9 @@ export class TransactionService {
           const cand = await contractReadService.getTranslationCandidate(candId, 'assess', true);
           const assessment = await contractReadService.getAssessment(candId, 'assess', true);
           const attemptsIncremented = preAttempts !== undefined ? cand?.attempts === preAttempts + 1 : (cand?.attempts || 0) > 0;
-          const timestampUpdated = preLastAssessedAt !== undefined ? (cand?.last_assessed_at || 0) > preLastAssessedAt : true;
+          const timestampUpdated = preLastAssessedAt !== undefined
+            ? BigInt(cand?.last_assessed_at || '0') > BigInt(preLastAssessedAt)
+            : true;
 
           return (
             cand !== null &&

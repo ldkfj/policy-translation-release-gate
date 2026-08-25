@@ -21,6 +21,15 @@ describe('Transaction Service & Safety Invariants', () => {
   });
 
   describe('classifyReceipt (Fail-Closed Finality & Execution Evaluation)', () => {
+    it('does not treat raw SUCCESS as finalized without explicit finality', () => {
+      const result = classifyReceipt({
+        status: 'SUCCESS',
+        txExecutionResultName: 'FINISHED_WITH_RETURN',
+      });
+      expect(result.isDecided).toBe(false);
+      expect(result.isSuccess).toBe(false);
+    });
+
     it('classifies finalized and successful transaction correctly', () => {
       const receipt = {
         status: 'FINALIZED',
