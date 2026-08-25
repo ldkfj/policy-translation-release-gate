@@ -1,0 +1,17 @@
+AGENTS.md
+CLAUDE.md
+STAGE-1.md
+STAGE-2.md
+.task/
+.env
+.env.*
+!.env.example
+node_modules/
+dist/
+coverage/
+.vite/
+.vercel/
+__pycache__/
+.pytest_cache/
+*.pyc
+

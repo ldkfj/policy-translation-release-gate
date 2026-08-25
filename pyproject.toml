@@ -1,0 +1,21 @@
+[project]
+name = "policy-translation-release-gate"
+version = "0.1.0"
+description = "Source-bound semantic parity gate for multilingual policy publication on GenLayer"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "genlayer-py>=0.16.3",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests/contract"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v -q -p no:cacheprovider"
+
+[tool.pyright]
+pythonVersion = "3.12"
+typeCheckingMode = "basic"
+reportMissingModuleSource = false
