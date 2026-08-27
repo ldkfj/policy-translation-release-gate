@@ -1,4 +1,4 @@
-# Resume Checkpoint — DEPLOYED / POST_DEPLOY_TEST IN PROGRESS
+# Resume Checkpoint — UPGRADED / STUDIO E2E PARTIAL
 
 Date: 2026-08-28
 
@@ -15,6 +15,8 @@ Date: 2026-08-28
 - Initial authoritative readback confirms locked admin/upgrader, policy version `1`, uninitialized profile, zero counts, and no active canonical.
 - No GitHub push, Vercel deployment, or submission has occurred.
 
-Next action: re-review the corrected runtime candidate recorded in `docs/DEPLOYMENT-RECOVERY.md`, then deploy/upgrade and continue the bounded Studio matrix. GitHub release is not a prerequisite for running available Studio cases. The full source-backed assessment journey still needs valid publicly retrievable commit-bound fixtures; do not mark it passed from local fixtures or mocks.
+Current executable revision: `e8c4277e908fa08c03eb571ff2a2c4d8ffccec97`, independently PRE_DEPLOY APPROVED. Exact-source upgrade `0xb4d3df5145ffd67c1bd8e2a4bcdc1a62320d3a9521ee65e2bbd2a96a4c23ad29` is FINALIZED with SUCCESS and matching source SHA-256 `FD003AE8CE47B3C36C242A8887D0C6F0B7BCFCCE0C9FC022306A3205665F598C`. Three negative controls have finalized with expected rejection and unchanged state. Full transactions, readbacks and retained original defect are in `docs/STUDIO-EVIDENCE.md`.
+
+Next action: obtain a real public fixture repository/commit or explicit authorization to publish only the prepared fixtures before source-backed Studio E2E. Do not push release source or deploy Vercel. Do not mark full E2E passed. Do not initialize an invented immutable owner/repository. Publisher remains uninitialized, all entity counts zero, event count 1 from the successful upgrade.
 
 Any source, account, network, constructor, or upgrade-classification change invalidates this PRE_DEPLOY approval.
