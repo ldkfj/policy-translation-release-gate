@@ -13,8 +13,8 @@ Status: PRE-DEPLOY draft. No transaction has been signed or sent.
 - Freeze choice: not frozen; the reviewed `upgrade(bytes)` path remains available only to a Root Slot upgrader.
 - Linked contracts: none.
 - Configuration transactions: none before deployment; the frontend address is wired only after verified deployment.
-- Reviewed source commit: `25312f7b8fc6045c0a9d44b1a7bb018bf412c7f0`.
-- Contract source SHA-256: `88897A97DA0E71D369D985F07E8DCE60930AF883E2114977129D749249E94028`.
+- Reviewed executable source commit: `d230059e0cec5a2196d70061731e5a079c7b6622`.
+- Contract source SHA-256: `322F3278B95CADCD68427DB16E4405D947F22577844D654ACFA32BD743A78F34`.
 - Specification SHA-256: `3CB5182CF978E048944B5FD7239D9F0A93E0A0EFF84CBBBD849A423557DD8D93`.
 - The final manifest adds the deployed contract address, deployment transaction and Explorer URL.
 
