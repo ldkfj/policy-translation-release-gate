@@ -62,7 +62,8 @@ export function validateContractAddress(rawAddress: unknown): ContractConfigResu
 
   return {
     isConfigured: true,
-    contractAddress: trimmed.toLowerCase(),
+    // Studionet currently resolves deployed contracts by the returned checksum form.
+    contractAddress: trimmed,
     configError: null,
   };
 }

@@ -1,6 +1,6 @@
 # Deployment and Recovery Manifest
 
-Status: PRE-DEPLOY draft. No transaction has been signed or sent.
+Status: deployed to Studionet; POST_DEPLOY_TEST live matrix in progress.
 
 ## Locked deployment configuration
 
@@ -16,7 +16,12 @@ Status: PRE-DEPLOY draft. No transaction has been signed or sent.
 - Reviewed executable source commit: `d230059e0cec5a2196d70061731e5a079c7b6622`.
 - Contract source SHA-256: `322F3278B95CADCD68427DB16E4405D947F22577844D654ACFA32BD743A78F34`.
 - Specification SHA-256: `3CB5182CF978E048944B5FD7239D9F0A93E0A0EFF84CBBBD849A423557DD8D93`.
-- The final manifest adds the deployed contract address, deployment transaction and Explorer URL.
+- Deployed contract: `0xf41A330869Cb9FDCCD8fbd7Ce7f83F5042908A75`.
+- Deployment transaction: `0xc9b344962bc468aed13375b4430ae6b434bcaebfb6af2e55fc8ec5a9a1b3f202`.
+- Transaction execution hash: `0x56840bf97604c6867e542fbd8f336adf23c4cf45e0b1998090e83fd4326071c2`.
+- Explorer: `https://explorer-studio.genlayer.com/address/0xf41A330869Cb9FDCCD8fbd7Ce7f83F5042908A75`.
+- Deployment closure: `FINALIZED`; receipt execution status `success`; deployed source SHA-256 `322F3278B95CADCD68427DB16E4405D947F22577844D654ACFA32BD743A78F34` exactly matches the approved source.
+- Authoritative initial readback: publisher admin and sole reported upgrader are both `0x34b92E6553eaCA11A00A9d86d75d8a7881779D78`; profile is uninitialized with policy version `1` and all counts zero; active canonical is empty.
 
 Changing the locked Studio account, source, constructor setup, network, or upgrade classification invalidates PRE-DEPLOY approval and requires a new review before any transaction.
 
