@@ -6,6 +6,7 @@ import types
 import json
 import glob
 import typing
+import cloudpickle
 import pytest
 
 # Ensure GENERATING_DOCS is set to avoid reading fd 0 on import
@@ -227,10 +228,15 @@ def prompt_mock():
 
 @pytest.fixture
 def setup_nondet():
-    """Sets up standard honest leader-validator consensus execution."""
+    """Runs leader and validator through the production-shaped pickle boundary."""
     def mock_run_nondet_unsafe(leader_fn, validator_fn):
-        leader_res = leader_fn()
-        valid = validator_fn(gl.vm.Return(leader_res))
+        serialized_leader = cloudpickle.dumps(leader_fn)
+        serialized_validator = cloudpickle.dumps(validator_fn)
+        leader_res = cloudpickle.loads(serialized_leader)()
+        serialized_result = cloudpickle.dumps(leader_res)
+        valid = cloudpickle.loads(serialized_validator)(
+            gl.vm.Return(cloudpickle.loads(serialized_result))
+        )
         if not valid:
             raise gl.UserError("VALIDATOR_DISAGREED")
         return leader_res

@@ -1,12 +1,19 @@
 """Tests for contract initialization, repository immutability, role authorization, and validation rules."""
 
+from dataclasses import is_dataclass
 import pytest
 import genlayer.gl as gl
 from genlayer import Address, u32
 from genlayer.py.storage import inmem_allocate
 from conftest import set_caller
 from contracts.policy_translation_release_gate import (
+    AssessmentRecord,
+    CanonicalRevision,
+    ConsumerBindingRecord,
+    EventRecord,
+    ObjectionRecord,
     PolicyTranslationReleaseGate,
+    TranslationCandidate,
     _is_safe_owner_repo,
     _is_safe_sha,
     _is_safe_digest,
@@ -15,6 +22,17 @@ from contracts.policy_translation_release_gate import (
     _is_safe_namespace,
     _is_safe_nonce,
 )
+
+
+def test_persisted_records_use_supported_dataclass_form():
+    assert all(is_dataclass(record_type) for record_type in (
+        CanonicalRevision,
+        TranslationCandidate,
+        AssessmentRecord,
+        ConsumerBindingRecord,
+        ObjectionRecord,
+        EventRecord,
+    ))
 
 
 def test_constructor_zero_params_and_clean_state(admin_address):

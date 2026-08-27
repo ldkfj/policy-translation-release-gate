@@ -36,3 +36,35 @@ Use the locked Studio upgrader account and the contract's public `upgrade(bytes)
 - Failed or ambiguous deployment: retain the transaction hash, reconcile finality and execution result, and do not redeploy until terminal failure is proven. Never submit a duplicate while the first outcome is unknown.
 
 No private key, seed phrase, token or credential belongs in this manifest.
+
+## Schema and runtime compatibility evidence
+
+Retrieval date: `2026-08-28`. The candidate was checked against the current official GenLayer documentation for [storage](https://docs.genlayer.com/developers/intelligent-contracts/storage), [equivalence](https://docs.genlayer.com/developers/intelligent-contracts/equivalence-principle), [testing](https://docs.genlayer.com/developers/intelligent-contracts/testing), [`genlayer-test`](https://docs.genlayer.com/api-references/genlayer-test), [messages/interfaces](https://docs.genlayer.com/developers/intelligent-contracts/features/messages), [Studio limitations](https://docs.genlayer.com/developers/intelligent-contracts/tools/genlayer-studio/limitations), [networks](https://docs.genlayer.com/developers/genlayer-network/networks), and the current Studio deployment workflow. The source header remains the current project dependency selected by the linter/runtime: `py-genlayer:1jb45aa8ynh2a9c9xn3b7qqh8sm5q93hwfp7jqmwsfhh8jpz09h6`.
+
+Tool/runtime record:
+
+- `genvm-lint 0.11.0`; `genvm-lint check`, `schema`, and `typecheck` pass on the exact contract source.
+- Schema discovers a zero-argument constructor and 25 public methods: 13 views and 12 writes, matching the specification and frontend callers.
+- Python `3.12`; `cloudpickle 3.1.2`; the test harness serializes/deserializes each leader closure, validator closure, and leader result before validator execution.
+- The linter reports a newer optional runner hash. Disposition: disclosed warning, not an automatic dependency change. Control: current source passes the installed current linter's lint, SDK semantic validation, schema, typecheck, Python compilation, production-shaped serialization tests, and the full regression suite. Any runner/header change is material and requires a new exact-source review.
+
+Storage/ABI inventory:
+
+- Scalar contract fields use `Address`, `str`, `bool`, `u32`, and `u64`; no persisted bare Python `int` or `float` is used.
+- Six custom persisted records use the current `@allow_storage` plus `@dataclass` form: `CanonicalRevision`, `TranslationCandidate`, `AssessmentRecord`, `ConsumerBindingRecord`, `ObjectionRecord`, and `EventRecord`.
+- Fully instantiated persistent maps: `TreeMap[u32, CanonicalRevision]`, `TreeMap[u32, TranslationCandidate]`, `TreeMap[u32, AssessmentRecord]`, `TreeMap[str, ConsumerBindingRecord]`, two `TreeMap[str, u32]`, `TreeMap[u32, u32]`, and `TreeMap[str, str]`.
+- Fully instantiated arrays: `DynArray[ObjectionRecord]` and `DynArray[EventRecord]`. Top-level runtime-managed collections are not reassigned in the constructor.
+- Every map crossing a public return boundary is converted into JSON-compatible dictionaries with string keys. Addresses return as canonical hex strings except `get_upgrader`, whose declared ABI return is `Address`. Counts/timestamps are losslessly handled as sized integers on-chain and decimal-string/BigInt values in the frontend. Coverage uses integer basis points; no currency or value transfer exists.
+
+Nondeterministic and serialization inventory:
+
+- `_fetch_and_validate_evidence` performs bounded immutable-commit GitHub API/raw reads via `gl.nondet.web.get`; `_evaluate_section_pair` uses `gl.nondet.exec_prompt` with an exact seven-dimension schema.
+- `assess_translation` and `retry_unresolved` wrap all nondeterminism in `gl.vm.run_nondet_unsafe`. Before closure creation, storage-backed values are copied into primitive immutable local strings; no storage proxy or custom persisted object is captured.
+- Each validator independently refetches and re-derives the complete assessment and compares all 17 consequence-bearing fields, including fingerprint, outcome, dimensional results, coverage, source identities, and bounded reason. Exceptions, malformed evidence, unavailable evidence, and disagreement fail closed; state mutates only after consensus returns.
+- The test fixture uses real `cloudpickle` round trips for leader, validator, and returned assessment data. The full nondeterministic suite therefore exercises closure/result serialization as well as agreement, deliberate material disagreement, malformed/overlong model output, HTTP failures, source mismatch, retry, and safe outcomes.
+
+Linked-interface and Studio declaration:
+
+- No linked Intelligent Contract, EVM contract, EOA message, child transaction, value transfer, or custom calldata boundary exists.
+- Studio evidence will be claimed only for this contract's own deployment, consensus transactions, finality/execution result, and authoritative state readbacks. No unsupported chain-layer, ghost-contract, or EVM behavior is advertised.
+- Known non-blocking frontend warning: the production main bundle is approximately `815.20 kB`. It does not alter contract schema/runtime behavior; frontend functional, type, and production-build gates remain mandatory.

@@ -2,6 +2,7 @@
 
 from genlayer import *
 from genlayer.py.storage import Root
+from dataclasses import dataclass
 import json
 import hashlib
 import re
@@ -47,6 +48,7 @@ SECTION_MARKER_PATTERN = re.compile(r"\[\[SECTION:([a-zA-Z0-9_-]{1,64})\]\]")
 # ---------------------------------------------------------------------------
 
 @allow_storage
+@dataclass
 class CanonicalRevision:
     id: u32
     commit: str
@@ -76,6 +78,7 @@ class CanonicalRevision:
 
 
 @allow_storage
+@dataclass
 class TranslationCandidate:
     id: u32
     canonical_id: u32
@@ -120,6 +123,7 @@ class TranslationCandidate:
 
 
 @allow_storage
+@dataclass
 class AssessmentRecord:
     canonical_status: str
     translation_status: str
@@ -179,6 +183,7 @@ class AssessmentRecord:
 
 
 @allow_storage
+@dataclass
 class ConsumerBindingRecord:
     namespace: str
     locale: str
@@ -193,6 +198,7 @@ class ConsumerBindingRecord:
 
 
 @allow_storage
+@dataclass
 class ObjectionRecord:
     id: u32
     candidate_id: u32
@@ -219,6 +225,7 @@ class ObjectionRecord:
 
 
 @allow_storage
+@dataclass
 class EventRecord:
     id: u32
     event_type: str
