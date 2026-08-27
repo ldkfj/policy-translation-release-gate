@@ -259,8 +259,8 @@ def _get_current_timestamp() -> u64:
                 dt = datetime.fromisoformat(dt_clean)
                 return u64(int(dt.timestamp()))
     except Exception as exc:
-        raise gl.UserError("INVALID_TRANSACTION_DATETIME") from exc
-    raise gl.UserError("INVALID_TRANSACTION_DATETIME")
+        raise gl.vm.UserError("INVALID_TRANSACTION_DATETIME") from exc
+    raise gl.vm.UserError("INVALID_TRANSACTION_DATETIME")
 
 
 def _is_safe_owner_repo(owner: str, repo: str) -> bool:
@@ -743,14 +743,14 @@ class PolicyTranslationReleaseGate(gl.Contract):
     @gl.public.write
     def initialize_publisher(self, owner: str, repo: str) -> None:
         if self.initialized:
-            raise gl.UserError("PUBLISHER_ALREADY_INITIALIZED")
+            raise gl.vm.UserError("PUBLISHER_ALREADY_INITIALIZED")
         if gl.message.sender_address != self.publisher_admin:
-            raise gl.UserError("UNAUTHORIZED_CALLER")
+            raise gl.vm.UserError("UNAUTHORIZED_CALLER")
 
         owner_clean = owner.strip().lower()
         repo_clean = repo.strip().lower()
         if not _is_safe_owner_repo(owner_clean, repo_clean):
-            raise gl.UserError("INVALID_OWNER_OR_REPO")
+            raise gl.vm.UserError("INVALID_OWNER_OR_REPO")
 
         self.owner = owner_clean
         self.repo = repo_clean
@@ -765,13 +765,13 @@ class PolicyTranslationReleaseGate(gl.Contract):
         self, client_nonce: str, commit: str, path: str, digest: str
     ) -> u32:
         if not self.initialized:
-            raise gl.UserError("PUBLISHER_NOT_INITIALIZED")
+            raise gl.vm.UserError("PUBLISHER_NOT_INITIALIZED")
         if gl.message.sender_address != self.publisher_admin:
-            raise gl.UserError("UNAUTHORIZED_PUBLISHER")
+            raise gl.vm.UserError("UNAUTHORIZED_PUBLISHER")
 
         nonce_clean = client_nonce.strip()
         if not _is_safe_nonce(nonce_clean):
-            raise gl.UserError("INVALID_CLIENT_NONCE")
+            raise gl.vm.UserError("INVALID_CLIENT_NONCE")
 
         # Nonce replay returns exact assigned ID if payload matches
         if nonce_clean in self.nonces:
@@ -785,24 +785,24 @@ class PolicyTranslationReleaseGate(gl.Contract):
                         or existing.path != path.strip()
                         or existing.digest != digest.strip().lower()
                     ):
-                        raise gl.UserError("NONCE_REUSED_WITH_DIFFERENT_PAYLOAD")
+                        raise gl.vm.UserError("NONCE_REUSED_WITH_DIFFERENT_PAYLOAD")
                 return existing_id
-            raise gl.UserError("NONCE_REUSED_FOR_DIFFERENT_ENTITY")
+            raise gl.vm.UserError("NONCE_REUSED_FOR_DIFFERENT_ENTITY")
 
         commit_clean = commit.strip().lower()
         if not _is_safe_sha(commit_clean):
-            raise gl.UserError("INVALID_COMMIT_SHA")
+            raise gl.vm.UserError("INVALID_COMMIT_SHA")
 
         path_clean = path.strip()
         if not _is_safe_path(path_clean):
-            raise gl.UserError("INVALID_PATH")
+            raise gl.vm.UserError("INVALID_PATH")
 
         digest_clean = digest.strip().lower()
         if not _is_safe_digest(digest_clean):
-            raise gl.UserError("INVALID_DIGEST")
+            raise gl.vm.UserError("INVALID_DIGEST")
 
         if int(self.canonical_count) >= MAX_CANONICAL_REVISIONS:
-            raise gl.UserError("CANONICAL_CAP_EXCEEDED")
+            raise gl.vm.UserError("CANONICAL_CAP_EXCEEDED")
 
         new_id = u32(int(self.canonical_count) + 1)
         self.canonical_count = new_id
@@ -828,19 +828,19 @@ class PolicyTranslationReleaseGate(gl.Contract):
     @gl.public.write
     def activate_canonical(self, canonical_id: u32) -> None:
         if not self.initialized:
-            raise gl.UserError("PUBLISHER_NOT_INITIALIZED")
+            raise gl.vm.UserError("PUBLISHER_NOT_INITIALIZED")
         if gl.message.sender_address != self.publisher_admin:
-            raise gl.UserError("UNAUTHORIZED_PUBLISHER")
+            raise gl.vm.UserError("UNAUTHORIZED_PUBLISHER")
 
         can_id_int = int(canonical_id)
         if can_id_int == 0 or canonical_id not in self.canonical_revisions:
-            raise gl.UserError("CANONICAL_NOT_FOUND")
+            raise gl.vm.UserError("CANONICAL_NOT_FOUND")
 
         rev = self.canonical_revisions[canonical_id]
         if rev.state == "ACTIVE":
-            raise gl.UserError("CANONICAL_ALREADY_ACTIVE")
+            raise gl.vm.UserError("CANONICAL_ALREADY_ACTIVE")
         if rev.state == "SUPERSEDED":
-            raise gl.UserError("CANNOT_ACTIVATE_SUPERSEDED")
+            raise gl.vm.UserError("CANNOT_ACTIVATE_SUPERSEDED")
 
         # Atomic supersession: stale prior active canonical and all its published locales
         old_active_id = int(self.active_canonical_id)
@@ -875,11 +875,11 @@ class PolicyTranslationReleaseGate(gl.Contract):
         digest: str,
     ) -> u32:
         if not self.initialized:
-            raise gl.UserError("PUBLISHER_NOT_INITIALIZED")
+            raise gl.vm.UserError("PUBLISHER_NOT_INITIALIZED")
 
         nonce_clean = client_nonce.strip()
         if not _is_safe_nonce(nonce_clean):
-            raise gl.UserError("INVALID_CLIENT_NONCE")
+            raise gl.vm.UserError("INVALID_CLIENT_NONCE")
 
         if nonce_clean in self.nonces:
             target = self.nonces[nonce_clean]
@@ -894,37 +894,37 @@ class PolicyTranslationReleaseGate(gl.Contract):
                         or existing.path != path.strip()
                         or existing.digest != digest.strip().lower()
                     ):
-                        raise gl.UserError("NONCE_REUSED_WITH_DIFFERENT_PAYLOAD")
+                        raise gl.vm.UserError("NONCE_REUSED_WITH_DIFFERENT_PAYLOAD")
                 return existing_id
-            raise gl.UserError("NONCE_REUSED_FOR_DIFFERENT_ENTITY")
+            raise gl.vm.UserError("NONCE_REUSED_FOR_DIFFERENT_ENTITY")
 
         can_id_int = int(canonical_id)
         if can_id_int == 0 or canonical_id not in self.canonical_revisions:
-            raise gl.UserError("CANONICAL_NOT_FOUND")
+            raise gl.vm.UserError("CANONICAL_NOT_FOUND")
 
         can_rev = self.canonical_revisions[canonical_id]
         if can_rev.state == "SUPERSEDED":
-            raise gl.UserError("CANNOT_REGISTER_ON_SUPERSEDED")
+            raise gl.vm.UserError("CANNOT_REGISTER_ON_SUPERSEDED")
 
         locale_clean = locale.strip()
         if not _is_safe_locale(locale_clean) or locale_clean.lower() == "en":
-            raise gl.UserError("INVALID_LOCALE")
+            raise gl.vm.UserError("INVALID_LOCALE")
 
         commit_clean = commit.strip().lower()
         if not _is_safe_sha(commit_clean):
-            raise gl.UserError("INVALID_COMMIT_SHA")
+            raise gl.vm.UserError("INVALID_COMMIT_SHA")
 
         path_clean = path.strip()
         if not _is_safe_path(path_clean):
-            raise gl.UserError("INVALID_PATH")
+            raise gl.vm.UserError("INVALID_PATH")
 
         digest_clean = digest.strip().lower()
         if not _is_safe_digest(digest_clean):
-            raise gl.UserError("INVALID_DIGEST")
+            raise gl.vm.UserError("INVALID_DIGEST")
 
         dedup_key = f"{can_id_int}:{locale_clean}:{commit_clean}:{path_clean}"
         if dedup_key in self.dedup_candidates:
-            raise gl.UserError("DUPLICATE_CANDIDATE")
+            raise gl.vm.UserError("DUPLICATE_CANDIDATE")
 
         locales_count = int(self.locales_count_per_canonical.get(canonical_id, u32(0)))
         locale_seen = False
@@ -937,7 +937,7 @@ class PolicyTranslationReleaseGate(gl.Contract):
                     locale_seen = True
                     break
         if not locale_seen and locales_count >= MAX_LOCALES_PER_CANONICAL:
-            raise gl.UserError("MAX_LOCALES_CAP_EXCEEDED")
+            raise gl.vm.UserError("MAX_LOCALES_CAP_EXCEEDED")
 
         if not locale_seen:
             self.locales_count_per_canonical[canonical_id] = u32(locales_count + 1)
@@ -974,30 +974,30 @@ class PolicyTranslationReleaseGate(gl.Contract):
         self, candidate_id: u32, commit: str, path: str, digest: str
     ) -> None:
         if candidate_id not in self.translation_candidates:
-            raise gl.UserError("CANDIDATE_NOT_FOUND")
+            raise gl.vm.UserError("CANDIDATE_NOT_FOUND")
 
         cand = self.translation_candidates[candidate_id]
         if gl.message.sender_address != cand.localizer:
-            raise gl.UserError("UNAUTHORIZED_LOCALIZER")
+            raise gl.vm.UserError("UNAUTHORIZED_LOCALIZER")
 
         if cand.state != "DRAFT":
-            raise gl.UserError("CANDIDATE_NOT_IN_DRAFT")
+            raise gl.vm.UserError("CANDIDATE_NOT_IN_DRAFT")
 
         commit_clean = commit.strip().lower()
         if not _is_safe_sha(commit_clean):
-            raise gl.UserError("INVALID_COMMIT_SHA")
+            raise gl.vm.UserError("INVALID_COMMIT_SHA")
 
         path_clean = path.strip()
         if not _is_safe_path(path_clean):
-            raise gl.UserError("INVALID_PATH")
+            raise gl.vm.UserError("INVALID_PATH")
 
         digest_clean = digest.strip().lower()
         if not _is_safe_digest(digest_clean):
-            raise gl.UserError("INVALID_DIGEST")
+            raise gl.vm.UserError("INVALID_DIGEST")
 
         new_dedup_key = f"{int(cand.canonical_id)}:{cand.locale}:{commit_clean}:{path_clean}"
         if new_dedup_key in self.dedup_candidates and self.dedup_candidates[new_dedup_key] != candidate_id:
-            raise gl.UserError("DUPLICATE_CANDIDATE")
+            raise gl.vm.UserError("DUPLICATE_CANDIDATE")
 
         self.dedup_candidates[new_dedup_key] = candidate_id
 
@@ -1013,14 +1013,14 @@ class PolicyTranslationReleaseGate(gl.Contract):
     @gl.public.write
     def freeze_translation(self, candidate_id: u32) -> None:
         if candidate_id not in self.translation_candidates:
-            raise gl.UserError("CANDIDATE_NOT_FOUND")
+            raise gl.vm.UserError("CANDIDATE_NOT_FOUND")
 
         cand = self.translation_candidates[candidate_id]
         if gl.message.sender_address != cand.localizer:
-            raise gl.UserError("UNAUTHORIZED_LOCALIZER")
+            raise gl.vm.UserError("UNAUTHORIZED_LOCALIZER")
 
         if cand.state != "DRAFT":
-            raise gl.UserError("CANDIDATE_NOT_IN_DRAFT")
+            raise gl.vm.UserError("CANDIDATE_NOT_IN_DRAFT")
 
         cand.state = "FROZEN"
         self._record_event(
@@ -1031,11 +1031,11 @@ class PolicyTranslationReleaseGate(gl.Contract):
     @gl.public.write
     def assess_translation(self, candidate_id: u32) -> None:
         if candidate_id not in self.translation_candidates:
-            raise gl.UserError("CANDIDATE_NOT_FOUND")
+            raise gl.vm.UserError("CANDIDATE_NOT_FOUND")
 
         cand = self.translation_candidates[candidate_id]
         if cand.state != "FROZEN":
-            raise gl.UserError("CANDIDATE_NOT_FROZEN")
+            raise gl.vm.UserError("CANDIDATE_NOT_FROZEN")
 
         can_rev = self.canonical_revisions[cand.canonical_id]
 
@@ -1163,20 +1163,20 @@ class PolicyTranslationReleaseGate(gl.Contract):
     @gl.public.write
     def retry_unresolved(self, candidate_id: u32) -> None:
         if candidate_id not in self.translation_candidates:
-            raise gl.UserError("CANDIDATE_NOT_FOUND")
+            raise gl.vm.UserError("CANDIDATE_NOT_FOUND")
 
         cand = self.translation_candidates[candidate_id]
         if cand.state != "HOLD_UNRESOLVED":
-            raise gl.UserError("CANDIDATE_NOT_UNRESOLVED")
+            raise gl.vm.UserError("CANDIDATE_NOT_UNRESOLVED")
 
         if int(cand.attempts) >= MAX_RETRY_ATTEMPTS:
-            raise gl.UserError("MAX_RETRY_ATTEMPTS_EXCEEDED")
+            raise gl.vm.UserError("MAX_RETRY_ATTEMPTS_EXCEEDED")
 
         current_ts = _get_current_timestamp()
         if current_ts > 0 and int(cand.last_assessed_at) > 0:
             elapsed = int(current_ts) - int(cand.last_assessed_at)
             if elapsed < RETRY_COOLDOWN_SECONDS:
-                raise gl.UserError("RETRY_COOLDOWN_ACTIVE")
+                raise gl.vm.UserError("RETRY_COOLDOWN_ACTIVE")
 
         can_rev = self.canonical_revisions[cand.canonical_id]
 
@@ -1302,21 +1302,21 @@ class PolicyTranslationReleaseGate(gl.Contract):
         self, candidate_id: u32, objection_digest: str, reason: str
     ) -> u32:
         if candidate_id not in self.translation_candidates:
-            raise gl.UserError("CANDIDATE_NOT_FOUND")
+            raise gl.vm.UserError("CANDIDATE_NOT_FOUND")
 
         cand = self.translation_candidates[candidate_id]
         if cand.state == "PUBLISHED":
-            raise gl.UserError("CANNOT_OBJECT_TO_PUBLISHED_TRANSLATION")
+            raise gl.vm.UserError("CANNOT_OBJECT_TO_PUBLISHED_TRANSLATION")
         if cand.state == "STALE_BY_CANONICAL_REVISION":
-            raise gl.UserError("CANNOT_OBJECT_TO_STALE_TRANSLATION")
+            raise gl.vm.UserError("CANNOT_OBJECT_TO_STALE_TRANSLATION")
 
         digest_clean = objection_digest.strip().lower()
         if not _is_safe_digest(digest_clean):
-            raise gl.UserError("INVALID_OBJECTION_DIGEST")
+            raise gl.vm.UserError("INVALID_OBJECTION_DIGEST")
 
         reason_clean = reason.strip()
         if not reason_clean or len(reason_clean) > 500:
-            raise gl.UserError("INVALID_OBJECTION_REASON")
+            raise gl.vm.UserError("INVALID_OBJECTION_REASON")
 
         self.objection_count = u32(int(self.objection_count) + 1)
         obj_id = self.objection_count
@@ -1340,24 +1340,24 @@ class PolicyTranslationReleaseGate(gl.Contract):
     @gl.public.write
     def publish_translation(self, candidate_id: u32) -> None:
         if not self.initialized:
-            raise gl.UserError("PUBLISHER_NOT_INITIALIZED")
+            raise gl.vm.UserError("PUBLISHER_NOT_INITIALIZED")
         if gl.message.sender_address != self.publisher_admin:
-            raise gl.UserError("UNAUTHORIZED_PUBLISHER")
+            raise gl.vm.UserError("UNAUTHORIZED_PUBLISHER")
 
         if candidate_id not in self.translation_candidates:
-            raise gl.UserError("CANDIDATE_NOT_FOUND")
+            raise gl.vm.UserError("CANDIDATE_NOT_FOUND")
 
         cand = self.translation_candidates[candidate_id]
         if cand.state != "ACCEPTED":
-            raise gl.UserError("CANDIDATE_NOT_ACCEPTED")
+            raise gl.vm.UserError("CANDIDATE_NOT_ACCEPTED")
 
         # Re-check active canonical in the same transaction
         if int(self.active_canonical_id) == 0 or cand.canonical_id != self.active_canonical_id:
-            raise gl.UserError("CANONICAL_NOT_ACTIVE")
+            raise gl.vm.UserError("CANONICAL_NOT_ACTIVE")
 
         can_rev = self.canonical_revisions[cand.canonical_id]
         if can_rev.state != "ACTIVE":
-            raise gl.UserError("CANONICAL_NOT_ACTIVE")
+            raise gl.vm.UserError("CANONICAL_NOT_ACTIVE")
 
         cand.state = "PUBLISHED"
         pub_key = f"{int(cand.canonical_id)}:{cand.locale}"
@@ -1372,18 +1372,18 @@ class PolicyTranslationReleaseGate(gl.Contract):
     def bind_consumer(self, namespace: str, locale: str, candidate_id: u32) -> None:
         ns_clean = namespace.strip()
         if not _is_safe_namespace(ns_clean):
-            raise gl.UserError("INVALID_NAMESPACE")
+            raise gl.vm.UserError("INVALID_NAMESPACE")
 
         loc_clean = locale.strip()
         if not _is_safe_locale(loc_clean):
-            raise gl.UserError("INVALID_LOCALE")
+            raise gl.vm.UserError("INVALID_LOCALE")
 
         if candidate_id not in self.translation_candidates:
-            raise gl.UserError("CANDIDATE_NOT_FOUND")
+            raise gl.vm.UserError("CANDIDATE_NOT_FOUND")
 
         cand = self.translation_candidates[candidate_id]
         if cand.locale != loc_clean:
-            raise gl.UserError("LOCALE_MISMATCH")
+            raise gl.vm.UserError("LOCALE_MISMATCH")
 
         key = f"{ns_clean}:{loc_clean}"
         rec = ConsumerBindingRecord(ns_clean, loc_clean, candidate_id, _get_current_timestamp())

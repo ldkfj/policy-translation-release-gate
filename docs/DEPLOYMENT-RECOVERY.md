@@ -1,6 +1,20 @@
 # Deployment and Recovery Manifest
 
-Status: deployed to Studionet; POST_DEPLOY_TEST live matrix in progress.
+Status: POST_DEPLOY_TEST found a runtime blocker; corrected candidate requires fresh PRE_DEPLOY approval before any replacement deployment or upgrade.
+
+## Runtime remediation candidate (2026-08-28)
+
+- Candidate source SHA-256: `FD003AE8CE47B3C36C242A8887D0C6F0B7BCFCCE0C9FC022306A3205665F598C`.
+- The existing deployment below remains diagnostic evidence, not a passed release.
+- Unauthorized `initialize_publisher("unauthorized-test", "negative-case")` from `0xeF5D2119416A2f5afa35dCFA209766EFC1BE5902` produced transaction `0x4ced1b4ed41d554530f7ef1769a5253ed344b1a6ad872157e57d52e8fb0cd1b6`. It finalized but full execution reported `ERROR`, with `AttributeError: module 'genlayer.gl' has no attribute 'UserError'`; the simplified receipt's `success` was not execution proof.
+- Root cause: contract rejection paths referenced `gl.UserError`, while the local fixture fabricated this missing alias. All contract/test references now use `gl.vm.UserError`; fixture aliases are removed. A regression asserts the alias remains absent.
+- Scope: error namespace only; storage, ABI, consensus comparison, source boundaries and approved product behavior are unchanged. This is the existing contract work item's Codex takeover after two Claude attempts.
+- Applicable experience: **Keep GenVM test doubles narrower than the real runtime**. Test conveniences must not invent production API members.
+- Current verification: Python 3.13 with installed cloudpickle 3.1.2; 65 contract tests pass; `genvm-lint check` passes lint and semantic validation; schema remains 25 methods (13 view, 12 write), zero constructor args; typecheck and py_compile pass. Use `PYTHONIOENCODING=utf-8` and `GENVM_VERSION=v0.3.0-rc7` for the installed linter.
+- Frontend regression: TypeScript passes, 99 tests across 10 files pass, production build passes with the existing 815.19 kB chunk warning. No frontend source changes in this correction.
+- Locked Studio account was rechecked in the live account selector: `0x34b92E6553eaCA11A00A9d86d75d8a7881779D78` remains available and selected. No new transaction was sent before review.
+- Official API: [Error Handling](https://docs.genlayer.com/developers/intelligent-contracts/features/error-handling), checked 2026-08-28. The dedicated UserError section specifies `gl.vm.UserError`; the actual deployed runtime corroborates that namespace despite inconsistent examples elsewhere.
+- Required closure: fresh exact-revision PRE_DEPLOY approval, corrected source deployment/upgrade, authoritative source parity, rerun failed authorization and complete the bounded Studio matrix. No POST_DEPLOY_TEST approval, GitHub push or Vercel deployment is claimed.
 
 ## Locked deployment configuration
 

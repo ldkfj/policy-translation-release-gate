@@ -35,6 +35,12 @@ def test_persisted_records_use_supported_dataclass_form():
     ))
 
 
+def test_user_errors_use_real_runtime_namespace():
+    # Studio has gl.vm.UserError, not the alias the old fixture invented.
+    assert not hasattr(gl, "UserError")
+    assert issubclass(gl.vm.UserError, Exception)
+
+
 def test_constructor_zero_params_and_clean_state(admin_address):
     set_caller(admin_address, timestamp=1700000000)
     contract = inmem_allocate(PolicyTranslationReleaseGate)
@@ -59,7 +65,7 @@ def test_initialization_via_write_method(admin_address, localizer_address):
 
     # Unauthorized caller cannot initialize
     set_caller(localizer_address, timestamp=1700000101)
-    with pytest.raises(gl.UserError) as exc:
+    with pytest.raises(gl.vm.UserError) as exc:
         contract.initialize_publisher("org-beta", "rules-repo")
     assert "UNAUTHORIZED_CALLER" in str(exc.value)
 
@@ -84,7 +90,7 @@ def test_initialization_via_write_method(admin_address, localizer_address):
     assert events["items"][0]["timestamp"] == 1700000102
 
     # Double initialization is rejected
-    with pytest.raises(gl.UserError) as exc2:
+    with pytest.raises(gl.vm.UserError) as exc2:
         contract.initialize_publisher("org-gamma", "other-repo")
     assert "PUBLISHER_ALREADY_INITIALIZED" in str(exc2.value)
 
@@ -97,14 +103,14 @@ def test_missing_or_invalid_transaction_datetime_fails_closed(
     original = gl.message_raw
     try:
         gl.message_raw = {"sender_address": admin_address}
-        with pytest.raises(gl.UserError) as missing:
+        with pytest.raises(gl.vm.UserError) as missing:
             contract.initialize_publisher("acme-corp", "privacy-policy")
         assert "INVALID_TRANSACTION_DATETIME" in str(missing.value)
 
         set_caller(admin_address, timestamp=1700000200)
         contract = inmem_allocate(PolicyTranslationReleaseGate)
         gl.message_raw = {"sender_address": admin_address, "datetime": "not-a-time"}
-        with pytest.raises(gl.UserError) as invalid:
+        with pytest.raises(gl.vm.UserError) as invalid:
             contract.initialize_publisher("acme-corp", "privacy-policy")
         assert "INVALID_TRANSACTION_DATETIME" in str(invalid.value)
     finally:
@@ -133,7 +139,7 @@ def test_invalid_owner_repo_rejection(admin_address, owner, repo):
     assert not _is_safe_owner_repo(owner, repo)
 
     contract = inmem_allocate(PolicyTranslationReleaseGate)
-    with pytest.raises(gl.UserError) as exc:
+    with pytest.raises(gl.vm.UserError) as exc:
         contract.initialize_publisher(owner, repo)
     assert "INVALID_OWNER_OR_REPO" in str(exc.value)
 
@@ -142,19 +148,19 @@ def test_uninitialized_contract_rejects_writes(admin_address):
     set_caller(admin_address)
     contract = inmem_allocate(PolicyTranslationReleaseGate)
 
-    with pytest.raises(gl.UserError) as exc:
+    with pytest.raises(gl.vm.UserError) as exc:
         contract.register_canonical("n-1", "a" * 40, "docs/p.md", "b" * 64)
     assert "PUBLISHER_NOT_INITIALIZED" in str(exc.value)
 
-    with pytest.raises(gl.UserError) as exc:
+    with pytest.raises(gl.vm.UserError) as exc:
         contract.activate_canonical(u32(1))
     assert "PUBLISHER_NOT_INITIALIZED" in str(exc.value)
 
-    with pytest.raises(gl.UserError) as exc:
+    with pytest.raises(gl.vm.UserError) as exc:
         contract.register_translation("n-2", u32(1), "es", "a" * 40, "docs/es.md", "b" * 64)
     assert "PUBLISHER_NOT_INITIALIZED" in str(exc.value)
 
-    with pytest.raises(gl.UserError) as exc:
+    with pytest.raises(gl.vm.UserError) as exc:
         contract.publish_translation(u32(1))
     assert "PUBLISHER_NOT_INITIALIZED" in str(exc.value)
 

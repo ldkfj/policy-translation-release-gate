@@ -64,7 +64,7 @@ def test_register_translation_nonce_replay(contract_factory, admin_address, loca
     assert contract.candidate_count == 1
 
     # Different payload with same nonce is rejected
-    with pytest.raises(gl.UserError) as exc:
+    with pytest.raises(gl.vm.UserError) as exc:
         contract.register_translation(
             "nonce-t1",
             u32(c1),
@@ -82,7 +82,7 @@ def test_nonce_cannot_cross_entity_domains(contract_factory, admin_address, loca
     c1 = contract.register_canonical("shared-nonce", "a" * 40, "terms.md", "1" * 64)
 
     set_caller(localizer_address)
-    with pytest.raises(gl.UserError, match="NONCE_REUSED_FOR_DIFFERENT_ENTITY"):
+    with pytest.raises(gl.vm.UserError, match="NONCE_REUSED_FOR_DIFFERENT_ENTITY"):
         contract.register_translation(
             "shared-nonce", u32(c1), "es", "b" * 40, "terms_es.md", "2" * 64
         )
@@ -91,7 +91,7 @@ def test_nonce_cannot_cross_entity_domains(contract_factory, admin_address, loca
         "translation-nonce", u32(c1), "es", "b" * 40, "terms_es.md", "2" * 64
     )
     set_caller(admin_address)
-    with pytest.raises(gl.UserError, match="NONCE_REUSED_FOR_DIFFERENT_ENTITY"):
+    with pytest.raises(gl.vm.UserError, match="NONCE_REUSED_FOR_DIFFERENT_ENTITY"):
         contract.register_canonical(
             "translation-nonce", "c" * 40, "next.md", "3" * 64
         )
@@ -113,7 +113,7 @@ def test_duplicate_candidate_rejection(contract_factory, admin_address, localize
     )
 
     # Re-registering exact duplicate (canonical_id, locale, commit, path) with new nonce
-    with pytest.raises(gl.UserError) as exc:
+    with pytest.raises(gl.vm.UserError) as exc:
         contract.register_translation(
             "nonce-t2",
             u32(c1),
@@ -144,7 +144,7 @@ def test_max_locales_per_canonical_cap(contract_factory, admin_address, localize
         )
 
     # 4th distinct locale on same canonical is rejected
-    with pytest.raises(gl.UserError) as exc:
+    with pytest.raises(gl.vm.UserError) as exc:
         contract.register_translation(
             "nonce-t-it",
             u32(c1),
@@ -178,7 +178,7 @@ def test_cannot_register_on_superseded_canonical(contract_factory, admin_address
     contract.activate_canonical(u32(c2))
 
     set_caller(localizer_address)
-    with pytest.raises(gl.UserError) as exc:
+    with pytest.raises(gl.vm.UserError) as exc:
         contract.register_translation(
             "nonce-t1",
             u32(c1),
@@ -202,18 +202,18 @@ def test_update_translation_draft_and_strict_localizer_authorization(
 
     # Unauthorized third party observer cannot update
     set_caller(observer_address)
-    with pytest.raises(gl.UserError) as exc:
+    with pytest.raises(gl.vm.UserError) as exc:
         contract.update_translation_draft(u32(t1), "2" * 40, "terms_es_v2.md", "2" * 64)
     assert "UNAUTHORIZED_LOCALIZER" in str(exc.value)
 
     # Publisher admin CANNOT update localizer's draft (strict localizer authorization)
     set_caller(admin_address)
-    with pytest.raises(gl.UserError) as exc_admin:
+    with pytest.raises(gl.vm.UserError) as exc_admin:
         contract.update_translation_draft(u32(t1), "2" * 40, "terms_es_v2.md", "2" * 64)
     assert "UNAUTHORIZED_LOCALIZER" in str(exc_admin.value)
 
     # Publisher admin CANNOT freeze localizer's draft
-    with pytest.raises(gl.UserError) as exc_freeze_admin:
+    with pytest.raises(gl.vm.UserError) as exc_freeze_admin:
         contract.freeze_translation(u32(t1))
     assert "UNAUTHORIZED_LOCALIZER" in str(exc_freeze_admin.value)
 
@@ -245,12 +245,12 @@ def test_freeze_translation_and_immutability(contract_factory, admin_address, lo
     assert cand["state"] == "FROZEN"
 
     # Cannot update a frozen candidate
-    with pytest.raises(gl.UserError) as exc:
+    with pytest.raises(gl.vm.UserError) as exc:
         contract.update_translation_draft(u32(t1), "2" * 40, "terms_es_v2.md", "2" * 64)
     assert "CANDIDATE_NOT_IN_DRAFT" in str(exc.value)
 
     # Cannot freeze an already frozen candidate
-    with pytest.raises(gl.UserError) as exc2:
+    with pytest.raises(gl.vm.UserError) as exc2:
         contract.freeze_translation(u32(t1))
     assert "CANDIDATE_NOT_IN_DRAFT" in str(exc2.value)
 

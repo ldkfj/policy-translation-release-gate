@@ -11,7 +11,7 @@ def test_register_canonical_basic(contract_factory, admin_address, localizer_add
 
     # Unauthorized caller cannot register canonical
     set_caller(localizer_address)
-    with pytest.raises(gl.UserError) as exc:
+    with pytest.raises(gl.vm.UserError) as exc:
         contract.register_canonical(
             "nonce-c1",
             "a" * 40,
@@ -67,7 +67,7 @@ def test_register_canonical_nonce_idempotency_and_replay(contract_factory, admin
     assert contract.canonical_count == 1
 
     # Replay with different payload is rejected
-    with pytest.raises(gl.UserError) as exc:
+    with pytest.raises(gl.vm.UserError) as exc:
         contract.register_canonical(
             "nonce-c1",
             "c" * 40,
@@ -94,7 +94,7 @@ def test_register_canonical_max_cap(contract_factory, admin_address):
     assert contract.canonical_count == 16
 
     # 17th registration exceeds cap
-    with pytest.raises(gl.UserError) as exc:
+    with pytest.raises(gl.vm.UserError) as exc:
         contract.register_canonical(
             "nonce-c-17",
             f"{17:040x}",
@@ -114,7 +114,7 @@ def test_activate_canonical_and_atomic_supersession(contract_factory, admin_addr
 
     # Unauthorized activation rejected
     set_caller(localizer_address)
-    with pytest.raises(gl.UserError) as exc:
+    with pytest.raises(gl.vm.UserError) as exc:
         contract.activate_canonical(u32(c1))
     assert "UNAUTHORIZED_PUBLISHER" in str(exc.value)
 
@@ -136,12 +136,12 @@ def test_activate_canonical_and_atomic_supersession(contract_factory, admin_addr
     assert rev2["state"] == "ACTIVE"
 
     # Re-activating already active c2 raises error
-    with pytest.raises(gl.UserError) as exc2:
+    with pytest.raises(gl.vm.UserError) as exc2:
         contract.activate_canonical(u32(c2))
     assert "CANONICAL_ALREADY_ACTIVE" in str(exc2.value)
 
     # Activating nonexistent canonical raises error
-    with pytest.raises(gl.UserError) as exc3:
+    with pytest.raises(gl.vm.UserError) as exc3:
         contract.activate_canonical(u32(99))
     assert "CANONICAL_NOT_FOUND" in str(exc3.value)
 

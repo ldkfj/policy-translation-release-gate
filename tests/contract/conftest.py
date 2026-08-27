@@ -80,12 +80,6 @@ from genlayer import Address, u32, u64
 from genlayer.py.storage import inmem_allocate, Root
 from contracts.policy_translation_release_gate import PolicyTranslationReleaseGate
 
-# Ensure UserError is accessible via gl.UserError and genlayer.UserError
-gl.UserError = gl.vm.UserError
-genlayer_top.UserError = gl.vm.UserError
-if hasattr(genlayer_top, "gl"):
-    genlayer_top.gl.UserError = gl.vm.UserError
-
 
 def set_caller(address: Address, timestamp: int = 1700000000):
     msg = types.SimpleNamespace(
@@ -238,7 +232,7 @@ def setup_nondet():
             gl.vm.Return(cloudpickle.loads(serialized_result))
         )
         if not valid:
-            raise gl.UserError("VALIDATOR_DISAGREED")
+            raise gl.vm.UserError("VALIDATOR_DISAGREED")
         return leader_res
 
     gl.vm.run_nondet_unsafe = mock_run_nondet_unsafe

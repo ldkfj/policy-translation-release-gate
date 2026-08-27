@@ -92,11 +92,11 @@ def test_validator_rejects_schema_valid_but_substantively_false_outcome(
         valid = validator_fn(gl.vm.Return(falsified_res))
         assert valid is False, "Validator must reject substantively false leader result!"
         # In GenVM consensus failure raises UserError or halts transaction
-        raise gl.UserError("VALIDATOR_CONSENSUS_REJECTED")
+        raise gl.vm.UserError("VALIDATOR_CONSENSUS_REJECTED")
 
     gl.vm.run_nondet_unsafe = run_nondet_malicious_leader
 
-    with pytest.raises(gl.UserError) as exc:
+    with pytest.raises(gl.vm.UserError) as exc:
         contract.assess_translation(u32(t1))
     assert "VALIDATOR_CONSENSUS_REJECTED" in str(exc.value)
 
@@ -135,11 +135,11 @@ def test_validator_rejects_altered_fingerprint_or_section_coverage(
         bad_fp_res["fingerprint"] = "0" * 64
         valid = validator_fn(gl.vm.Return(bad_fp_res))
         assert valid is False
-        raise gl.UserError("VALIDATOR_CONSENSUS_REJECTED")
+        raise gl.vm.UserError("VALIDATOR_CONSENSUS_REJECTED")
 
     gl.vm.run_nondet_unsafe = run_nondet_bad_fp
 
-    with pytest.raises(gl.UserError):
+    with pytest.raises(gl.vm.UserError):
         contract.assess_translation(u32(t1))
 
     assert contract.get_translation_candidate(u32(t1))["state"] == "FROZEN"
@@ -169,9 +169,9 @@ def test_validator_rejects_unverified_reason(
         result = leader_fn()
         result["reason"] = "Unsupported reviewer-facing explanation."
         assert validator_fn(gl.vm.Return(result)) is False
-        raise gl.UserError("VALIDATOR_CONSENSUS_REJECTED")
+        raise gl.vm.UserError("VALIDATOR_CONSENSUS_REJECTED")
 
     gl.vm.run_nondet_unsafe = run_nondet_bad_reason
-    with pytest.raises(gl.UserError):
+    with pytest.raises(gl.vm.UserError):
         contract.assess_translation(u32(t1))
     assert contract.get_translation_candidate(u32(t1))["state"] == "FROZEN"

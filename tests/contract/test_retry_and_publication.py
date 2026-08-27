@@ -43,7 +43,7 @@ def test_retry_unresolved_cooldown_boundaries_and_max_attempts(
     # 2. Cooldown boundary tests (cooldown is 600s):
     # Early retry at 599 seconds (assess_time_1 + 599) must be rejected with RETRY_COOLDOWN_ACTIVE
     set_caller(localizer_address, timestamp=assess_time_1 + 599)
-    with pytest.raises(gl.UserError) as exc_early:
+    with pytest.raises(gl.vm.UserError) as exc_early:
         contract.retry_unresolved(u32(t1))
     assert "RETRY_COOLDOWN_ACTIVE" in str(exc_early.value)
 
@@ -76,7 +76,7 @@ def test_retry_unresolved_cooldown_boundaries_and_max_attempts(
     # 5. 4th attempt exceeds max 3 attempts -> MAX_RETRY_ATTEMPTS_EXCEEDED
     retry_time_4 = retry_time_3 + 700
     set_caller(localizer_address, timestamp=retry_time_4)
-    with pytest.raises(gl.UserError) as exc_max:
+    with pytest.raises(gl.vm.UserError) as exc_max:
         contract.retry_unresolved(u32(t1))
     assert "MAX_RETRY_ATTEMPTS_EXCEEDED" in str(exc_max.value)
 
@@ -142,7 +142,7 @@ def test_publication_guards_and_atomic_active_canonical_check(
 
     # Cannot publish draft candidate
     set_caller(admin_address)
-    with pytest.raises(gl.UserError) as exc1:
+    with pytest.raises(gl.vm.UserError) as exc1:
         contract.publish_translation(u32(t1))
     assert "CANDIDATE_NOT_ACCEPTED" in str(exc1.value)
 
@@ -158,7 +158,7 @@ def test_publication_guards_and_atomic_active_canonical_check(
 
     # Unauthorized caller cannot publish
     set_caller(localizer_address)
-    with pytest.raises(gl.UserError) as exc2:
+    with pytest.raises(gl.vm.UserError) as exc2:
         contract.publish_translation(u32(t1))
     assert "UNAUTHORIZED_PUBLISHER" in str(exc2.value)
 
@@ -229,7 +229,7 @@ def test_objections_pre_publish_allowed_and_post_publish_rejected(
 
     # 4. Post-publish objection on PUBLISHED candidate is REJECTED
     set_caller(observer_address, timestamp=base_time + 70)
-    with pytest.raises(gl.UserError) as exc_pub:
+    with pytest.raises(gl.vm.UserError) as exc_pub:
         contract.record_objection(u32(t1), "3" * 64, "Objection after publish.")
     assert "CANNOT_OBJECT_TO_PUBLISHED_TRANSLATION" in str(exc_pub.value)
 
@@ -240,6 +240,6 @@ def test_objections_pre_publish_allowed_and_post_publish_rejected(
     assert contract.get_translation_candidate(u32(t1))["state"] == "STALE_BY_CANONICAL_REVISION"
 
     set_caller(observer_address, timestamp=base_time + 90)
-    with pytest.raises(gl.UserError) as exc_stale:
+    with pytest.raises(gl.vm.UserError) as exc_stale:
         contract.record_objection(u32(t1), "4" * 64, "Objection after stale.")
     assert "CANNOT_OBJECT_TO_STALE_TRANSLATION" in str(exc_stale.value)

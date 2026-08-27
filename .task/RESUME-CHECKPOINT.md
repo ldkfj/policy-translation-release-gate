@@ -15,6 +15,6 @@ Date: 2026-08-28
 - Initial authoritative readback confirms locked admin/upgrader, policy version `1`, uninitialized profile, zero counts, and no active canonical.
 - No GitHub push, Vercel deployment, or submission has occurred.
 
-Next action: complete the bounded live Studio matrix before requesting `POST_DEPLOY_TEST` review. Publisher initialization is intentionally not sent until the immutable public GitHub owner/repository containing commit-bound live fixtures is selected and verified.
+Next action: re-review the corrected runtime candidate recorded in `docs/DEPLOYMENT-RECOVERY.md`, then deploy/upgrade and continue the bounded Studio matrix. GitHub release is not a prerequisite for running available Studio cases. The full source-backed assessment journey still needs valid publicly retrievable commit-bound fixtures; do not mark it passed from local fixtures or mocks.
 
 Any source, account, network, constructor, or upgrade-classification change invalidates this PRE_DEPLOY approval.
