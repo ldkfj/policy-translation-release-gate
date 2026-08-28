@@ -12,11 +12,15 @@ This document is the compact judge-facing verification record for Policy Transla
 - Contract: 0xf41A330869Cb9FDCCD8fbd7Ce7f83F5042908A75
 - Explorer: https://explorer-studio.genlayer.com/address/0xf41A330869Cb9FDCCD8fbd7Ce7f83F5042908A75
 - RPC: https://studio.genlayer.com/api
+- Live web: https://policy-translation-release-gate.vercel.app
+- Public repository: https://github.com/ldkfj/policy-translation-release-gate
 - Constructor: no arguments
 - Deployment class: UPGRADABLE native Root Slot
 - Locked publisher/upgrader: 0x34b92E6553eaCA11A00A9d86d75d8a7881779D78
 
 The deployed source readback is the lowercase form of the exact SHA above. The release package commit is the Git commit containing this verification record; the final public URL and commit are recorded in the release handoff after GitHub push.
+
+The first verified Vercel production deployment was `dpl_6oHYx5goXzAdUGSsRm4MxkU9Men9` in team `gam9`; the stable production alias above is the judge-facing URL. Primary live review confirmed the correct title, contract/Explorer link, disconnected wallet state, six journeys, and successful wallet-free profile/canonical/upgrader reads.
 
 ## Exact-source upgrade and threshold proof
 

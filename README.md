@@ -4,7 +4,8 @@ Policy Translation Release Gate is a GenLayer Studionet application that prevent
 
 ## Verified links
 
-- Live app: added after the final Vercel deployment.
+- Live app: [policy-translation-release-gate.vercel.app](https://policy-translation-release-gate.vercel.app)
+- Source repository: [ldkfj/policy-translation-release-gate](https://github.com/ldkfj/policy-translation-release-gate)
 - Studionet contract: [0xf41A330869Cb9FDCCD8fbd7Ce7f83F5042908A75](https://explorer-studio.genlayer.com/address/0xf41A330869Cb9FDCCD8fbd7Ce7f83F5042908A75)
 - Network: [GenLayer Studionet](https://studio.genlayer.com/) (61999)
 - Fixture repository: [pcong5239/policy-translation-release-gate-fixtures](https://github.com/pcong5239/policy-translation-release-gate-fixtures)
