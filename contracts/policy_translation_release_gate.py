@@ -289,6 +289,56 @@ def _is_safe_digest(digest: str) -> bool:
     return bool(re.match(r"^[0-9a-f]{64}$", digest))
 
 
+def _text_value(value: typing.Any) -> str:
+    """Converts a runtime header/body value to bounded text for classification."""
+    if isinstance(value, (bytes, bytearray)):
+        return bytes(value).decode("utf-8", errors="ignore")
+    return str(value)
+
+
+def _response_header(response: typing.Any, name: str) -> str:
+    """Reads a response header without assuming casing or byte/string values."""
+    try:
+        headers = getattr(response, "headers", {}) or {}
+        wanted = name.strip().lower()
+        for key, value in headers.items():
+            if _text_value(key).strip().lower() == wanted:
+                return _text_value(value).strip()
+    except Exception:
+        return ""
+    return ""
+
+
+def _is_rate_limited_response(response: typing.Any) -> bool:
+    """Recognizes provider throttling without treating every 403 as unavailable."""
+    try:
+        status = int(getattr(response, "status", 0))
+    except Exception:
+        return False
+
+    if status == 429:
+        return True
+    if status != 403:
+        return False
+
+    # GitHub documents both 403 and 429 for primary/secondary rate limits.
+    if _response_header(response, "retry-after"):
+        return True
+    if _response_header(response, "x-ratelimit-remaining").strip() == "0":
+        return True
+
+    body = _text_value(getattr(response, "body", b"")).lower()
+    return any(
+        marker in body
+        for marker in (
+            "rate limit",
+            "secondary rate limit",
+            "abuse detection mechanism",
+            "too many requests",
+        )
+    )
+
+
 def _is_safe_path(path: str) -> bool:
     if not path or len(path) > 255:
         return False
@@ -367,36 +417,52 @@ def _fetch_and_validate_evidence(
     commit_sha: str,
     safe_path: str,
     declared_digest: str,
+    commit_status_cache: typing.Optional[dict[str, str]] = None,
 ) -> tuple[str, typing.Optional[dict[str, str]]]:
     """Fetches commit API and raw file, returning (status, parsed_sections)."""
     commit_url = f"https://api.github.com/repos/{owner}/{repo}/commits/{commit_sha}"
     raw_url = f"https://raw.githubusercontent.com/{owner}/{repo}/{commit_sha}/{safe_path}"
 
-    try:
-        commit_resp = gl.nondet.web.get(
-            commit_url,
-            headers={
-                "Accept": "application/vnd.github.v3+json",
-                "User-Agent": "GenLayer-PolicyGate-Validator",
-            },
-        )
-    except Exception:
-        return ("UNAVAILABLE", None)
+    cache_key = f"{owner}/{repo}/{commit_sha.lower()}"
+    commit_status = None
+    if commit_status_cache is not None:
+        commit_status = commit_status_cache.get(cache_key)
 
-    if commit_resp.status == 404:
-        return ("MISSING", None)
-    if commit_resp.status in (0, 429, 500, 502, 503, 504, 599) or commit_resp.status >= 500:
-        return ("UNAVAILABLE", None)
-    if commit_resp.status != 200 or not commit_resp.body:
-        return ("INVALID", None)
+    if commit_status is None:
+        try:
+            commit_resp = gl.nondet.web.get(
+                commit_url,
+                headers={
+                    "Accept": "application/vnd.github.v3+json",
+                    "User-Agent": "GenLayer-PolicyGate-Validator",
+                },
+            )
+        except Exception:
+            commit_status = "UNAVAILABLE"
+        else:
+            if _is_rate_limited_response(commit_resp):
+                commit_status = "UNAVAILABLE"
+            elif commit_resp.status == 404:
+                commit_status = "MISSING"
+            elif commit_resp.status in (0, 500, 502, 503, 504, 599) or commit_resp.status >= 500:
+                commit_status = "UNAVAILABLE"
+            elif commit_resp.status != 200 or not commit_resp.body:
+                commit_status = "INVALID"
+            else:
+                try:
+                    commit_json = json.loads(commit_resp.body.decode("utf-8"))
+                    returned_sha = str(commit_json.get("sha", "")).lower()
+                    commit_status = (
+                        "AVAILABLE" if returned_sha == commit_sha.lower() else "INVALID"
+                    )
+                except Exception:
+                    commit_status = "INVALID"
 
-    try:
-        commit_json = json.loads(commit_resp.body.decode("utf-8"))
-        returned_sha = str(commit_json.get("sha", "")).lower()
-        if returned_sha != commit_sha.lower():
-            return ("INVALID", None)
-    except Exception:
-        return ("INVALID", None)
+        if commit_status_cache is not None:
+            commit_status_cache[cache_key] = commit_status
+
+    if commit_status != "AVAILABLE":
+        return (commit_status, None)
 
     try:
         raw_resp = gl.nondet.web.get(
@@ -406,9 +472,11 @@ def _fetch_and_validate_evidence(
     except Exception:
         return ("UNAVAILABLE", None)
 
+    if _is_rate_limited_response(raw_resp):
+        return ("UNAVAILABLE", None)
     if raw_resp.status == 404:
         return ("MISSING", None)
-    if raw_resp.status in (0, 429, 500, 502, 503, 504, 599) or raw_resp.status >= 500:
+    if raw_resp.status in (0, 500, 502, 503, 504, 599) or raw_resp.status >= 500:
         return ("UNAVAILABLE", None)
     if raw_resp.status != 200 or raw_resp.body is None:
         return ("INVALID", None)
@@ -553,11 +621,15 @@ def _derive_assessment(
     trn_digest: str,
 ) -> dict[str, typing.Any]:
     """Leader & validator assessment computation."""
+    # This cache is local to one leader/validator execution. It removes a
+    # duplicate commit-API request when both bound files share one immutable
+    # commit, while every validator still performs its own cache-free fetch.
+    commit_status_cache: dict[str, str] = {}
     can_status, can_sections = _fetch_and_validate_evidence(
-        owner, repo, can_commit, can_path, can_digest
+        owner, repo, can_commit, can_path, can_digest, commit_status_cache
     )
     trn_status, trn_sections = _fetch_and_validate_evidence(
-        owner, repo, trn_commit, trn_path, trn_digest
+        owner, repo, trn_commit, trn_path, trn_digest, commit_status_cache
     )
 
     can_section_ids = sorted(list(can_sections.keys())) if can_sections else []

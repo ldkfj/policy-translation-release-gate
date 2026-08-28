@@ -6,6 +6,7 @@ import pytest
 import genlayer.gl as gl
 from genlayer import Address, u32
 from conftest import set_caller
+from contracts.policy_translation_release_gate import _fetch_and_validate_evidence
 
 
 def test_evidence_boundary_exact_url_construction(
@@ -48,6 +49,84 @@ def test_evidence_boundary_exact_url_construction(
     cand = contract.get_translation_candidate(u32(t1))
     assert cand["state"] == "ACCEPTED"
     assert cand["has_assessment"] is True
+
+
+@pytest.mark.parametrize(
+    "headers, body",
+    [
+        ({"X-RateLimit-Remaining": b"0"}, b"Forbidden"),
+        ({}, b'{"message":"API rate limit exceeded"}'),
+        ({"Retry-After": b"60"}, b"Forbidden"),
+    ],
+)
+def test_rate_limited_403_is_unavailable(
+    web_mock, headers, body
+):
+    """GitHub uses 403 as well as 429 for throttling; it is retryable, not invalid."""
+    commit = "a" * 40
+    web_mock.register(
+        f"https://api.github.com/repos/acme/policy/commits/{commit}",
+        status=403,
+        body=body,
+        headers=headers,
+    )
+
+    status, sections = _fetch_and_validate_evidence(
+        "acme", "policy", commit, "terms.md", "0" * 64
+    )
+
+    assert status == "UNAVAILABLE"
+    assert sections is None
+
+
+def test_generic_403_remains_invalid(web_mock):
+    """A normal forbidden response must not be hidden as a transient throttle."""
+    commit = "b" * 40
+    web_mock.register(
+        f"https://api.github.com/repos/acme/policy/commits/{commit}",
+        status=403,
+        body=b"Forbidden",
+    )
+
+    status, sections = _fetch_and_validate_evidence(
+        "acme", "policy", commit, "terms.md", "0" * 64
+    )
+
+    assert status == "INVALID"
+    assert sections is None
+
+
+def test_same_commit_reuses_only_commit_api_status(web_mock, sample_canonical_doc):
+    """One execution may reuse immutable commit identity but must fetch both raw files."""
+    commit = "c" * 40
+    digest = hashlib.sha256(sample_canonical_doc.encode("utf-8")).hexdigest()
+    web_mock.register(
+        f"https://api.github.com/repos/acme/policy/commits/{commit}",
+        status=200,
+        body=json.dumps({"sha": commit}).encode("utf-8"),
+    )
+    web_mock.register(
+        f"https://raw.githubusercontent.com/acme/policy/{commit}/terms.md",
+        status=200,
+        body=sample_canonical_doc.encode("utf-8"),
+    )
+    web_mock.register(
+        f"https://raw.githubusercontent.com/acme/policy/{commit}/terms_es.md",
+        status=200,
+        body=sample_canonical_doc.encode("utf-8"),
+    )
+    cache = {}
+
+    first = _fetch_and_validate_evidence(
+        "acme", "policy", commit, "terms.md", digest, cache
+    )
+    second = _fetch_and_validate_evidence(
+        "acme", "policy", commit, "terms_es.md", digest, cache
+    )
+
+    assert first[0] == second[0] == "AVAILABLE"
+    assert len([call for call in web_mock.calls if "/commits/" in call["url"]]) == 1
+    assert len([call for call in web_mock.calls if "raw.githubusercontent.com" in call["url"]]) == 2
 
 
 @pytest.mark.parametrize("status_code", [0, 429, 500, 503, 599])
