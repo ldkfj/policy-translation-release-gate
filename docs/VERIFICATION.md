@@ -50,7 +50,7 @@ The final read-only Studionet observer readback records:
 - Prior-release transaction: [0x4db8f73dca4e2d1852a8522b9d138c46e2855e079583be2e26b8323ac552a001](https://explorer-studio.genlayer.com/tx/0x4db8f73dca4e2d1852a8522b9d138c46e2855e079583be2e26b8323ac552a001)
 - Prior-release authoritative result remains historical evidence: `FINALIZED / SUCCESS / MAJORITY_AGREE`; contract return value `2`; objection ID `2`.
 - Current exact-release external-wallet: account `0x008704...E01f`, candidate `16`, digest `a00c15...2906ea`, transaction [0xe1b67acf6607c50fd9301d56ebb9bca25c799d2d7562cf9f694449e8d5dc1e7b](https://explorer-studio.genlayer.com/tx/0xe1b67acf6607c50fd9301d56ebb9bca25c799d2d7562cf9f694449e8d5dc1e7b), `FINALIZED / SUCCESS / MAJORITY_AGREE`, contract return value `4`, objection ID `4`, candidate-16 objection page total `3`, profile `objection_count=4`, `event_count=63`.
-- The current exact application package `2c07257acd2e3299adc5bff20a3aee7dfd108455` was deployed as `dpl_AcLC5FenPms81vhyZwh1eJTdG9Dh`; the new transaction was submitted after that deployment and authoritative readback passed. Reload/disconnect confirmation is still pending.
+- The current exact application package `2c07257acd2e3299adc5bff20a3aee7dfd108455` was deployed as `dpl_AcLC5FenPms81vhyZwh1eJTdG9Dh`; the new transaction was submitted after that deployment and authoritative readback passed. The user confirmed reload/disconnect on this exact release: `PASS`.
 
 The complete transaction matrix, including expected failures, disagreement controls, invalid external-fetch controls, source restoration, and authoritative readbacks, is in [STUDIO-LIVE-MATRIX.md](STUDIO-LIVE-MATRIX.md). The narrative evidence is in [STUDIO-EVIDENCE.md](STUDIO-EVIDENCE.md). Recovery and incident handling are in [DEPLOYMENT-RECOVERY.md](DEPLOYMENT-RECOVERY.md).
 
@@ -71,4 +71,4 @@ Public reads are wallet-free. Writes require explicit EIP-6963 selection of Meta
 
 ## Release gates still required
 
-GitHub public rendering, the final Vercel URL, and the current exact-release external-wallet objection/readback have been verified. The remaining operational release gates are user confirmation of reload/disconnect on the exact release, a fresh anonymous `POST_GITHUB_VERCEL_FINAL` `APPROVED` verdict for package `2c07257acd2e3299adc5bff20a3aee7dfd108455`, and matching `DUAL_APPROVED`. No form submission is made by this project.
+GitHub public rendering, the final Vercel URL, the current exact-release external-wallet objection/readback, and reload/disconnect have been verified. The remaining operational release gates are a fresh anonymous `POST_GITHUB_VERCEL_FINAL` `APPROVED` verdict for package `2c07257acd2e3299adc5bff20a3aee7dfd108455`, and matching `DUAL_APPROVED`. No form submission is made by this project.
