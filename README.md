@@ -1,78 +1,103 @@
 # Policy Translation Release Gate
 
-An enterprise-grade decentralized policy translation release gate application built on **GenLayer Studionet**. The system enforces semantic equivalence between canonical policy documents and localized translations via GenLayer intelligent validator consensus before policies can be published and consumed by client applications.
+Policy Translation Release Gate is a GenLayer Studionet application that prevents a localized policy from being published until independent validator consensus confirms that its meaning remains materially equivalent to the canonical policy.
 
----
+## Verified links
 
-## 🎯 Overview & Architecture
+- Live app: added after the final Vercel deployment.
+- Studionet contract: [0xf41A330869Cb9FDCCD8fbd7Ce7f83F5042908A75](https://explorer-studio.genlayer.com/address/0xf41A330869Cb9FDCCD8fbd7Ce7f83F5042908A75)
+- Network: [GenLayer Studionet](https://studio.genlayer.com/) (61999)
+- Fixture repository: [pcong5239/policy-translation-release-gate-fixtures](https://github.com/pcong5239/policy-translation-release-gate-fixtures)
 
-When global organizations publish canonical policies (e.g. Terms of Service, Privacy Policies, Legal Notices), translations into regional languages often suffer from subtle legal drifts, omitted obligations, lost rights/exceptions, or altered liability thresholds.
+The live contract is bound to source SHA-256 92A77792DBD393E7DAFBA5C6127791E2D9C04999A5B3B826354782FB0B0DE35F (63,417 UTF-8 bytes). The final release package records the exact Git revision and live readback in docs/VERIFICATION.md.
 
-**Policy Translation Release Gate** provides an on-chain verification pipeline:
-1. **Canonical Registry**: Publishers register authoritative canonical policy revisions with cryptographic SHA-256 digests and Git commit hashes.
-2. **Translation Submissions**: Localizers submit translated markdown documents anchored to canonical revisions.
-3. **GenLayer Intelligent Consensus**: Multiple GenLayer validator nodes independently parse and evaluate semantic equivalence across 7 legal dimensions (Rights, Obligations, Prohibitions, Exceptions, Scope, Thresholds, Deadlines) returning a 17-field structured consensus result.
-4. **Release Gate Enforcement**: Translations can only transition to `PUBLISHED` if validator consensus outcomes reach `MATERIALLY_EQUIVALENT`.
-5. **Consumer Namespace Binding**: Client applications query effective translations with regional dialect fallbacks (e.g. `es-MX` -> `es`).
-6. **Public Audit & Objections**: Community observers and auditors review on-chain event trails and register verifiable objections (1–500 characters) against translation candidates.
+## Trust problem
 
----
+Publishers, localizers, and consumers do not share the same incentives. A translation can look fluent while weakening a right, omitting an obligation, changing an exception, or altering a deadline or threshold. A central release operator can also claim that a review happened without leaving a durable, independently checkable record.
 
-## 🧭 Six Release Gate Journeys
+This project makes the source documents, semantic decision, release state, consumer binding, and objections auditable on-chain. A translation is not publishable merely because one operator says it is correct.
 
-| Journey | Role | Key Functions |
-|---|---|---|
-| **1. Publisher** | Publisher Authority | Initialize publisher GitHub repository, register canonical revisions (`register_canonical`), and activate policies (`activate_canonical`). |
-| **2. Localizer** | Localizer / Translator | Submit translation candidate drafts (`register_translation`), edit draft metadata (`update_translation_draft`), and freeze candidates for consensus (`freeze_translation`). |
-| **3. Assess** | Validator Consensus | Trigger GenLayer intelligent validator consensus assessment (`assess_translation`), inspect 17-field dimensional breakdown, and retry unresolved assessments (`retry_unresolved`). |
-| **4. Publish** | Release Manager | Execute release gate on accepted candidates to transition to `PUBLISHED` (`publish_translation`). |
-| **5. Consumer** | Application Client | Bind application namespaces (`bind_consumer`) and query effective locale resolution with fallback paths (`get_effective_locale`). |
-| **6. Public Audit** | Observer / Auditor | Inspect contract event audit logs, review community objections, and record verifiable objections (`record_objection`). |
+## Why GenLayer is essential
 
----
+The decisive operation is semantic comparison of two immutable GitHub commit artifacts. The contract cannot reduce this operation to a deterministic hash comparison: validators independently refetch the declared raw files, derive the same bounded 17-field result, and use gl.nondet.exec_prompt to classify seven non-overlapping legal consequence dimensions. GenLayer consensus compares the validator results before the contract mutates the candidate state.
 
-## ⚡ GenLayer Studionet Configuration
+The on-chain consequence is strict: only a candidate whose consensus outcome is MATERIALLY_EQUIVALENT, whose evidence is available, and whose canonical revision is active can pass the release gate and become PUBLISHED.
 
-| Parameter | Value |
-|---|---|
-| **Chain Name** | GenLayer Studionet |
-| **Chain ID** | `61999` (`0xf22f`) |
-| **RPC Endpoint** | `https://studio.genlayer.com/api` |
-| **Block Explorer** | `https://explorer-studio.genlayer.com` |
-| **Native Currency** | `GEN` (18 Decimals) |
+## How it works
 
----
+The frontend exposes six connected journeys:
 
-## 👛 Supported EIP-6963 Wallets
+1. **Publisher** registers and activates a canonical policy revision, identified by a Git commit, path, and SHA-256 digest.
+2. **Localizer** registers a translation candidate, updates its draft metadata, and freezes it for assessment.
+3. **Assess** triggers GenLayer intelligent validator consensus, displays all 17 result fields and seven dimensional statuses, and supports bounded recovery of unresolved assessments.
+4. **Publish** applies the release gate. A candidate can become PUBLISHED only after an accepted assessment and active-canonical checks.
+5. **Consumer** binds a namespace and locale to a published candidate, then resolves exact and base-locale fallbacks.
+6. **Public Audit** records objections, displays paginated objections and contract events, and shows the locked upgrade authority.
 
-The application exclusively integrates with browser wallets supporting the **EIP-6963 multi-provider discovery protocol** with strict RDNS allowlisting:
-- **MetaMask**: `io.metamask`
-- **OKX Wallet**: `com.okex.wallet` / `com.okx.wallet`
-- **Rabby Wallet**: `io.rabby`
+The deployed instance has canonical revision 2 active and candidate 8 published for es; the exact state and transaction matrix are in docs/STUDIO-LIVE-MATRIX.md.
 
-*Note: The frontend does not use legacy global `window.ethereum` fallbacks to ensure multi-wallet isolation and eliminate provider race conditions.*
+## Architecture
 
----
+The Intelligent Contract owns authorization, immutable source identity, canonical and candidate state machines, consensus results, publication guards, consumer bindings, objections, events, and upgrade authority. The frontend owns discovery, input validation, wallet interaction, read presentation, and transaction lifecycle UX. It never replaces contract authority.
 
-## 🛠️ Development & Testing Commands
+Public reads are wallet-free and use one bounded Studionet read client. Writes bind to the exact user-selected EIP-6963 provider and account. The chain is the source of truth for state, finality, execution result, and post-write readback; GitHub is the source of truth for the declared document bytes.
 
-All commands should be executed from within the `frontend/` directory:
+## Intelligent Contract
 
-```bash
+- **Actors:** locked publisher/admin for canonical registration and publication; localizers own their drafts; any valid account may submit an eligible candidate, bind a consumer namespace, or record an objection.
+- **State:** canonical revisions move through ACTIVE and SUPERSEDED; candidates move through draft, frozen, assessment, revision, accepted, published, stale, or unresolved states.
+- **Evidence:** commit hashes, safe relative paths, SHA-256 digests, section identifiers, locale, and client nonces are validated on-chain.
+- **Consensus:** validators independently fetch and compare the canonical and translation artifacts, then return the same structured 17-field decision before state mutation.
+- **Recoverability:** the contract uses the native upgradable Root Slot path; the current upgrader is read back from the deployed instance. The recovery chronology and stale-editor incident are disclosed in docs/DEPLOYMENT-RECOVERY.md.
+
+## Transaction lifecycle
+
+The frontend validates inputs, checks the selected account and chain, captures one transaction hash, and presents explicit phases: awaiting signature, submitted, consensus pending, finalized, execution result, authoritative readback, and success. It does not label a write successful from a wallet response alone. A pending or ambiguous hash is retained for reconciliation and is never silently resubmitted.
+
+## Run locally
+
+Prerequisites are Python with the installed GenLayer test tooling and Node.js/npm. From the repository root:
+
+~~~bash
 cd frontend
-
-# Install dependencies (if setting up fresh)
 npm install
 
-# Typecheck TypeScript codebase
-npm run typecheck
-
-# Run test suite via Vitest
-npm run test:run
-
-# Build production bundle via Vite
-npm run build
-
-# Start local development server
+# Set a real Studionet address for live reads/writes; empty values fail closed.
+# PowerShell: $env:VITE_GENLAYER_CONTRACT_ADDRESS="0xf41A330869Cb9FDCCD8fbd7Ce7f83F5042908A75"
+# POSIX shell: export VITE_GENLAYER_CONTRACT_ADDRESS=0xf41A330869Cb9FDCCD8fbd7Ce7f83F5042908A75
 npm run dev
-```
+~~~
+
+The frontend requires an explicit EIP-6963 selection among MetaMask, OKX Wallet, and Rabby for writes. It starts disconnected after each full reload and never falls back to a global injected provider.
+
+## Tests and verification
+
+~~~bash
+# repository root
+python -m pytest
+
+# frontend/
+npm run typecheck
+npm run test:run
+npm run build
+~~~
+
+The verified package currently records 66 contract tests, 99 frontend tests across 10 suites, clean typecheck, successful production build, genvm-lint check/schema/typecheck passes, and successful Python compilation. The Vite build reports a disclosed minified-chunk size warning; it does not change correctness or source parity.
+
+## Deployment
+
+The contract runs on GenLayer Studionet chain 61999 at [the verified Explorer address](https://explorer-studio.genlayer.com/address/0xf41A330869Cb9FDCCD8fbd7Ce7f83F5042908A75), with RPC endpoint https://studio.genlayer.com/api. The frontend must be built with VITE_GENLAYER_CONTRACT_ADDRESS set to that exact address. Source parity, final readback, recovery records, and the bounded live proof matrix are maintained in docs/VERIFICATION.md, docs/STUDIO-EVIDENCE.md, and docs/STUDIO-LIVE-MATRIX.md.
+
+## Security and trust boundaries
+
+- The contract validates all declared paths, digests, commit hashes, locales, nonces, evidence, state transitions, and authorization.
+- Validator code refetches the declared immutable artifacts and compares all consequence-bearing fields before mutation.
+- The frontend uses strict runtime decoders, lossless integer handling, bounded FIFO RPC access, safe caching, backoff, finality checks, and method-specific readback.
+- Supported injected wallets are exactly MetaMask (io.metamask), OKX Wallet (com.okex.wallet/com.okx.wallet), and Rabby (io.rabby). No private key, seed phrase, token, or Studio credential is part of the frontend.
+- The source restoration incident caused by a stale Studio editor buffer is retained as adverse evidence; only the exact source hash above is treated as the release source.
+
+## Known limitations
+
+- The deployed instance intentionally binds publisher/admin and Root Slot upgrade authority to the selected Studio account. Publisher-only registration and publication writes therefore require that authority; a fresh external wallet can use the public reads and non-admin journeys but must not import the Studio account.
+- Threshold control fixtures currently demonstrate invalid/not-comparable external-fetch conditions, not a false threshold PASS; the evidence does not overclaim them.
+- The final Vercel URL and user-executed external-wallet E2E results are release-gate fields and are added only after the exact Vercel deployment is verified.
