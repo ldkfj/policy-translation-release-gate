@@ -20,8 +20,6 @@ Explorer: https://explorer-studio.genlayer.com/address/0xf41A330869Cb9FDCCD8fbd7
 
 ## Pending PRE_DEPLOY package (not live)
 
-- Package commit: `2d325a4fd39389ba1a077eb6005a57fec0658155`
-- Package parent: `5d50e4fc8f2f6f77bc09fb8a7fc205021d7bc09e`
 - Executable source commit: `5d50e4fc8f2f6f77bc09fb8a7fc205021d7bc09e`
 - Source: `66,182` UTF-8 bytes; SHA-256 `55262740969342C0721A6DC6A4282708E86B7B74D2C71363B7BC2305FA169738`
 - Specification snapshot SHA-256: `7AFC0B370CCAC0408B6D6F548081F4D3286717CC11561EE1FD29C6A782D0FF71`

@@ -10,7 +10,7 @@ Status: exact-source live recovery and the bounded Studio matrix are complete fo
 - Contract source: `contracts/policy_translation_release_gate.py`.
 - Exact live executable Git revision: `1a26dccf6ca8a69eb5ebd6812184d40cdbd2a1b0`.
 - Exact source: `63,417` UTF-8 bytes; SHA-256 `92A77792DBD393E7DAFBA5C6127791E2D9C04999A5B3B826354782FB0B0DE35F`.
-- Pending PRE_DEPLOY package (not deployed): commit `2d325a4fd39389ba1a077eb6005a57fec0658155`, parent `5d50e4fc8f2f6f77bc09fb8a7fc205021d7bc09e`; executable source commit `5d50e4fc8f2f6f77bc09fb8a7fc205021d7bc09e`, source `66,182` UTF-8 bytes, SHA-256 `55262740969342C0721A6DC6A4282708E86B7B74D2C71363B7BC2305FA169738`.
+- Pending PRE_DEPLOY source package (not deployed): executable source commit `5d50e4fc8f2f6f77bc09fb8a7fc205021d7bc09e`, source `66,182` UTF-8 bytes, SHA-256 `55262740969342C0721A6DC6A4282708E86B7B74D2C71363B7BC2305FA169738`.
 - Pending specification snapshot: `.task/SPECIFICATION.md`, SHA-256 `7AFC0B370CCAC0408B6D6F548081F4D3286717CC11561EE1FD29C6A782D0FF71`.
 - Constructor arguments: none.
 - Classification: `UPGRADABLE`, using the native Root Slot code replacement path.
@@ -23,7 +23,7 @@ The original deployment transaction is retained as historical evidence: `0xc9b34
 
 ## Review and local verification
 
-The live `1a26...` source was reviewed and approved at the earlier PRE_DEPLOY checkpoint in reviewer Task `codex://threads/01a0393a-00d9-7bd2-a5b2-60278c55bb1a`. The pending `2d325...` package (executable source commit `5d50...`) received `CHANGES REQUIRED` at fresh PRE_DEPLOY because its source/spec binding was stale; it is not approved or deployed. The network, contract address, constructor shape and locked account remain unchanged.
+The live `1a26...` source was reviewed and approved at the earlier PRE_DEPLOY checkpoint in reviewer Task `codex://threads/01a0393a-00d9-7bd2-a5b2-60278c55bb1a`. The pending source package rooted at `5d50...` received `CHANGES REQUIRED` at fresh PRE_DEPLOY because its source/spec binding was stale; it is not approved or deployed. The network, contract address, constructor shape and locked account remain unchanged.
 
 Current checks on the exact local source:
 

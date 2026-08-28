@@ -9,7 +9,7 @@ Policy Translation Release Gate is a GenLayer Studionet application that prevent
 - Network: [GenLayer Studionet](https://studio.genlayer.com/) (61999)
 - Fixture repository: [pcong5239/policy-translation-release-gate-fixtures](https://github.com/pcong5239/policy-translation-release-gate-fixtures)
 
-The live contract is bound to source SHA-256 92A77792DBD393E7DAFBA5C6127791E2D9C04999A5B3B826354782FB0B0DE35F (63,417 UTF-8 bytes). A pending, not-yet-deployed repair is executable source commit `5d50e4fc8f2f6f77bc09fb8a7fc205021d7bc09e`, packaged in `2d325a4fd39389ba1a077eb6005a57fec0658155`, with source SHA-256 `55262740969342C0721A6DC6A4282708E86B7B74D2C71363B7BC2305FA169738` (66,182 bytes). The final release package records the exact Git revision and live readback in docs/VERIFICATION.md.
+The live contract is bound to source SHA-256 92A77792DBD393E7DAFBA5C6127791E2D9C04999A5B3B826354782FB0B0DE35F (63,417 UTF-8 bytes). A pending, not-yet-deployed repair is executable source commit `5d50e4fc8f2f6f77bc09fb8a7fc205021d7bc09e`, with source SHA-256 `55262740969342C0721A6DC6A4282708E86B7B74D2C71363B7BC2305FA169738` (66,182 bytes). The final release package records the exact Git revision and live readback in docs/VERIFICATION.md.
 
 ## Trust problem
 
