@@ -12,6 +12,8 @@ Policy Translation Release Gate is a GenLayer Studionet application that prevent
 
 The live contract is bound to executable source commit `5d50e4fc8f2f6f77bc09fb8a7fc205021d7bc09e`, source SHA-256 `55262740969342C0721A6DC6A4282708E86B7B74D2C71363B7BC2305FA169738` (66,182 UTF-8 bytes), and the matching on-chain code readback. The final release package records the exact documentation revision and live evidence in docs/VERIFICATION.md.
 
+The exact final application/test package is public commit `ea66fb82a990e9a5b6314135c4c6ce2d2f4994f5`. It contains the production frontend repair and provider-identity regression coverage used by the verified Vercel deployment.
+
 ## Trust problem
 
 Publishers, localizers, and consumers do not share the same incentives. A translation can look fluent while weakening a right, omitting an obligation, changing an exception, or altering a deadline or threshold. A central release operator can also claim that a review happened without leaving a durable, independently checkable record.
@@ -83,7 +85,7 @@ npm run test:run
 npm run build
 ~~~
 
-The exact deployed package records 71 contract tests, 99 frontend tests across 10 suites, clean typecheck, successful production build, genvm-lint check/schema/typecheck/validate passes, and successful Python compilation. The Vite build reports a disclosed minified-chunk size warning; it does not change correctness or source parity. The exact-source upgrade and threshold proof are recorded in the live transaction matrix.
+The exact deployed package records 71 contract tests, 101 frontend tests across 10 suites, clean typecheck, successful production build, genvm-lint check/schema/typecheck/validate passes, and successful Python compilation. The Vite build reports a disclosed minified-chunk size warning; it does not change correctness or source parity. The exact-source upgrade, threshold proof, and final external-wallet objection are recorded in the live transaction matrix.
 
 ## Deployment
 
@@ -101,4 +103,4 @@ The contract runs on GenLayer Studionet chain 61999 at [the verified Explorer ad
 
 - The deployed instance intentionally binds publisher/admin and Root Slot upgrade authority to the selected Studio account. Publisher-only registration and publication writes therefore require that authority; a fresh external wallet can use the public reads and non-admin journeys but must not import the Studio account.
 - Historical threshold fixtures that also removed a deletion/restriction right are retained as negative controls. Corrected immutable fixture `es-threshold-drift-v3.md` produced a live `SCOPE_OR_THRESHOLD_DRIFT` result with only `deadlines` and `thresholds` changed.
-- The final Vercel URL and user-executed external-wallet E2E results are release-gate fields and are added only after the exact Vercel deployment is verified.
+- The final stable Vercel URL is `https://policy-translation-release-gate.vercel.app`. The verified final external-wallet E2E recorded objection ID 2 for candidate 16 on Studionet; the transaction and readback are documented in `docs/VERIFICATION.md`.

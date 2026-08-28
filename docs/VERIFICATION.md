@@ -18,9 +18,9 @@ This document is the compact judge-facing verification record for Policy Transla
 - Deployment class: UPGRADABLE native Root Slot
 - Locked publisher/upgrader: 0x34b92E6553eaCA11A00A9d86d75d8a7881779D78
 
-The deployed source readback is the lowercase form of the exact SHA above. Contract evidence remains bound to executable revision `5d50...`; the production frontend repair is bound to public commit `e3bf7776dfbce3a43577607ad0fe9942e24973ee`.
+The deployed source readback is the lowercase form of the exact SHA above. Contract evidence remains bound to executable revision `5d50...`; the exact final application/test package is public commit `ea66fb82a990e9a5b6314135c4c6ce2d2f4994f5`. The earlier frontend repair commit `e3bf777...` is superseded by the provider-identity repair in `ea66fb8...`.
 
-The final verified Vercel production deployment is `dpl_22X9hMYHuh6Qcztbg7Q2QbSGPMkC` in team `gam9`; immutable URL `https://policy-translation-release-gate-jonggdfyu-gam9.vercel.app`; the stable production alias above is the judge-facing URL. Primary live review confirmed the correct title, contract/Explorer link, disconnected wallet state, all six journeys, 2 canonical revisions, 16 candidates, published candidate 8, consumer resolution data, audit/upgrader data, and no console warnings or errors. The cross-journey read-dedup cancellation defect was fixed at `e3bf777...` and its production transition regression passed.
+The final verified Vercel production deployment is `dpl_uo6XefNfq2xZvGKLhD9ihmmGiqK6` in team `gam9`; the stable production alias above is the only judge-facing URL. Primary live review confirmed the correct title, contract/Explorer link, disconnected wallet state, all six journeys, 2 canonical revisions, 16 candidates, published candidate 8, consumer resolution data, audit/upgrader data, and no console warnings or errors. The cross-journey read-dedup cancellation defect and the EIP-6963 provider-object deduplication defect were fixed in the exact application package; their regression tests passed.
 
 ## Exact-source upgrade and threshold proof
 
@@ -34,12 +34,22 @@ The final verified Vercel production deployment is `dpl_22X9hMYHuh6Qcztbg7Q2QbSG
 The final read-only Studionet observer readback records:
 
 - initialized profile; active canonical revision 2; canonical revision 1 SUPERSEDED;
-- 16 translation candidates and 1 recorded objection;
+- 16 translation candidates and 2 recorded objections;
 - candidate 8 PUBLISHED for canonical 2 and locale es;
 - candidate 8 assessment MATERIALLY_EQUIVALENT, 3/3 sections, 10000 bps coverage, and all 7 consequence dimensions EQUIVALENT;
 - studio-consumer/es bound to candidate 8 and effective;
-- 60 contract events;
+- 61 contract events;
 - get_upgrader() equal to the locked authority.
+
+## Final external-wallet E2E
+
+- Exact final application/test package: `ea66fb82a990e9a5b6314135c4c6ce2d2f4994f5`.
+- Stable Vercel URL: https://policy-translation-release-gate.vercel.app
+- Independent external wallet: `0x008704...E01f`, connected to Studionet 61999 through the supported wallet selector.
+- Public Audit flow: candidate `#16` (`REVISION_REQUIRED`), digest auto-populated by the contract read, objection reason submitted once.
+- Transaction: [0x4db8f73dca4e2d1852a8522b9d138c46e2855e079583be2e26b8323ac552a001](https://explorer-studio.genlayer.com/tx/0x4db8f73dca4e2d1852a8522b9d138c46e2855e079583be2e26b8323ac552a001)
+- Authoritative result: `FINALIZED / SUCCESS / MAJORITY_AGREE`; contract return value `2`; objection ID `2`; candidate-16 objection page total `1`; profile `objection_count=2`, `event_count=61`.
+- Reload/disconnect: `PASS`; the refreshed page showed `Connect Wallet` and no automatic account request.
 
 The complete transaction matrix, including expected failures, disagreement controls, invalid external-fetch controls, source restoration, and authoritative readbacks, is in [STUDIO-LIVE-MATRIX.md](STUDIO-LIVE-MATRIX.md). The narrative evidence is in [STUDIO-EVIDENCE.md](STUDIO-EVIDENCE.md). Recovery and incident handling are in [DEPLOYMENT-RECOVERY.md](DEPLOYMENT-RECOVERY.md).
 
@@ -47,7 +57,7 @@ The complete transaction matrix, including expected failures, disagreement contr
 
 - Contract regression: pending package 71 passed; live-source historical matrix 66 passed.
 - Frontend typecheck: passed.
-- Frontend regression: 100 passed across 10 suites, including cross-journey cancellation isolation.
+- Frontend regression: 101 passed across 10 suites, including cross-journey cancellation and provider-identity isolation.
 - Production Vite build: passed with the disclosed 815.19 kB minified-chunk warning.
 - genvm-lint check, schema, and typecheck: passed; 25 methods, 13 views, 12 writes, zero constructor parameters.
 - Python compilation: passed.
@@ -60,4 +70,4 @@ Public reads are wallet-free. Writes require explicit EIP-6963 selection of Meta
 
 ## Release gates still required
 
-The user-executed external-wallet E2E result and anonymous POST_GITHUB_VERCEL_FINAL verdict must be added before DUAL_APPROVED. GitHub public rendering and the final Vercel URL have been verified. No form submission is made by this project.
+The user-executed external-wallet E2E, GitHub public rendering, and final Vercel URL have been verified. The only remaining release gate is a fresh anonymous `POST_GITHUB_VERCEL_FINAL` `APPROVED` verdict for the repaired package, followed by matching `DUAL_APPROVED`. No form submission is made by this project.

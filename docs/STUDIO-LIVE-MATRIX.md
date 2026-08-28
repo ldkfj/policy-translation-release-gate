@@ -1,8 +1,8 @@
 # Studio Live Matrix
 
-Status: exact-source upgrade and required Studionet matrix are complete. POST_DEPLOY_TEST reviewer approval remains pending before GitHub/Vercel release.
+Status: exact-source upgrade, required Studionet matrix, GitHub release, Vercel release, and user external-wallet E2E are complete. Fresh POST_GITHUB_VERCEL_FINAL review of the repaired package remains pending.
 
-Date: `2026-08-28`
+Date: `2026-08-29`
 Network: GenLayer Studionet, chain `61999`, full-consensus mode.
 Contract: `0xf41A330869Cb9FDCCD8fbd7Ce7f83F5042908A75`
 Explorer: https://explorer-studio.genlayer.com/address/0xf41A330869Cb9FDCCD8fbd7Ce7f83F5042908A75
@@ -24,8 +24,9 @@ Explorer: https://explorer-studio.genlayer.com/address/0xf41A330869Cb9FDCCD8fbd7
 - Source: `66,182` UTF-8 bytes; SHA-256 `55262740969342C0721A6DC6A4282708E86B7B74D2C71363B7BC2305FA169738`
 - Specification snapshot SHA-256: `7AFC0B370CCAC0408B6D6F548081F4D3286717CC11561EE1FD29C6A782D0FF71`
 - Fresh PRE_DEPLOY status: `APPROVED`; exact-source upgrade `0x8c805cec74b97873f9c3eae942937561d20ddf2d963b99099cc584d02b39c7a9` finalized `SUCCESS / MAJORITY_AGREE`.
+- Final application/test package: `ea66fb82a990e9a5b6314135c4c6ce2d2f4994f5`.
 
-The current live evidence is bound to source `5d50...`/`552627...`. Local regression remains contract `71/71`, frontend `99/99`, lint/schema/typecheck/validate/compile/build pass.
+The current live evidence is bound to source `5d50...`/`552627...`. Local regression is contract `71/71`, frontend `101/101`, lint/schema/typecheck/validate/compile/build pass.
 
 ## Immutable fixture manifest
 
@@ -89,11 +90,20 @@ Every row below was sent through Studio UI and independently checked with read-o
 | Successor candidate 8 | `0x1f541ff5897b77db47ae82fbeb307b34d34773e1723dd5c99bff2341725e807e`, `0xb483ef46f6d07663fa70b9dea4de4b095935b41692fd1e93bbc78e259e5ceaec`, `0x377623858e6401e4758b3aa17b3b84957bd2509a65941351d56640e32f12637f`, `0x12b68bb763bf716076442353257fbfa4cbc4e23b7d79a2032ca0fd41e5650bf4` | register/freeze/assess/publish `SUCCESS`; candidate 8 `PUBLISHED`, materially equivalent |
 | Successor consumer rebind | `0x75bc1518001692b1f642709a09396afa034033cf179bc7ba7e0c12cc9b2c3b7e` | independent actor; `studio-consumer/es` candidate 8, canonical 2, `is_effective=true` |
 
+### Final GitHub/Vercel release evidence
+
+| Case | Evidence | Result |
+|---|---|---|
+| Public GitHub release | https://github.com/ldkfj/policy-translation-release-gate | public repository rendering and exact application package commit `ea66fb82a990e9a5b6314135c4c6ce2d2f4994f5` verified |
+| Final Vercel production | `dpl_uo6XefNfq2xZvGKLhD9ihmmGiqK6`; https://policy-translation-release-gate.vercel.app | `READY`; configured contract; six journeys load; no console errors or warnings |
+| External-wallet objection | [`0x4db8f73dca4e2d1852a8522b9d138c46e2855e079583be2e26b8323ac552a001`](https://explorer-studio.genlayer.com/tx/0x4db8f73dca4e2d1852a8522b9d138c46e2855e079583be2e26b8323ac552a001) | `FINALIZED / SUCCESS / MAJORITY_AGREE`; objection ID `2`; candidate 16 page total `1`; profile counts `objection_count=2`, `event_count=61` |
+| Reload/disconnect | final Vercel release | `PASS`; reload returned to `Connect Wallet` with no automatic account request |
+
 ## Exact-source recovery chronology
 
 - `0x94e49246bd439f521c931fe45682fcc9f8a15b0a48b0c378d53aa46f9c6f5414` is a finalized `upgrade(bytes)` call whose raw calldata source body matches `1a26...` and `92A777...`; it preserved the populated v1 state before the later matrix.
 - `0x1e484b14483fdfbf7b8df0a283572201dfaa3d092f697064d01b22ea71969169` was an accidental Studio code upgrade from a stale editor buffer. It finalized with `MAJORITY_AGREE` and temporarily installed source SHA `322F3278...`; the incident is disclosed and retained, not treated as an approved release.
 - The Studio buffer was then replaced through the visible editor with the exact local source. `0xef831609be9fb78aa866e94c69c665aabe02698bcab659f9cc3be9ce6522cd99` finalized as a code upgrade with exact `92A777...` source bytes. Two queued exact-source code upgrades, `0xb5a5b98820b1aa876d0513df51bbe230d61275a9b6ef18484a412e77081f7eac` and `0x067cf62b52aadae5750461dba29113e8f4e83969cf76cbb06db0806fd08afd4a`, later also finalized with the same exact source; they do not change source parity.
-- The final observer readback was captured after these upgrade records settled. It reports source `92A777...`, active canonical 2, candidate 8 published/effective, objection count 1, event count 37, and the locked upgrader address.
+- The final Studio observer readback after the exact-source upgrade reports source `552627...`, active canonical 2, candidate 8 published/effective, and the locked upgrader address. The post-release readback after the external objection reports objection count `2` and event count `61`; the objection transaction and readback are recorded above.
 
-No local-state inference is used to mark a live row PASS. No project-source GitHub push, Vercel deployment, final external-wallet web E2E, submission, or experience-ledger update has occurred.
+No local-state inference is used to mark a live row PASS. GitHub rendering, Vercel production, and the final external-wallet E2E are verified. Submission and experience-ledger update remain gated on the fresh final reviewer approval and user completion confirmation.

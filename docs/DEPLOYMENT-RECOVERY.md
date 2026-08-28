@@ -1,6 +1,6 @@
 # Deployment and Recovery Manifest
 
-Status: the approved blocker-driven source repair is deployed and its bounded Studio threshold proof is complete. The project remains before POST_DEPLOY_TEST approval, project-source GitHub release, Vercel deployment, final external-wallet E2E, and DUAL_APPROVED submission closure.
+Status: the approved exact-source contract repair, bounded Studio proof, GitHub release, Vercel release, and final external-wallet E2E are complete. The project remains before fresh POST_GITHUB_VERCEL_FINAL approval and DUAL_APPROVED submission closure.
 
 ## Locked deployment configuration
 
@@ -22,12 +22,12 @@ The original deployment transaction is retained as historical evidence: `0xc9b34
 
 ## Review and local verification
 
-The `5d50...` source first received `CHANGES REQUIRED` because its source/spec binding was stale. After that binding was corrected, the reviewer Task `codex://threads/01a0393a-00d9-7bd2-a5b2-60278c55bb1a` returned fresh PRE_DEPLOY `APPROVED` for the exact source, network, address and locked account. Upgrade `0x8c805cec74b97873f9c3eae942937561d20ddf2d963b99099cc584d02b39c7a9` finalized successfully and exact source/state readback passed.
+The `5d50...` source first received `CHANGES REQUIRED` because its source/spec binding was stale. After that binding was corrected, the anonymous co-review AI returned fresh PRE_DEPLOY `APPROVED` for the exact source, network, address and locked account. Upgrade `0x8c805cec74b97873f9c3eae942937561d20ddf2d963b99099cc584d02b39c7a9` finalized successfully and exact source/state readback passed.
 
 Current checks on the exact local source:
 
 - Live-source historical Python contract tests: `66 passed`.
-- Pending package Python contract tests: `71 passed`; frontend typecheck pass; `99 passed` across 10 Vitest files; Vite production build pass.
+- Exact application package `ea66fb82a990e9a5b6314135c4c6ce2d2f4994f5`: Python contract tests `71 passed`; frontend typecheck pass; `101 passed` across 10 Vitest files; Vite production build pass.
 - `genvm-lint check`: pass; schema `25` methods (`13` views, `12` writes), zero constructor parameters.
 - `genvm-lint typecheck`: pass.
 - Python compilation: pass.
@@ -42,6 +42,7 @@ Current checks on the exact local source:
 5. The final read-only observer run after the queue settled returned source `92a777...`, active canonical 2, candidate 8 `PUBLISHED`, effective consumer binding, preserved objection/event records and the locked upgrader address.
 6. The approved repair upgrade `0x8c805cec74b97873f9c3eae942937561d20ddf2d963b99099cc584d02b39c7a9` finalized `SUCCESS / MAJORITY_AGREE`, installed exact source `552627...`, and preserved active canonical 2, candidate 8 published/effective, objections and upgrader authority.
 7. Corrected immutable fixture commit `957a4521f155d24cfc8291a98782314c78239f8b` removed unintended rights drift from the threshold control. Register `0x75fcd92...`, freeze `0xc023219...`, and assess `0x4dd7d69...` proved `SCOPE_OR_THRESHOLD_DRIFT` with exact changed dimensions `deadlines, thresholds`; one disclosed duplicate register `0xea257a8...` was an idempotent no-op returning candidate 16 with counts unchanged.
+8. The final external-wallet Vercel E2E recorded objection ID `2` for candidate `16` in transaction `0x4db8f73dca4e2d1852a8522b9d138c46e2855e079583be2e26b8323ac552a001`; authoritative readback returned objection count `2` and event count `61`, and reload/disconnect passed.
 
 The prior public exact-source upgrade `0xe676236385c4d3eefd5739acb2fce782c839c79e596cbf85b140b689e91a65d0` is also retained: `FINALIZED`, `SUCCESS`, `MAJORITY_AGREE`; its raw calldata source body matches the approved source exactly and its contract event is the final `UPGRADE` event in the readback.
 

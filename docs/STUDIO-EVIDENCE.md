@@ -1,6 +1,6 @@
 # Studio E2E Evidence
 
-Date: `2026-08-28`
+Date: `2026-08-29`
 Network: GenLayer Studionet, chain `61999`, full consensus, simulation disabled.
 Contract: `0xf41A330869Cb9FDCCD8fbd7Ce7f83F5042908A75`
 Explorer: https://explorer-studio.genlayer.com/address/0xf41A330869Cb9FDCCD8fbd7Ce7f83F5042908A75
@@ -14,7 +14,7 @@ Explorer: https://explorer-studio.genlayer.com/address/0xf41A330869Cb9FDCCD8fbd7
 - Locked publisher/upgrader: `0x34b92E6553eaCA11A00A9d86d75d8a7881779D78`
 - Independent localizer: `0xeF5D2119416A2f5afa35dCFA209766EFC1BE5902`
 - Independent consumer/auditor: `0x22A2906BB59A1DFaEEAD6148eba7dB24d6F22FB1`
-- Anonymous reviewer Task: `codex://threads/01a0393a-00d9-7bd2-a5b2-60278c55bb1a`
+- Final application/test package: `ea66fb82a990e9a5b6314135c4c6ce2d2f4994f5`
 
 ## Exact-source review and upgrade
 
@@ -25,22 +25,22 @@ Explorer: https://explorer-studio.genlayer.com/address/0xf41A330869Cb9FDCCD8fbd7
 
 The live source bytes and readback above are bound to `5d50...`/`552627...`. Historical rows remain disclosed; current decisive proof rows below were executed after the exact-source upgrade.
 
-Current checks are: contract tests `71/71`; frontend typecheck pass; frontend tests `100/100` across 10 files; frontend production build pass with the existing minified-chunk warning; `genvm-lint check` pass with schema `25` methods (`13` views, `12` writes), zero constructor parameters; `genvm-lint typecheck` pass; Python compilation pass. The frontend-only cancellation-isolation repair is public at `e3bf7776dfbce3a43577607ad0fe9942e24973ee`; it does not alter the contract source or invalidate this Studionet evidence.
+Current checks are: contract tests `71/71`; frontend typecheck pass; frontend tests `101/101` across 10 files; frontend production build pass with the existing minified-chunk warning; `genvm-lint check` pass with schema `25` methods (`13` views, `12` writes), zero constructor parameters; `genvm-lint typecheck` pass; Python compilation pass. The frontend cancellation-isolation and EIP-6963 provider-identity repairs are public in application package `ea66fb82a990e9a5b6314135c4c6ce2d2f4994f5`; they do not alter the contract source or invalidate this Studionet evidence.
 
-All state-changing operations in this evidence were submitted through Studio UI. The observer script only performs read-only RPC calls and stores raw transaction/readback JSON under `.task/live-evidence/`.
+All state-changing operations in the Studio matrix were submitted through Studio UI. The final external-wallet objection was submitted through the Vercel frontend; the observer script only performs read-only RPC calls and stores raw transaction/readback JSON under `.task/live-evidence/`.
 
 ## Populated final readback
 
 The final readback after all upgrade records settled is in `.task/live-evidence/latest-readback.json`:
 
-- Profile: initialized `true`; owner `pcong5239`; repo `policy-translation-release-gate-fixtures`; admin `0x34b92E6553eaCA11A00A9d86d75d8a7881779D78`; active canonical `2`; canonical count `2`; candidate count `16`; objection count `1`; event count `60`.
+- Profile: initialized `true`; owner `pcong5239`; repo `policy-translation-release-gate-fixtures`; admin `0x34b92E6553eaCA11A00A9d86d75d8a7881779D78`; active canonical `2`; canonical count `2`; candidate count `16`; objection count `2`; event count `61`.
 - Active canonical: id `2`, path `canonical-v2.md`, state `ACTIVE`, digest `5F18FA0632DCE5765BC4241676C80D45D9B72F7E18B123AC99456C169C8E71EB`.
 - Canonical 1 is `SUPERSEDED`; canonical 2 is `ACTIVE`.
 - Candidate 1 is `STALE_BY_CANONICAL_REVISION`; candidate 8 is `PUBLISHED` for canonical 2/es.
 - Candidate 8 assessment: canonical/translation `AVAILABLE`, 3/3 matched sections, coverage `10000` bps, all 7 dimensions `EQUIVALENT`, outcome `MATERIALLY_EQUIVALENT`, `REVISION_REQUIRED` list empty.
 - `studio-consumer/es` binding points to candidate 8, canonical 2, state `PUBLISHED`, `is_effective=true`.
 - `get_effective_locale("es")` returns candidate 8 and the exact candidate source digest/path.
-- One objection remains recorded against candidate 2 with the independent observer address and reason intact.
+- Two objections are recorded; the final external-wallet objection is ID `2` against candidate `16`, with the independent observer address and reason intact.
 - `get_upgrader()` returns the locked account.
 
 ## Live transaction evidence
@@ -55,6 +55,7 @@ The complete case-by-case matrix and all full transaction hashes are maintained 
 | Bounded right-loss recovery | `0xe9ce6150c7c756f54e2e34067999dd04dc0040314de237fb9e92dc8dfcc3da32` | `FINALIZED / SUCCESS / MAJORITY_AGREE`; outcome `RIGHT_OR_EXCEPTION_LOSS`, candidate 3 revision required |
 | Exact-source upgrade | `0x8c805cec74b97873f9c3eae942937561d20ddf2d963b99099cc584d02b39c7a9` | `FINALIZED / SUCCESS / MAJORITY_AGREE`; source readback exactly `552627...` and populated state preserved |
 | Corrected threshold/deadline proof | `0x4dd7d69da71528ede89a644262d109ceb423bc69960824a00a7b5e456ea8df17` | `FINALIZED / SUCCESS / MAJORITY_AGREE`; `AVAILABLE/AVAILABLE`, 3/3, 10000 bps, exactly `deadlines, thresholds`, outcome `SCOPE_OR_THRESHOLD_DRIFT`, candidate 16 revision required |
+| Final external-wallet objection | [`0x4db8f73dca4e2d1852a8522b9d138c46e2855e079583be2e26b8323ac552a001`](https://explorer-studio.genlayer.com/tx/0x4db8f73dca4e2d1852a8522b9d138c46e2855e079583be2e26b8323ac552a001) | `FINALIZED / SUCCESS / MAJORITY_AGREE`; return `2`; objection ID `2` for candidate 16; candidate-16 page total `1` |
 | Missing evidence | `0xed692396eb786a085665702f9990251a5ad5e9aac361ee17e22c37602882903d` | `FINALIZED / SUCCESS / MAJORITY_AGREE`; translation `MISSING`, outcome `NOT_COMPARABLE`, coverage 0 |
 | Canonical supersession | `0x80d26af1f626784e858277ee2b03e0fdb4816ad5ede1186ee791764bdcc0498a`, `0x645cb057cccfe5d38b5b3085a3620851bc8a012e8205418cd10a4ea964a493a0` | canonical 1 superseded; canonical 2 active; old candidate/binding ineffective |
 | Successor publish and rebind | `0x377623858e6401e4758b3aa17b3b84957bd2509a65941351d56640e32f12637f`, `0x12b68bb763bf716076442353257fbfa4cbc4e23b7d79a2032ca0fd41e5650bf4`, `0x75bc1518001692b1f642709a09396afa034033cf179bc7ba7e0c12cc9b2c3b7e` | candidate 8 published and independently rebound/effective |
@@ -66,4 +67,4 @@ The first populated-state top-button upgrade, `0x1e484b14483fdfbf7b8df0a28357220
 
 The exact local source was then loaded into the visible Studio editor and restored. Public `upgrade(bytes)` transaction `0xe676236385c4d3eefd5739acb2fce782c839c79e596cbf85b140b689e91a65d0` finalized `SUCCESS / MAJORITY_AGREE`; its raw calldata source body hashes exactly to `92A777...`. Studio code-upgrade transactions `0xef831609be9fb78aa866e94c69c665aabe02698bcab659f9cc3be9ce6522cd99`, `0xb5a5b98820b1aa876d0513df51bbe230d61275a9b6ef18484a412e77081f7eac`, and `0x067cf62b52aadae5750461dba29113e8f4e83969cf76cbb06db0806fd08afd4a` also finalized with exact 63,417-byte source payloads. The final observer readback proves source parity and preserved canonical/candidate/binding state.
 
-Project source is public at `https://github.com/ldkfj/policy-translation-release-gate`. The verified production frontend is deployment `dpl_22X9hMYHuh6Qcztbg7Q2QbSGPMkC` at `https://policy-translation-release-gate.vercel.app`. Final MetaMask/OKX/Rabby web E2E, the final reviewer checkpoint, submission, and experience-ledger update have not occurred.
+Project source is public at `https://github.com/ldkfj/policy-translation-release-gate`. The verified production frontend is deployment `dpl_uo6XefNfq2xZvGKLhD9ihmmGiqK6` at `https://policy-translation-release-gate.vercel.app`. The final external-wallet E2E and reload/disconnect check passed; final reviewer approval, submission, and experience-ledger update remain gated.
