@@ -31,9 +31,10 @@ All state-changing operations in the Studio matrix were submitted through Studio
 
 ## Populated final readback
 
-The final readback after all upgrade records settled is in `.task/live-evidence/latest-readback.json`:
+The pre-external-objection observer snapshot in `.task/live-evidence/latest-readback.json` is retained as historical baseline; the current post-objection authoritative counts are recorded below and in the live matrix:
 
-- Profile: initialized `true`; owner `pcong5239`; repo `policy-translation-release-gate-fixtures`; admin `0x34b92E6553eaCA11A00A9d86d75d8a7881779D78`; active canonical `2`; canonical count `2`; candidate count `16`; objection count `2`; event count `61`.
+- Historical baseline profile snapshot: initialized `true`; owner `pcong5239`; repo `policy-translation-release-gate-fixtures`; admin `0x34b92E6553eaCA11A00A9d86d75d8a7881779D78`; active canonical `2`; canonical count `2`; candidate count `16`; objection count `2`; event count `61`.
+- Current post-external-objection authoritative profile readback: objection count `4`; event count `63`; the exact transaction, objection ID, and paginated candidate-16 readback are recorded below.
 - Active canonical: id `2`, path `canonical-v2.md`, state `ACTIVE`, digest `5F18FA0632DCE5765BC4241676C80D45D9B72F7E18B123AC99456C169C8E71EB`.
 - Canonical 1 is `SUPERSEDED`; canonical 2 is `ACTIVE`.
 - Candidate 1 is `STALE_BY_CANONICAL_REVISION`; candidate 8 is `PUBLISHED` for canonical 2/es.

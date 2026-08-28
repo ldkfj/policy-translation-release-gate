@@ -34,11 +34,11 @@ The final verified Vercel production deployment is `dpl_AcLC5FenPms81vhyZwh1eJTd
 The final read-only Studionet observer readback records:
 
 - initialized profile; active canonical revision 2; canonical revision 1 SUPERSEDED;
-- 16 translation candidates and 2 recorded objections;
+- 16 translation candidates and 4 recorded objections;
 - candidate 8 PUBLISHED for canonical 2 and locale es;
 - candidate 8 assessment MATERIALLY_EQUIVALENT, 3/3 sections, 10000 bps coverage, and all 7 consequence dimensions EQUIVALENT;
 - studio-consumer/es bound to candidate 8 and effective;
-- 61 contract events;
+- 63 contract events;
 - get_upgrader() equal to the locked authority.
 
 ## External-wallet E2E status
