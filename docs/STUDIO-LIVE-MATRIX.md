@@ -1,13 +1,13 @@
 # Studio Live Matrix
 
-Status: live Studionet matrix completed on the exact approved executable source; POST_DEPLOY_TEST and release gates remain pending reviewer confirmation and final web E2E.
+Status: live Studionet matrix completed on the exact currently deployed executable source. A pending source repair has not been deployed; POST_DEPLOY_TEST and release gates remain pending fresh reviewer approval, the required threshold proof, and final web E2E.
 
 Date: `2026-08-28`
 Network: GenLayer Studionet, chain `61999`, full-consensus mode.
 Contract: `0xf41A330869Cb9FDCCD8fbd7Ce7f83F5042908A75`
 Explorer: https://explorer-studio.genlayer.com/address/0xf41A330869Cb9FDCCD8fbd7Ce7f83F5042908A75
 
-## Exact executable binding
+## Live executable binding
 
 - Git revision: `1a26dccf6ca8a69eb5ebd6812184d40cdbd2a1b0`
 - Contract source: `contracts/policy_translation_release_gate.py`
@@ -18,7 +18,15 @@ Explorer: https://explorer-studio.genlayer.com/address/0xf41A330869Cb9FDCCD8fbd7
 - Independent localizer: `0xeF5D2119416A2f5afa35dCFA209766EFC1BE5902`
 - Independent consumer/auditor: `0x22A2906BB59A1DFaEEAD6148eba7dB24d6F22FB1`
 
-The exact source is unchanged from Git revision `1a26...`; `git status` shows no tracked source diff. Local contract regression is `66/66`, frontend typecheck is clean, frontend tests are `99/99`, production build is clean apart from the existing bundle-size warning. `genvm-lint check`, schema, typecheck and Python compilation pass; schema is 25 methods (13 views, 12 writes), zero constructor parameters.
+## Pending PRE_DEPLOY package (not live)
+
+- Commit: `5d50e4fc8f2f6f77bc09fb8a7fc205021d7bc09e`
+- Parent: `46c887f13f0b836730a786456e79a66470406c7b`
+- Source: `66,182` UTF-8 bytes; SHA-256 `55262740969342C0721A6DC6A4282708E86B7B74D2C71363B7BC2305FA169738`
+- Specification snapshot SHA-256: `7AFC0B370CCAC0408B6D6F548081F4D3286717CC11561EE1FD29C6A782D0FF71`
+- Fresh PRE_DEPLOY status: `CHANGES REQUIRED`; no upgrade transaction sent.
+
+The live matrix and every on-chain readback in this file are bound to live source `1a26...`/`92A777...`. The pending package has local regression only: contract `71/71`, frontend `99/99`, lint/schema/typecheck/validate/compile/build pass. It cannot be treated as live evidence until the review and upgrade gates pass.
 
 ## Immutable fixture manifest
 

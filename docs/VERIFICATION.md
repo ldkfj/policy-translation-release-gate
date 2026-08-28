@@ -18,6 +18,17 @@ This document is the compact judge-facing verification record for Policy Transla
 
 The deployed source readback is the lowercase form of the exact SHA above. The release package commit is the Git commit containing this verification record; the final public URL and commit are recorded in the release handoff after GitHub push.
 
+## Pending PRE_DEPLOY package
+
+- Package commit: `5d50e4fc8f2f6f77bc09fb8a7fc205021d7bc09e`
+- Parent: `46c887f13f0b836730a786456e79a66470406c7b`
+- Pending source length: `66,182` UTF-8 bytes
+- Pending source SHA-256: `55262740969342C0721A6DC6A4282708E86B7B74D2C71363B7BC2305FA169738`
+- Pending specification snapshot SHA-256: `7AFC0B370CCAC0408B6D6F548081F4D3286717CC11561EE1FD29C6A782D0FF71`
+- Status: fresh PRE_DEPLOY `CHANGES REQUIRED`; not deployed and not authorized for upgrade.
+
+All live state, transaction rows, and deployed-source readbacks in this verification record remain explicitly bound to the live `1a26...` source and `92A777...` hash. They are not evidence for the pending package.
+
 ## Live state readback
 
 The final read-only Studionet observer readback records:
@@ -34,10 +45,10 @@ The complete transaction matrix, including expected failures, disagreement contr
 
 ## Local verification
 
-- Contract regression: 66 passed.
+- Contract regression: pending package 71 passed; live-source historical matrix 66 passed.
 - Frontend typecheck: passed.
 - Frontend regression: 99 passed across 10 suites.
-- Production Vite build: passed with the disclosed 815.23 kB minified-chunk warning.
+- Production Vite build: passed with the disclosed 815.19 kB minified-chunk warning.
 - genvm-lint check, schema, and typecheck: passed; 25 methods, 13 views, 12 writes, zero constructor parameters.
 - Python compilation: passed.
 - git diff --check: passed.

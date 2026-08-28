@@ -5,9 +5,9 @@ Network: GenLayer Studionet, chain `61999`, full consensus, simulation disabled.
 Contract: `0xf41A330869Cb9FDCCD8fbd7Ce7f83F5042908A75`
 Explorer: https://explorer-studio.genlayer.com/address/0xf41A330869Cb9FDCCD8fbd7Ce7f83F5042908A75
 
-## Exact revision and review binding
+## Live executable revision and review binding
 
-- Approved Git revision: `1a26dccf6ca8a69eb5ebd6812184d40cdbd2a1b0`
+- Live executable Git revision: `1a26dccf6ca8a69eb5ebd6812184d40cdbd2a1b0`
 - Contract source: `contracts/policy_translation_release_gate.py`
 - Exact source: `63,417` UTF-8 bytes; SHA-256 `92A77792DBD393E7DAFBA5C6127791E2D9C04999A5B3B826354782FB0B0DE35F`
 - Final on-chain source readback: `92a77792dbd393e7dafba5c6127791e2d9c04999a5b3b826354782fb0b0de35f`
@@ -16,7 +16,17 @@ Explorer: https://explorer-studio.genlayer.com/address/0xf41A330869Cb9FDCCD8fbd7
 - Independent consumer/auditor: `0x22A2906BB59A1DFaEEAD6148eba7dB24d6F22FB1`
 - Anonymous reviewer Task: `codex://threads/01a0393a-00d9-7bd2-a5b2-60278c55bb1a`
 
-The source bytes are unchanged from the approved Git revision. The current local checks are: contract tests `66/66`; frontend typecheck pass; frontend tests `99/99` across 10 files; frontend production build pass with the existing 815.19 kB minified-chunk warning; `genvm-lint check` pass with schema `25` methods (`13` views, `12` writes), zero constructor parameters; `genvm-lint typecheck` pass; Python compilation pass. The linter's optional newer runner warning is disclosed and no dependency/header change was made.
+## Pending PRE_DEPLOY package (not live)
+
+- Package commit: `5d50e4fc8f2f6f77bc09fb8a7fc205021d7bc09e`
+- Parent: `46c887f13f0b836730a786456e79a66470406c7b`
+- Source: `66,182` UTF-8 bytes; SHA-256 `55262740969342C0721A6DC6A4282708E86B7B74D2C71363B7BC2305FA169738`
+- Specification snapshot: `.task/SPECIFICATION.md`; SHA-256 `7AFC0B370CCAC0408B6D6F548081F4D3286717CC11561EE1FD29C6A782D0FF71`
+- Review status: fresh PRE_DEPLOY `CHANGES REQUIRED`; no deployment authorization.
+
+The live source bytes and readback above are bound to `1a26...`/`92A777...`. The pending package is a local repair for provider-throttling taxonomy and has no live transaction evidence. Live transaction rows below must not be interpreted as proof for the pending source.
+
+Current checks for the pending package are: contract tests `71/71`; frontend typecheck pass; frontend tests `99/99` across 10 files; frontend production build pass with the existing minified-chunk warning; `genvm-lint check` pass with schema `25` methods (`13` views, `12` writes), zero constructor parameters; `genvm-lint typecheck` pass; Python compilation pass. The linter's optional newer runner warning is disclosed and no dependency/header change was made.
 
 All state-changing operations in this evidence were submitted through Studio UI. The observer script only performs read-only RPC calls and stores raw transaction/readback JSON under `.task/live-evidence/`.
 

@@ -9,7 +9,7 @@ Policy Translation Release Gate is a GenLayer Studionet application that prevent
 - Network: [GenLayer Studionet](https://studio.genlayer.com/) (61999)
 - Fixture repository: [pcong5239/policy-translation-release-gate-fixtures](https://github.com/pcong5239/policy-translation-release-gate-fixtures)
 
-The live contract is bound to source SHA-256 92A77792DBD393E7DAFBA5C6127791E2D9C04999A5B3B826354782FB0B0DE35F (63,417 UTF-8 bytes). The final release package records the exact Git revision and live readback in docs/VERIFICATION.md.
+The live contract is bound to source SHA-256 92A77792DBD393E7DAFBA5C6127791E2D9C04999A5B3B826354782FB0B0DE35F (63,417 UTF-8 bytes). A pending, not-yet-deployed repair is tracked separately as commit `5d50e4fc8f2f6f77bc09fb8a7fc205021d7bc09e`, source SHA-256 `55262740969342C0721A6DC6A4282708E86B7B74D2C71363B7BC2305FA169738` (66,182 bytes). The final release package records the exact Git revision and live readback in docs/VERIFICATION.md.
 
 ## Trust problem
 
@@ -82,7 +82,7 @@ npm run test:run
 npm run build
 ~~~
 
-The verified package currently records 66 contract tests, 99 frontend tests across 10 suites, clean typecheck, successful production build, genvm-lint check/schema/typecheck passes, and successful Python compilation. The Vite build reports a disclosed minified-chunk size warning; it does not change correctness or source parity.
+The current pending package records 71 contract tests, 99 frontend tests across 10 suites, clean typecheck, successful production build, genvm-lint check/schema/typecheck/validate passes, and successful Python compilation. The Vite build reports a disclosed minified-chunk size warning; it does not change correctness or source parity. The live transaction matrix remains bound to the deployed `1a26...` source until the pending package passes PRE_DEPLOY and is upgraded.
 
 ## Deployment
 
@@ -94,7 +94,7 @@ The contract runs on GenLayer Studionet chain 61999 at [the verified Explorer ad
 - Validator code refetches the declared immutable artifacts and compares all consequence-bearing fields before mutation.
 - The frontend uses strict runtime decoders, lossless integer handling, bounded FIFO RPC access, safe caching, backoff, finality checks, and method-specific readback.
 - Supported injected wallets are exactly MetaMask (io.metamask), OKX Wallet (com.okex.wallet/com.okx.wallet), and Rabby (io.rabby). No private key, seed phrase, token, or Studio credential is part of the frontend.
-- The source restoration incident caused by a stale Studio editor buffer is retained as adverse evidence; only the exact source hash above is treated as the release source.
+- The source restoration incident caused by a stale Studio editor buffer is retained as adverse evidence; the live source hash and pending source hash are stated separately and must not be conflated.
 
 ## Known limitations
 

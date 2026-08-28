@@ -1,6 +1,6 @@
 # Deployment and Recovery Manifest
 
-Status: exact-source live recovery and the bounded Studio matrix are complete. The project remains before project-source GitHub release, Vercel deployment, final external-wallet E2E, and DUAL_APPROVED submission closure.
+Status: exact-source live recovery and the bounded Studio matrix are complete for the currently deployed source. A blocker-driven source repair is staged as a pending PRE_DEPLOY package and has not been upgraded or deployed. The project remains before project-source GitHub release, Vercel deployment, final external-wallet E2E, and DUAL_APPROVED submission closure.
 
 ## Locked deployment configuration
 
@@ -8,8 +8,10 @@ Status: exact-source live recovery and the bounded Studio matrix are complete. T
 - Contract address: `0xf41A330869Cb9FDCCD8fbd7Ce7f83F5042908A75`.
 - Explorer: https://explorer-studio.genlayer.com/address/0xf41A330869Cb9FDCCD8fbd7Ce7f83F5042908A75
 - Contract source: `contracts/policy_translation_release_gate.py`.
-- Exact approved Git revision: `1a26dccf6ca8a69eb5ebd6812184d40cdbd2a1b0`.
+- Exact live executable Git revision: `1a26dccf6ca8a69eb5ebd6812184d40cdbd2a1b0`.
 - Exact source: `63,417` UTF-8 bytes; SHA-256 `92A77792DBD393E7DAFBA5C6127791E2D9C04999A5B3B826354782FB0B0DE35F`.
+- Pending PRE_DEPLOY package (not deployed): commit `5d50e4fc8f2f6f77bc09fb8a7fc205021d7bc09e`, parent `46c887f13f0b836730a786456e79a66470406c7b`, source `66,182` UTF-8 bytes, SHA-256 `55262740969342C0721A6DC6A4282708E86B7B74D2C71363B7BC2305FA169738`.
+- Pending specification snapshot: `.task/SPECIFICATION.md`, SHA-256 `7AFC0B370CCAC0408B6D6F548081F4D3286717CC11561EE1FD29C6A782D0FF71`.
 - Constructor arguments: none.
 - Classification: `UPGRADABLE`, using the native Root Slot code replacement path.
 - Locked Studio deployer/upgrader: `0x34b92E6553eaCA11A00A9d86d75d8a7881779D78`.
@@ -21,12 +23,12 @@ The original deployment transaction is retained as historical evidence: `0xc9b34
 
 ## Review and local verification
 
-The exact `1a26...` source was reviewed and approved at the PRE_DEPLOY checkpoint in reviewer Task `codex://threads/01a0393a-00d9-7bd2-a5b2-60278c55bb1a`. The source, network, contract address, constructor shape and locked account remain unchanged.
+The live `1a26...` source was reviewed and approved at the earlier PRE_DEPLOY checkpoint in reviewer Task `codex://threads/01a0393a-00d9-7bd2-a5b2-60278c55bb1a`. The pending `5d50...` package received `CHANGES REQUIRED` at fresh PRE_DEPLOY because its source/spec binding was stale; it is not approved or deployed. The network, contract address, constructor shape and locked account remain unchanged.
 
 Current checks on the exact local source:
 
-- Python contract tests: `66 passed`.
-- Frontend: typecheck pass; `99 passed` across 10 Vitest files; Vite production build pass.
+- Live-source historical Python contract tests: `66 passed`.
+- Pending package Python contract tests: `71 passed`; frontend typecheck pass; `99 passed` across 10 Vitest files; Vite production build pass.
 - `genvm-lint check`: pass; schema `25` methods (`13` views, `12` writes), zero constructor parameters.
 - `genvm-lint typecheck`: pass.
 - Python compilation: pass.
@@ -46,6 +48,7 @@ The prior public exact-source upgrade `0xe676236385c4d3eefd5739acb2fce782c839c79
 
 - Do not change the source, dependency header, constructor, chain, contract address, upgrade classification or locked account without a new exact-source review.
 - If a transaction is pending or ambiguous, retain its full hash and reconcile finality and execution before sending another transaction. Never duplicate an unknown transaction.
+- All live transaction rows and on-chain readbacks in this manifest are bound to the live `1a26...` source and `92A777...` hash. The pending `5d50...` source must not be described as deployed until a fresh PRE_DEPLOY approval, one authorized upgrade, and exact on-chain source readback are complete.
 - If the Studio UI resets while chain state and the locked account remain available, reconnect the locked account, import the recorded address, load the exact recorded source, and verify source/state before any upgrade.
 - If the locked Studio authority is unavailable, do not claim upgrade recovery. A replacement deployment requires the recorded source/constructor manifest, a complete live matrix and new release links.
 - If Studionet state resets, the old state cannot be recovered; redeploy from the exact source and rerun all required live cases.
