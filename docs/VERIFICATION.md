@@ -41,15 +41,15 @@ The final read-only Studionet observer readback records:
 - 61 contract events;
 - get_upgrader() equal to the locked authority.
 
-## Final external-wallet E2E
+## External-wallet E2E status
 
 - Exact final application/test package: `ea66fb82a990e9a5b6314135c4c6ce2d2f4994f5`.
 - Stable Vercel URL: https://policy-translation-release-gate.vercel.app
-- Independent external wallet: `0x008704...E01f`, connected to Studionet 61999 through the supported wallet selector.
-- Public Audit flow: candidate `#16` (`REVISION_REQUIRED`), digest auto-populated by the contract read, objection reason submitted once.
-- Transaction: [0x4db8f73dca4e2d1852a8522b9d138c46e2855e079583be2e26b8323ac552a001](https://explorer-studio.genlayer.com/tx/0x4db8f73dca4e2d1852a8522b9d138c46e2855e079583be2e26b8323ac552a001)
-- Authoritative result: `FINALIZED / SUCCESS / MAJORITY_AGREE`; contract return value `2`; objection ID `2`; candidate-16 objection page total `1`; profile `objection_count=2`, `event_count=61`.
-- Reload/disconnect: `PASS`; the refreshed page showed `Connect Wallet` and no automatic account request.
+- Prior-release external wallet: `0x008704...E01f`, connected to Studionet 61999 through the supported wallet selector before the provider-identity repair.
+- Prior-release Public Audit flow: candidate `#16` (`REVISION_REQUIRED`), digest auto-populated by the contract read, objection reason submitted once.
+- Prior-release transaction: [0x4db8f73dca4e2d1852a8522b9d138c46e2855e079583be2e26b8323ac552a001](https://explorer-studio.genlayer.com/tx/0x4db8f73dca4e2d1852a8522b9d138c46e2855e079583be2e26b8323ac552a001)
+- Prior-release authoritative result: `FINALIZED / SUCCESS / MAJORITY_AGREE`; contract return value `2`; objection ID `2`; candidate-16 objection page total `1`; profile `objection_count=2`, `event_count=61`.
+- Current exact application package `ea66fb8...` was deployed as `dpl_uo6XefNfq2xZvGKLhD9ihmmGiqK6` after the provider-identity repair. The user-owned external-wallet E2E and reload/disconnect rerun on this exact release are pending; the prior transaction cannot substitute for that rerun.
 
 The complete transaction matrix, including expected failures, disagreement controls, invalid external-fetch controls, source restoration, and authoritative readbacks, is in [STUDIO-LIVE-MATRIX.md](STUDIO-LIVE-MATRIX.md). The narrative evidence is in [STUDIO-EVIDENCE.md](STUDIO-EVIDENCE.md). Recovery and incident handling are in [DEPLOYMENT-RECOVERY.md](DEPLOYMENT-RECOVERY.md).
 
@@ -70,4 +70,4 @@ Public reads are wallet-free. Writes require explicit EIP-6963 selection of Meta
 
 ## Release gates still required
 
-The user-executed external-wallet E2E, GitHub public rendering, and final Vercel URL have been verified. The only remaining release gate is a fresh anonymous `POST_GITHUB_VERCEL_FINAL` `APPROVED` verdict for the repaired package, followed by matching `DUAL_APPROVED`. No form submission is made by this project.
+GitHub public rendering and the final Vercel URL have been verified. The only remaining operational release gates are the user-owned external-wallet E2E on the exact `ea66...` release, a fresh anonymous `POST_GITHUB_VERCEL_FINAL` `APPROVED` verdict for that package, and matching `DUAL_APPROVED`. No form submission is made by this project.

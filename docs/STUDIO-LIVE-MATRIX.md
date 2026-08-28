@@ -1,6 +1,6 @@
 # Studio Live Matrix
 
-Status: exact-source upgrade, required Studionet matrix, GitHub release, Vercel release, and user external-wallet E2E are complete. Fresh POST_GITHUB_VERCEL_FINAL review of the repaired package remains pending.
+Status: exact-source upgrade, required Studionet matrix, GitHub release, Vercel release, and primary browser smoke are complete. The required user external-wallet E2E on the repaired package and fresh POST_GITHUB_VERCEL_FINAL review remain pending.
 
 Date: `2026-08-29`
 Network: GenLayer Studionet, chain `61999`, full-consensus mode.
@@ -96,8 +96,8 @@ Every row below was sent through Studio UI and independently checked with read-o
 |---|---|---|
 | Public GitHub release | https://github.com/ldkfj/policy-translation-release-gate | public repository rendering and exact application package commit `ea66fb82a990e9a5b6314135c4c6ce2d2f4994f5` verified |
 | Final Vercel production | `dpl_uo6XefNfq2xZvGKLhD9ihmmGiqK6`; https://policy-translation-release-gate.vercel.app | `READY`; configured contract; six journeys load; no console errors or warnings |
-| External-wallet objection | [`0x4db8f73dca4e2d1852a8522b9d138c46e2855e079583be2e26b8323ac552a001`](https://explorer-studio.genlayer.com/tx/0x4db8f73dca4e2d1852a8522b9d138c46e2855e079583be2e26b8323ac552a001) | `FINALIZED / SUCCESS / MAJORITY_AGREE`; objection ID `2`; candidate 16 page total `1`; profile counts `objection_count=2`, `event_count=61` |
-| Reload/disconnect | final Vercel release | `PASS`; reload returned to `Connect Wallet` with no automatic account request |
+| Prior-release external-wallet objection | [`0x4db8f73dca4e2d1852a8522b9d138c46e2855e079583be2e26b8323ac552a001`](https://explorer-studio.genlayer.com/tx/0x4db8f73dca4e2d1852a8522b9d138c46e2855e079583be2e26b8323ac552a001) | `FINALIZED / SUCCESS / MAJORITY_AGREE`; objection ID `2`; candidate 16 page total `1`; executed before the final provider-identity repair |
+| Primary browser smoke | final Vercel release `dpl_uo6XefNfq2xZvGKLhD9ihmmGiqK6` | `PASS`; all six read journeys load and reload returns to `Connect Wallet`; user-owned wallet rerun remains pending |
 
 ## Exact-source recovery chronology
 
@@ -106,4 +106,4 @@ Every row below was sent through Studio UI and independently checked with read-o
 - The Studio buffer was then replaced through the visible editor with the exact local source. `0xef831609be9fb78aa866e94c69c665aabe02698bcab659f9cc3be9ce6522cd99` finalized as a code upgrade with exact `92A777...` source bytes. Two queued exact-source code upgrades, `0xb5a5b98820b1aa876d0513df51bbe230d61275a9b6ef18484a412e77081f7eac` and `0x067cf62b52aadae5750461dba29113e8f4e83969cf76cbb06db0806fd08afd4a`, later also finalized with the same exact source; they do not change source parity.
 - The final Studio observer readback after the exact-source upgrade reports source `552627...`, active canonical 2, candidate 8 published/effective, and the locked upgrader address. The post-release readback after the external objection reports objection count `2` and event count `61`; the objection transaction and readback are recorded above.
 
-No local-state inference is used to mark a live row PASS. GitHub rendering, Vercel production, and the final external-wallet E2E are verified. Submission and experience-ledger update remain gated on the fresh final reviewer approval and user completion confirmation.
+No local-state inference is used to mark a live row PASS. GitHub rendering, Vercel production, and primary browser smoke are verified. The user-owned external-wallet E2E on the exact repaired package, submission, and experience-ledger update remain gated on the fresh final reviewer approval and user completion confirmation.
