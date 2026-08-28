@@ -457,14 +457,26 @@ Section ID: {sec_id}
 {translation_text}
 </translation_section>
 
-Evaluate the following 7 consequence-bearing dimensions:
-1. rights
-2. obligations
-3. prohibitions
-4. exceptions
-5. scope
-6. thresholds
-7. deadlines
+Evaluate these 7 NON-OVERLAPPING consequence dimensions. Classify a difference
+only in its most specific dimension; do not infer indirect rights from duties,
+or scope/threshold changes from a changed duty:
+1. rights: an express entitlement, permission, or remedy held by a beneficiary.
+2. obligations: whether an actor must/shall do an act. Modal force belongs here.
+3. prohibitions: whether an actor must not/is forbidden to do an act.
+4. exceptions: an express carve-out from a right, obligation, or prohibition.
+5. scope: the expressly covered actors, data, conduct, or jurisdiction.
+6. thresholds: a non-temporal numeric trigger or quantity. Time never belongs here.
+7. deadlines: a duration, date, frequency, or other temporal limit.
+
+Binding rules:
+- A weaker or optional version of a mandatory duty changes obligations only; it
+  is not also a lost right, changed scope, or changed threshold.
+- A changed time limit changes deadlines only, unless separate wording changes
+  another dimension.
+- Use LOST only for an express right or express exception that was removed or
+  weakened. For all other dimensions use CHANGED.
+- If a dimension has no difference, EQUIVALENT and NOT_APPLICABLE have the same
+  consensus meaning. Prefer EQUIVALENT whenever uncertain between those two.
 
 For EACH dimension, assign exactly ONE of these values:
 - "EQUIVALENT": The translation conveys the exact same legal/normative effect.
@@ -516,6 +528,13 @@ Output ONLY a JSON object with this exact schema:
             val_clean = val.strip().upper()
             if val_clean not in valid_vals:
                 return (False, {})
+            # Canonicalize labels that have identical consequence semantics.
+            # This removes validator-local EQUIVALENT/NOT_APPLICABLE wording
+            # variance without tolerating any substantive changed dimension.
+            if val_clean == "NOT_APPLICABLE":
+                val_clean = "EQUIVALENT"
+            if val_clean == "LOST" and dim not in ("rights", "exceptions"):
+                val_clean = "CHANGED"
             dim_results[dim] = val_clean
 
         return (True, dim_results)

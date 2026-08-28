@@ -10,8 +10,37 @@ from contracts.policy_translation_release_gate import (
     _parse_sections_from_text,
     _compute_consequence_fingerprint,
     _derive_assessment,
+    _evaluate_section_pair,
     CONSEQUENCE_DIMENSIONS,
 )
+
+
+def test_dimension_labels_are_canonicalized_without_hiding_changes(prompt_mock):
+    """Equivalent wording converges; every substantive dimension stays changed."""
+    prompt_mock.set_raw_override({
+        "rights": "NOT_APPLICABLE",
+        "obligations": "LOST",
+        "prohibitions": "NOT_APPLICABLE",
+        "exceptions": "NOT_APPLICABLE",
+        "scope": "NOT_APPLICABLE",
+        "thresholds": "LOST",
+        "deadlines": "CHANGED",
+    })
+
+    success, result = _evaluate_section_pair("security", "canonical", "translation")
+
+    assert success is True
+    assert "NON-OVERLAPPING consequence dimensions" in prompt_mock.calls[-1]
+    assert "Time never belongs here" in prompt_mock.calls[-1]
+    assert result == {
+        "rights": "EQUIVALENT",
+        "obligations": "CHANGED",
+        "prohibitions": "EQUIVALENT",
+        "exceptions": "EQUIVALENT",
+        "scope": "EQUIVALENT",
+        "thresholds": "CHANGED",
+        "deadlines": "CHANGED",
+    }
 
 
 def test_stable_section_parser_valid():

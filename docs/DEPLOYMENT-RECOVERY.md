@@ -77,7 +77,7 @@ Storage/ABI inventory:
 
 Nondeterministic and serialization inventory:
 
-- `_fetch_and_validate_evidence` performs bounded immutable-commit GitHub API/raw reads via `gl.nondet.web.get`; `_evaluate_section_pair` uses `gl.nondet.exec_prompt` with an exact seven-dimension schema.
+- `_fetch_and_validate_evidence` performs bounded immutable-commit GitHub API/raw reads via `gl.nondet.web.get`; `_evaluate_section_pair` uses `gl.nondet.exec_prompt` with an exact seven-dimension schema. After the retained live drift-consensus failure, the axes were clarified as non-overlapping and label-only `NOT_APPLICABLE` is normalized to `EQUIVALENT`; substantive changes, exact section bands, outcome, fingerprint and independent validator re-derivation remain strict.
 - `assess_translation` and `retry_unresolved` wrap all nondeterminism in `gl.vm.run_nondet_unsafe`. Before closure creation, storage-backed values are copied into primitive immutable local strings; no storage proxy or custom persisted object is captured.
 - Each validator independently refetches and re-derives the complete assessment and compares all 17 consequence-bearing fields, including fingerprint, outcome, dimensional results, coverage, source identities, and bounded reason. Exceptions, malformed evidence, unavailable evidence, and disagreement fail closed; state mutates only after consensus returns.
 - The test fixture uses real `cloudpickle` round trips for leader, validator, and returned assessment data. The full nondeterministic suite therefore exercises closure/result serialization as well as agreement, deliberate material disagreement, malformed/overlong model output, HTTP failures, source mismatch, retry, and safe outcomes.

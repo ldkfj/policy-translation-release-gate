@@ -74,6 +74,8 @@ For each section, validators independently classify these consequence-bearing di
 
 Each dimension uses a bounded enum indicating equivalent, changed/lost, or not comparable. Free-form explanations are optional bounded audit text; they do not participate in strict equality, but validators must ensure any stored explanation is source-grounded and consistent with the agreed dimensions/outcome.
 
+Dimension axes are mutually exclusive for consensus: express beneficiary entitlements map to rights; mandatory acts to obligations; forbidden acts to prohibitions; express carve-outs to exceptions; covered actors/data/conduct/jurisdiction to scope; non-temporal numeric triggers to thresholds; and temporal limits to deadlines. Weakening a duty does not independently create a rights/scope/threshold change. `LOST` is reserved for express rights or exceptions; an equivalent absent dimension is normalized from `NOT_APPLICABLE` to `EQUIVALENT` before strict comparison. This canonicalization removes label-only variance and never converts a substantive `CHANGED`/`LOST` dimension into equivalence.
+
 ## 6. Exact consensus result schema
 
 The accepted nondeterministic result has one exact normalized schema shared by contract validation, tests, frontend decoding, and documentation:
@@ -174,4 +176,3 @@ PRE_DEPLOY requires exact source/spec hashes, tests, upgradable classification, 
 The exact final Vercel release requires user-executed E2E with an independent MetaMask/OKX/Rabby wallet, followed by primary-AI chain verification. GitHub, contract, Explorer, Vercel, documentation, and scorecard must bind one exact revision before final dual approval.
 
 Disclosed limitations: public GitHub repositories only; publisher wallet does not prove GitHub ownership; stable section IDs are required; semantic parity is not legal certification; one canonical language and three locales; bounded document/revision/event sizes; Studionet is temporary; no economic value.
-

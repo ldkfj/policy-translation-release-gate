@@ -26,12 +26,39 @@ The primary AI performed every write through the live Studio UI. Upgrade calldat
 
 Negative initialization arguments respectively: `("unauthorized-test", "negative-case")` and `("invalid/owner", "negative-case")`. Both upgrade attempts supplied the exact corrected source bytes; only the authorized one succeeded. Idle validators cancelled after quorum are not counted as successful executions or as contradictory consensus votes.
 
-Final observed profile: `initialized=false`, owner/repo empty, active canonical 0, canonical/candidate/objection counts 0, policy version 1, event count 1, admin unchanged. Final events page contains only `UPGRADE`, id 1, timestamp `1787863276`, actor the locked upgrader. Root Slot upgrader readback matches the locked account. Thus all three negative controls left the post-upgrade baseline unchanged.
+Profile after those negative controls: `initialized=false`, owner/repo empty, active canonical 0, canonical/candidate/objection counts 0, policy version 1, event count 1, admin unchanged. Events contained only `UPGRADE`, id 1, timestamp `1787863276`, actor the locked upgrader. Root Slot upgrader readback matched the locked account. All three negative controls left that post-upgrade baseline unchanged.
 
-## Remaining live dependency and gate
+## Public fixtures and source-backed lifecycle
 
-The seven source-backed files under `live-fixtures/` exist locally only; no public fixture repository/commit has been supplied or authorized for publication. Locked Stage 1/Stage 2 and specification section 4 require real GitHub commit API and raw file retrieval, including stable `[[SECTION:...]]` markers. Local files and mock results cannot establish semantic equivalence, publication, effective consumer binding, supersession, or successor publication on Studionet.
+The user authorized fixture-only publication at [the fixture repository](https://github.com/pcong5239/policy-translation-release-gate-fixtures). Immutable commit `3c7431f10d5349c35e82ea400d84442c53b441f0` contains exactly the seven Markdown fixtures at repository root. Public commit API and all raw files returned HTTP 200 with matching local byte hashes. This exception does not authorize project-source release or Vercel deployment.
 
-Do not initialize the immutable owner/repository binding with an invented or unrelated repository. Do not publish project source, use another Task's repository, or change the evidence boundary to evade this dependency. The next source-backed lifecycle needs an existing suitable public fixture repository or explicit user authorization for fixture-only publication before the release push. POST_DEPLOY_TEST remains incomplete and no approval is claimed for it.
+| Case / purpose | Transaction | Verified result |
+|---|---|---|
+| Initialize real publisher | `0xe6abbfe2434862cf113cc891658deea37f8414de921aa670b0ff0b3c95f5cacd` | FINALIZED / SUCCESS; owner `pcong5239`, repo `policy-translation-release-gate-fixtures` |
+| Register canonical v1 | `0x50e8c9ee21c902a1d4701fed2cc12e1d8ca09ff899fcc478d0683be1b1f62259` | FINALIZED / SUCCESS; id 1, source digest and nonce verified |
+| Activate canonical v1 | `0x3a4d9fc47c97f715352232ff64709a72149dd0343bdb2e11db9b33e7be01d7f8` | FINALIZED / SUCCESS; canonical 1 ACTIVE |
+| Register localizer draft | `0xf98359e50921679c9227b46abdf40895ad9a529ffe774fa9370a41982a563772` | FINALIZED / SUCCESS; candidate 1 DRAFT, nonce `studio-es-v1`; initial v2 fixture intentionally prepares draft-update case |
+| Update draft to equivalent v1 | `0x829e82002e5988fe8f6581eb2badcca41df426372ba7484e26e7c4101cf936b2` | FINALIZED / SUCCESS; candidate 1 DRAFT, `es-equivalent-v1.md`, digest `24b16304995ebba7ba1009190fe81b83c0a6779acb36c636243cdf0878197828` |
+| Freeze candidate | `0x42be4da5ed277642684e6924b0e768988501e6b80668fc869a358c42c2686ccd` | FINALIZED / SUCCESS; candidate 1 FROZEN, attempts 0 |
 
-No GitHub push, Vercel deployment, final user web E2E, submission, or experience-ledger update has occurred.
+All six writes obtained MAJORITY_AGREE and authoritative matching readbacks. Admin performed the first three; the independent localizer performed the last three. Exact calldata and raw readbacks are retained locally.
+
+| Further case / purpose | Transaction | Verified result |
+|---|---|---|
+| Equivalent assessment | `0x37191953fe567d6e017c29bd097efb9aa033688b6b8ebbda15e28074b7c0a17a` | FINALIZED / SUCCESS / MAJORITY_AGREE; candidate 1 ACCEPTED, MATERIALLY_EQUIVALENT, both sources AVAILABLE, 3 matched sections, coverage 10000, no changed dimensions |
+| Localizer cannot publish | `0xa07f05390187534b54806091db4f3077923a56d164d14adf793a7d9d799c1f82` | FINALIZED / expected rollback UNAUTHORIZED_PUBLISHER; candidate remains ACCEPTED, effective locale false |
+| Publisher releases accepted candidate | `0x34db1697769392ce97923e3dd8b1951493836e44476661e910ffe641d7508499` | FINALIZED / SUCCESS; candidate 1 PUBLISHED; effective es true with exact source |
+| Independent consumer binding | `0xb2c07aafe04ac2564c0fe54c9b432232b9cd480fa5f10487880e80b4257f4fc8` | FINALIZED / SUCCESS; actor 0x22A2906BB59A1DFaEEAD6148eba7dB24d6F22FB1, namespace studio-consumer/es, candidate 1, is_effective true |
+| Register obligation-drift fixture | `0x7f148ff22696e43cf3d751c50049543c0e1ed9ef7712ad96e0482224af19f50b` | FINALIZED / SUCCESS; actor 0x22A2906BB59A1DFaEEAD6148eba7dB24d6F22FB1, candidate 2 DRAFT, locale fr |
+| Independent prepublication objection | `0xe42348136c15bb4b47a8055ad7793c7362c196fdabe5b5d5d5902c08c2be04a2` | FINALIZED / SUCCESS; observer 0xeF5D2119416A2f5afa35dCFA209766EFC1BE5902, objection 1 on candidate 2, source digest and reason matched; candidate stayed DRAFT without assessment |
+| Freeze obligation-drift fixture | `0xa398ce2afb121d0ea5abdb202c1b6a01e5691731cb117422f96a23b5da569384` | FINALIZED / SUCCESS; candidate 2 FROZEN, attempts 0 |
+
+Equivalent assessment fingerprint: `fbb295581208225006591718c847a48afe629c32be822c1abf46a6a781dfee5e`. The first bounded observer ended while consensus was still COMMITTING; read-only reconciliation of the same hash then verified FINALIZED. No duplicate assessment was submitted.
+
+## Failed drift consensus — retained evidence
+
+`assess_translation(2)` transaction `0x0819097c27405f2ec6218d5803bf26d2051073ed077abea5ee0f76b954b28609` finalized with MAJORITY_DISAGREE after rotations. Leader execution SUCCESS did not make the case pass. Readback: candidate 2 FROZEN, attempts 0, has_assessment false; assessment empty. Historical leaders fetched AVAILABLE sources with the same exact digests but varied between OBLIGATION_DRIFT and RIGHT_OR_EXCEPTION_LOSS and between per-dimension bands. This is a failed required case, not UNRESOLVED or a source-unavailability test. No duplicate assessment was submitted.
+
+POST_DEPLOY_TEST remains incomplete. Equivalent assessment, publication and effective binding passed on this revision; drift rejection is blocked by the recorded consensus failure. Evidence-failure/retry, remaining guard cases, supersession, successor publication and populated-state recovery remain unproven. The fixed Studio-only publisher authority also blocks the advertised independent-wallet publisher web journey; no external-wallet workaround is claimed.
+
+No project-source GitHub push, Vercel deployment, final user web E2E, submission, or experience-ledger update has occurred.
