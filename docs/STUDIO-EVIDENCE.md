@@ -1,64 +1,58 @@
-# Studio E2E evidence — partial, not release approval
+# Studio E2E Evidence
 
-Date: 2026-08-28. Network: Studionet, chain 61999, full consensus, simulation disabled.
+Date: `2026-08-28`
+Network: GenLayer Studionet, chain `61999`, full consensus, simulation disabled.
+Contract: `0xf41A330869Cb9FDCCD8fbd7Ce7f83F5042908A75`
+Explorer: https://explorer-studio.genlayer.com/address/0xf41A330869Cb9FDCCD8fbd7Ce7f83F5042908A75
 
-Contract: `0xf41A330869Cb9FDCCD8fbd7Ce7f83F5042908A75`.
-Corrected executable revision: `e8c4277e908fa08c03eb571ff2a2c4d8ffccec97`.
-Deployed source SHA-256: `FD003AE8CE47B3C36C242A8887D0C6F0B7BCFCCE0C9FC022306A3205665F598C`, 61,848 bytes.
-Publisher/upgrader: `0x34b92E6553eaCA11A00A9d86d75d8a7881779D78`.
-Independent Studio test actor: `0xeF5D2119416A2f5afa35dCFA209766EFC1BE5902`.
+## Exact revision and review binding
 
-## Review and execution identity
+- Approved Git revision: `1a26dccf6ca8a69eb5ebd6812184d40cdbd2a1b0`
+- Contract source: `contracts/policy_translation_release_gate.py`
+- Exact source: `63,417` UTF-8 bytes; SHA-256 `92A77792DBD393E7DAFBA5C6127791E2D9C04999A5B3B826354782FB0B0DE35F`
+- Final on-chain source readback: `92a77792dbd393e7dafba5c6127791e2d9c04999a5b3b826354782fb0b0de35f`
+- Locked publisher/upgrader: `0x34b92E6553eaCA11A00A9d86d75d8a7881779D78`
+- Independent localizer: `0xeF5D2119416A2f5afa35dCFA209766EFC1BE5902`
+- Independent consumer/auditor: `0x22A2906BB59A1DFaEEAD6148eba7dB24d6F22FB1`
+- Anonymous reviewer Task: `codex://threads/01a0393a-00d9-7bd2-a5b2-60278c55bb1a`
 
-Anonymous PRE_DEPLOY verdict: APPROVED for the corrected executable revision, permitting exact-source deployment or storage-compatible upgrade with the locked account. The completed reviewer turn is `01a044f1-9ef9-7381-8dbb-8b54ac21f38b` in the existing reviewer Task. Task read tools omitted the latest final text even after pagination; its exact final verdict was recovered from the reviewer's durable rollout, not inferred from liveness.
+The source bytes are unchanged from the approved Git revision. The current local checks are: contract tests `66/66`; frontend typecheck pass; frontend tests `99/99` across 10 files; frontend production build pass with the existing 815.19 kB minified-chunk warning; `genvm-lint check` pass with schema `25` methods (`13` views, `12` writes), zero constructor parameters; `genvm-lint typecheck` pass; Python compilation pass. The linter's optional newer runner warning is disclosed and no dependency/header change was made.
 
-The primary AI performed every write through the live Studio UI. Upgrade calldata used Studio's documented `b#<hex>` bytes format, verified against the local source hash before sending. No signature or transaction was sent before the new approval. Read-only SDK RPC queries independently checked transaction execution, consensus, code and state.
+All state-changing operations in this evidence were submitted through Studio UI. The observer script only performs read-only RPC calls and stores raw transaction/readback JSON under `.task/live-evidence/`.
 
-## Completed cases
+## Populated final readback
 
-| Case / proof purpose | Transaction | Finality / execution | Authoritative result |
-|---|---|---|---|
-| Original unauthorized initialization exposed production namespace defect | `0x4ced1b4ed41d554530f7ef1769a5253ed344b1a6ad872157e57d52e8fb0cd1b6` | FINALIZED, MAJORITY_AGREE, ERROR | `AttributeError` for missing `gl.UserError`; diagnostic failure retained, not a passing authorization result |
-| Authorized exact-source upgrade proves recovery and transaction timestamp path | `0xb4d3df5145ffd67c1bd8e2a4bcdc1a62320d3a9521ee65e2bbd2a96a4c23ad29` | FINALIZED, MAJORITY_AGREE, leader SUCCESS / return null | Code hash matches corrected source; publisher data/counts preserved; one UPGRADE event recorded |
-| Unauthorized initialization rerun proves corrected business rejection | `0x1021407b963a268482e4a61a4727c6041ba9e56063ff770c410244c431a7bab0` | FINALIZED, MAJORITY_AGREE, expected ERROR / rollback | `UNAUTHORIZED_CALLER`, empty stderr, no publisher initialization or count changes |
-| Unauthorized exact-source upgrade proves Root Slot permission enforcement | `0xbb8fffa228ea46abf5dd338c046c4f8ef9313946de9c3d282f8cc21f52fc7207` | FINALIZED, MAJORITY_AGREE, expected ERROR | `SystemError: 6: forbidden` at protected code storage write; source hash/state/event count unchanged |
-| Authorized caller with malformed repository owner proves validation before immutable binding | `0x06f01aaf77c498d5a28387341444f4a6cb5c0b19d3bce2d512f0ff8c60bf61ba` | FINALIZED, MAJORITY_AGREE, expected ERROR / rollback | `INVALID_OWNER_OR_REPO`, empty stderr, no initialization or count changes |
+The final readback after all upgrade records settled is in `.task/live-evidence/latest-readback.json`:
 
-Negative initialization arguments respectively: `("unauthorized-test", "negative-case")` and `("invalid/owner", "negative-case")`. Both upgrade attempts supplied the exact corrected source bytes; only the authorized one succeeded. Idle validators cancelled after quorum are not counted as successful executions or as contradictory consensus votes.
+- Profile: initialized `true`; owner `pcong5239`; repo `policy-translation-release-gate-fixtures`; admin `0x34b92E6553eaCA11A00A9d86d75d8a7881779D78`; active canonical `2`; canonical count `2`; candidate count `8`; objection count `1`; event count `37`.
+- Active canonical: id `2`, path `canonical-v2.md`, state `ACTIVE`, digest `5F18FA0632DCE5765BC4241676C80D45D9B72F7E18B123AC99456C169C8E71EB`.
+- Canonical 1 is `SUPERSEDED`; canonical 2 is `ACTIVE`.
+- Candidate 1 is `STALE_BY_CANONICAL_REVISION`; candidate 8 is `PUBLISHED` for canonical 2/es.
+- Candidate 8 assessment: canonical/translation `AVAILABLE`, 3/3 matched sections, coverage `10000` bps, all 7 dimensions `EQUIVALENT`, outcome `MATERIALLY_EQUIVALENT`, `REVISION_REQUIRED` list empty.
+- `studio-consumer/es` binding points to candidate 8, canonical 2, state `PUBLISHED`, `is_effective=true`.
+- `get_effective_locale("es")` returns candidate 8 and the exact candidate source digest/path.
+- One objection remains recorded against candidate 2 with the independent observer address and reason intact.
+- `get_upgrader()` returns the locked account.
 
-Profile after those negative controls: `initialized=false`, owner/repo empty, active canonical 0, canonical/candidate/objection counts 0, policy version 1, event count 1, admin unchanged. Events contained only `UPGRADE`, id 1, timestamp `1787863276`, actor the locked upgrader. Root Slot upgrader readback matched the locked account. All three negative controls left that post-upgrade baseline unchanged.
+## Live transaction evidence
 
-## Public fixtures and source-backed lifecycle
+The complete case-by-case matrix and all full transaction hashes are maintained in [STUDIO-LIVE-MATRIX.md](STUDIO-LIVE-MATRIX.md). The decisive rows are summarized here.
 
-The user authorized fixture-only publication at [the fixture repository](https://github.com/pcong5239/policy-translation-release-gate-fixtures). Immutable commit `3c7431f10d5349c35e82ea400d84442c53b441f0` contains exactly the seven Markdown fixtures at repository root. Public commit API and all raw files returned HTTP 200 with matching local byte hashes. This exception does not authorize project-source release or Vercel deployment.
-
-| Case / purpose | Transaction | Verified result |
+| Proof | Transaction(s) | Authoritative result |
 |---|---|---|
-| Initialize real publisher | `0xe6abbfe2434862cf113cc891658deea37f8414de921aa670b0ff0b3c95f5cacd` | FINALIZED / SUCCESS; owner `pcong5239`, repo `policy-translation-release-gate-fixtures` |
-| Register canonical v1 | `0x50e8c9ee21c902a1d4701fed2cc12e1d8ca09ff899fcc478d0683be1b1f62259` | FINALIZED / SUCCESS; id 1, source digest and nonce verified |
-| Activate canonical v1 | `0x3a4d9fc47c97f715352232ff64709a72149dd0343bdb2e11db9b33e7be01d7f8` | FINALIZED / SUCCESS; canonical 1 ACTIVE |
-| Register localizer draft | `0xf98359e50921679c9227b46abdf40895ad9a529ffe774fa9370a41982a563772` | FINALIZED / SUCCESS; candidate 1 DRAFT, nonce `studio-es-v1`; initial v2 fixture intentionally prepares draft-update case |
-| Update draft to equivalent v1 | `0x829e82002e5988fe8f6581eb2badcca41df426372ba7484e26e7c4101cf936b2` | FINALIZED / SUCCESS; candidate 1 DRAFT, `es-equivalent-v1.md`, digest `24b16304995ebba7ba1009190fe81b83c0a6779acb36c636243cdf0878197828` |
-| Freeze candidate | `0x42be4da5ed277642684e6924b0e768988501e6b80668fc869a358c42c2686ccd` | FINALIZED / SUCCESS; candidate 1 FROZEN, attempts 0 |
+| Equivalent candidate consensus | `0x37191953fe567d6e017c29bd097efb9aa033688b6b8ebbda15e28074b7c0a17a` | `FINALIZED / SUCCESS / MAJORITY_AGREE`; candidate 1 accepted, 17 fields, 3 sections, 10000 bps |
+| Independent objection | `0xe42348136c15bb4b47a8055ad7793c7362c196fdabe5b5d5d5902c08c2be04a2` | `FINALIZED / SUCCESS`; objection 1 retained on candidate 2 |
+| Corrected obligation drift | `0xc811aace94aa1786495e01054e28455e0415968252819c8a78f48a0fc75a5163` | `FINALIZED / SUCCESS / MAJORITY_AGREE`; outcome `OBLIGATION_DRIFT`, changed `deadlines, obligations`, candidate 2 revision required |
+| Bounded right-loss recovery | `0xe9ce6150c7c756f54e2e34067999dd04dc0040314de237fb9e92dc8dfcc3da32` | `FINALIZED / SUCCESS / MAJORITY_AGREE`; outcome `RIGHT_OR_EXCEPTION_LOSS`, candidate 3 revision required |
+| Missing evidence | `0xed692396eb786a085665702f9990251a5ad5e9aac361ee17e22c37602882903d` | `FINALIZED / SUCCESS / MAJORITY_AGREE`; translation `MISSING`, outcome `NOT_COMPARABLE`, coverage 0 |
+| Canonical supersession | `0x80d26af1f626784e858277ee2b03e0fdb4816ad5ede1186ee791764bdcc0498a`, `0x645cb057cccfe5d38b5b3085a3620851bc8a012e8205418cd10a4ea964a493a0` | canonical 1 superseded; canonical 2 active; old candidate/binding ineffective |
+| Successor publish and rebind | `0x377623858e6401e4758b3aa17b3b84957bd2509a65941351d56640e32f12637f`, `0x12b68bb763bf716076442353257fbfa4cbc4e23b7d79a2032ca0fd41e5650bf4`, `0x75bc1518001692b1f642709a09396afa034033cf179bc7ba7e0c12cc9b2c3b7e` | candidate 8 published and independently rebound/effective |
+| Negative validation controls | `0xf9cb...`, `0x33e5...`, `0x7344...`, `0x3dee...`, `0xb549...`, `0xd43a...` | full hashes and unchanged-state readbacks are in the matrix and raw evidence |
 
-All six writes obtained MAJORITY_AGREE and authoritative matching readbacks. Admin performed the first three; the independent localizer performed the last three. Exact calldata and raw readbacks are retained locally.
+## Source restoration incident and exact parity
 
-| Further case / purpose | Transaction | Verified result |
-|---|---|---|
-| Equivalent assessment | `0x37191953fe567d6e017c29bd097efb9aa033688b6b8ebbda15e28074b7c0a17a` | FINALIZED / SUCCESS / MAJORITY_AGREE; candidate 1 ACCEPTED, MATERIALLY_EQUIVALENT, both sources AVAILABLE, 3 matched sections, coverage 10000, no changed dimensions |
-| Localizer cannot publish | `0xa07f05390187534b54806091db4f3077923a56d164d14adf793a7d9d799c1f82` | FINALIZED / expected rollback UNAUTHORIZED_PUBLISHER; candidate remains ACCEPTED, effective locale false |
-| Publisher releases accepted candidate | `0x34db1697769392ce97923e3dd8b1951493836e44476661e910ffe641d7508499` | FINALIZED / SUCCESS; candidate 1 PUBLISHED; effective es true with exact source |
-| Independent consumer binding | `0xb2c07aafe04ac2564c0fe54c9b432232b9cd480fa5f10487880e80b4257f4fc8` | FINALIZED / SUCCESS; actor 0x22A2906BB59A1DFaEEAD6148eba7dB24d6F22FB1, namespace studio-consumer/es, candidate 1, is_effective true |
-| Register obligation-drift fixture | `0x7f148ff22696e43cf3d751c50049543c0e1ed9ef7712ad96e0482224af19f50b` | FINALIZED / SUCCESS; actor 0x22A2906BB59A1DFaEEAD6148eba7dB24d6F22FB1, candidate 2 DRAFT, locale fr |
-| Independent prepublication objection | `0xe42348136c15bb4b47a8055ad7793c7362c196fdabe5b5d5d5902c08c2be04a2` | FINALIZED / SUCCESS; observer 0xeF5D2119416A2f5afa35dCFA209766EFC1BE5902, objection 1 on candidate 2, source digest and reason matched; candidate stayed DRAFT without assessment |
-| Freeze obligation-drift fixture | `0xa398ce2afb121d0ea5abdb202c1b6a01e5691731cb117422f96a23b5da569384` | FINALIZED / SUCCESS; candidate 2 FROZEN, attempts 0 |
+The first populated-state top-button upgrade, `0x1e484b14483fdfbf7b8df0a283572201dfaa3d092f697064d01b22ea71969169`, finalized with `MAJORITY_AGREE` but came from a stale Studio editor buffer. Read-only source observation identified deployed SHA `322F3278B95CADCD68427DB16E4405D947F22577844D654ACFA32BD743A78F34`; state remained populated, but this was a material source mismatch and is not hidden or treated as release evidence.
 
-Equivalent assessment fingerprint: `fbb295581208225006591718c847a48afe629c32be822c1abf46a6a781dfee5e`. The first bounded observer ended while consensus was still COMMITTING; read-only reconciliation of the same hash then verified FINALIZED. No duplicate assessment was submitted.
+The exact local source was then loaded into the visible Studio editor and restored. Public `upgrade(bytes)` transaction `0xe676236385c4d3eefd5739acb2fce782c839c79e596cbf85b140b689e91a65d0` finalized `SUCCESS / MAJORITY_AGREE`; its raw calldata source body hashes exactly to `92A777...`. Studio code-upgrade transactions `0xef831609be9fb78aa866e94c69c665aabe02698bcab659f9cc3be9ce6522cd99`, `0xb5a5b98820b1aa876d0513df51bbe230d61275a9b6ef18484a412e77081f7eac`, and `0x067cf62b52aadae5750461dba29113e8f4e83969cf76cbb06db0806fd08afd4a` also finalized with exact 63,417-byte source payloads. The final observer readback proves source parity and preserved canonical/candidate/binding state.
 
-## Failed drift consensus — retained evidence
-
-`assess_translation(2)` transaction `0x0819097c27405f2ec6218d5803bf26d2051073ed077abea5ee0f76b954b28609` finalized with MAJORITY_DISAGREE after rotations. Leader execution SUCCESS did not make the case pass. Readback: candidate 2 FROZEN, attempts 0, has_assessment false; assessment empty. Historical leaders fetched AVAILABLE sources with the same exact digests but varied between OBLIGATION_DRIFT and RIGHT_OR_EXCEPTION_LOSS and between per-dimension bands. This is a failed required case, not UNRESOLVED or a source-unavailability test. No duplicate assessment was submitted.
-
-POST_DEPLOY_TEST remains incomplete. Equivalent assessment, publication and effective binding passed on this revision; drift rejection is blocked by the recorded consensus failure. Evidence-failure/retry, remaining guard cases, supersession, successor publication and populated-state recovery remain unproven. The fixed Studio-only publisher authority also blocks the advertised independent-wallet publisher web journey; no external-wallet workaround is claimed.
-
-No project-source GitHub push, Vercel deployment, final user web E2E, submission, or experience-ledger update has occurred.
+No project-source GitHub push, Vercel deployment, final MetaMask/OKX/Rabby web E2E, submission, or experience-ledger update has occurred. The live matrix is complete, but release remains gated on the required reviewer checkpoint and final external-wallet web E2E.
