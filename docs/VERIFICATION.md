@@ -18,9 +18,9 @@ This document is the compact judge-facing verification record for Policy Transla
 - Deployment class: UPGRADABLE native Root Slot
 - Locked publisher/upgrader: 0x34b92E6553eaCA11A00A9d86d75d8a7881779D78
 
-The deployed source readback is the lowercase form of the exact SHA above. Contract evidence remains bound to executable revision `5d50...`; the exact final application/test package is public commit `ea66fb82a990e9a5b6314135c4c6ce2d2f4994f5`. The earlier frontend repair commit `e3bf777...` is superseded by the provider-identity repair in `ea66fb8...`.
+The deployed source readback is the lowercase form of the exact SHA above. Contract evidence remains bound to executable revision `5d50...`; the exact final application/test package is public commit `2c07257acd2e3299adc5bff20a3aee7dfd108455`. The earlier frontend repair commits are superseded by the provider-identity and GenLayer transaction-finality repairs in that exact package.
 
-The final verified Vercel production deployment is `dpl_uo6XefNfq2xZvGKLhD9ihmmGiqK6` in team `gam9`; the stable production alias above is the only judge-facing URL. Primary live review confirmed the correct title, contract/Explorer link, disconnected wallet state, all six journeys, 2 canonical revisions, 16 candidates, published candidate 8, consumer resolution data, audit/upgrader data, and no console warnings or errors. The cross-journey read-dedup cancellation defect and the EIP-6963 provider-object deduplication defect were fixed in the exact application package; their regression tests passed.
+The final verified Vercel production deployment is `dpl_AcLC5FenPms81vhyZwh1eJTdG9Dh` in team `gam9`; the stable production alias above is the only judge-facing URL. Primary live review confirmed the correct title, contract/Explorer link, disconnected wallet state, all six journeys, 2 canonical revisions, 16 candidates, published candidate 8, consumer resolution data, audit/upgrader data, and no console warnings or errors. The cross-journey read-dedup cancellation defect, EIP-6963 provider-object deduplication defect, and GenLayer transaction-finality/readback defect were fixed in the exact application package; their regression tests passed.
 
 ## Exact-source upgrade and threshold proof
 
@@ -43,13 +43,14 @@ The final read-only Studionet observer readback records:
 
 ## External-wallet E2E status
 
-- Exact final application/test package: `ea66fb82a990e9a5b6314135c4c6ce2d2f4994f5`.
+- Exact final application/test package: `2c07257acd2e3299adc5bff20a3aee7dfd108455`.
 - Stable Vercel URL: https://policy-translation-release-gate.vercel.app
 - Prior-release external wallet: `0x008704...E01f`, connected to Studionet 61999 through the supported wallet selector before the provider-identity repair.
 - Prior-release Public Audit flow: candidate `#16` (`REVISION_REQUIRED`), digest auto-populated by the contract read, objection reason submitted once.
 - Prior-release transaction: [0x4db8f73dca4e2d1852a8522b9d138c46e2855e079583be2e26b8323ac552a001](https://explorer-studio.genlayer.com/tx/0x4db8f73dca4e2d1852a8522b9d138c46e2855e079583be2e26b8323ac552a001)
-- Prior-release authoritative result: `FINALIZED / SUCCESS / MAJORITY_AGREE`; contract return value `2`; objection ID `2`; candidate-16 objection page total `1`; profile `objection_count=2`, `event_count=61`.
-- Current exact application package `ea66fb8...` was deployed as `dpl_uo6XefNfq2xZvGKLhD9ihmmGiqK6` after the provider-identity repair. The user-owned external-wallet E2E and reload/disconnect rerun on this exact release are pending; the prior transaction cannot substitute for that rerun.
+- Prior-release authoritative result remains historical evidence: `FINALIZED / SUCCESS / MAJORITY_AGREE`; contract return value `2`; objection ID `2`.
+- Current exact-release external-wallet: account `0x008704...E01f`, candidate `16`, digest `a00c15...2906ea`, transaction [0xe1b67acf6607c50fd9301d56ebb9bca25c799d2d7562cf9f694449e8d5dc1e7b](https://explorer-studio.genlayer.com/tx/0xe1b67acf6607c50fd9301d56ebb9bca25c799d2d7562cf9f694449e8d5dc1e7b), `FINALIZED / SUCCESS / MAJORITY_AGREE`, contract return value `4`, objection ID `4`, candidate-16 objection page total `3`, profile `objection_count=4`, `event_count=63`.
+- The current exact application package `2c07257acd2e3299adc5bff20a3aee7dfd108455` was deployed as `dpl_AcLC5FenPms81vhyZwh1eJTdG9Dh`; the new transaction was submitted after that deployment and authoritative readback passed. Reload/disconnect confirmation is still pending.
 
 The complete transaction matrix, including expected failures, disagreement controls, invalid external-fetch controls, source restoration, and authoritative readbacks, is in [STUDIO-LIVE-MATRIX.md](STUDIO-LIVE-MATRIX.md). The narrative evidence is in [STUDIO-EVIDENCE.md](STUDIO-EVIDENCE.md). Recovery and incident handling are in [DEPLOYMENT-RECOVERY.md](DEPLOYMENT-RECOVERY.md).
 
@@ -57,7 +58,7 @@ The complete transaction matrix, including expected failures, disagreement contr
 
 - Contract regression: pending package 71 passed; live-source historical matrix 66 passed.
 - Frontend typecheck: passed.
-- Frontend regression: 101 passed across 10 suites, including cross-journey cancellation and provider-identity isolation.
+- Frontend regression: 103 passed across 10 suites, including cross-journey cancellation, provider-identity isolation, and finalized leader-receipt classification.
 - Production Vite build: passed with the disclosed 815.19 kB minified-chunk warning.
 - genvm-lint check, schema, and typecheck: passed; 25 methods, 13 views, 12 writes, zero constructor parameters.
 - Python compilation: passed.
@@ -70,4 +71,4 @@ Public reads are wallet-free. Writes require explicit EIP-6963 selection of Meta
 
 ## Release gates still required
 
-GitHub public rendering and the final Vercel URL have been verified. The only remaining operational release gates are the user-owned external-wallet E2E on the exact `ea66...` release, a fresh anonymous `POST_GITHUB_VERCEL_FINAL` `APPROVED` verdict for that package, and matching `DUAL_APPROVED`. No form submission is made by this project.
+GitHub public rendering, the final Vercel URL, and the current exact-release external-wallet objection/readback have been verified. The remaining operational release gates are user confirmation of reload/disconnect on the exact release, a fresh anonymous `POST_GITHUB_VERCEL_FINAL` `APPROVED` verdict for package `2c07257acd2e3299adc5bff20a3aee7dfd108455`, and matching `DUAL_APPROVED`. No form submission is made by this project.

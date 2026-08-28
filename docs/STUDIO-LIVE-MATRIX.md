@@ -1,6 +1,6 @@
 # Studio Live Matrix
 
-Status: exact-source upgrade, required Studionet matrix, GitHub release, Vercel release, and primary browser smoke are complete. The required user external-wallet E2E on the repaired package and fresh POST_GITHUB_VERCEL_FINAL review remain pending.
+Status: exact-source upgrade, required Studionet matrix, GitHub release, Vercel release, primary browser smoke, and current exact-release external-wallet objection/readback are complete. User reload/disconnect confirmation and fresh POST_GITHUB_VERCEL_FINAL review remain pending.
 
 Date: `2026-08-29`
 Network: GenLayer Studionet, chain `61999`, full-consensus mode.
@@ -24,9 +24,9 @@ Explorer: https://explorer-studio.genlayer.com/address/0xf41A330869Cb9FDCCD8fbd7
 - Source: `66,182` UTF-8 bytes; SHA-256 `55262740969342C0721A6DC6A4282708E86B7B74D2C71363B7BC2305FA169738`
 - Specification snapshot SHA-256: `7AFC0B370CCAC0408B6D6F548081F4D3286717CC11561EE1FD29C6A782D0FF71`
 - Fresh PRE_DEPLOY status: `APPROVED`; exact-source upgrade `0x8c805cec74b97873f9c3eae942937561d20ddf2d963b99099cc584d02b39c7a9` finalized `SUCCESS / MAJORITY_AGREE`.
-- Final application/test package: `ea66fb82a990e9a5b6314135c4c6ce2d2f4994f5`.
+- Final application/test package: `2c07257acd2e3299adc5bff20a3aee7dfd108455`.
 
-The current live evidence is bound to source `5d50...`/`552627...`. Local regression is contract `71/71`, frontend `101/101`, lint/schema/typecheck/validate/compile/build pass.
+The current live evidence is bound to source `5d50...`/`552627...`. Local regression is contract `71/71`, frontend `103/103`, lint/schema/typecheck/validate/compile/build pass.
 
 ## Immutable fixture manifest
 
@@ -94,16 +94,17 @@ Every row below was sent through Studio UI and independently checked with read-o
 
 | Case | Evidence | Result |
 |---|---|---|
-| Public GitHub release | https://github.com/ldkfj/policy-translation-release-gate | public repository rendering and exact application package commit `ea66fb82a990e9a5b6314135c4c6ce2d2f4994f5` verified |
-| Final Vercel production | `dpl_uo6XefNfq2xZvGKLhD9ihmmGiqK6`; https://policy-translation-release-gate.vercel.app | `READY`; configured contract; six journeys load; no console errors or warnings |
+| Public GitHub release | https://github.com/ldkfj/policy-translation-release-gate | public repository rendering and exact application package commit `2c07257acd2e3299adc5bff20a3aee7dfd108455` verified |
+| Final Vercel production | `dpl_AcLC5FenPms81vhyZwh1eJTdG9Dh`; https://policy-translation-release-gate.vercel.app | `READY`; configured contract; six journeys load; no console errors or warnings |
 | Prior-release external-wallet objection | [`0x4db8f73dca4e2d1852a8522b9d138c46e2855e079583be2e26b8323ac552a001`](https://explorer-studio.genlayer.com/tx/0x4db8f73dca4e2d1852a8522b9d138c46e2855e079583be2e26b8323ac552a001) | `FINALIZED / SUCCESS / MAJORITY_AGREE`; objection ID `2`; candidate 16 page total `1`; executed before the final provider-identity repair |
-| Primary browser smoke | final Vercel release `dpl_uo6XefNfq2xZvGKLhD9ihmmGiqK6` | `PASS`; all six read journeys load and reload returns to `Connect Wallet`; user-owned wallet rerun remains pending |
+| Current exact-release external-wallet objection | [`0xe1b67acf6607c50fd9301d56ebb9bca25c799d2d7562cf9f694449e8d5dc1e7b`](https://explorer-studio.genlayer.com/tx/0xe1b67acf6607c50fd9301d56ebb9bca25c799d2d7562cf9f694449e8d5dc1e7b) | `FINALIZED / SUCCESS / MAJORITY_AGREE`; objection ID `4`; candidate 16 page total `3`; authoritative UI readback passed on exact current release |
+| Primary browser smoke | final Vercel release `dpl_AcLC5FenPms81vhyZwh1eJTdG9Dh` | `PASS`; all six read journeys load; current wallet objection finalized/read back; reload/disconnect confirmation remains pending |
 
 ## Exact-source recovery chronology
 
 - `0x94e49246bd439f521c931fe45682fcc9f8a15b0a48b0c378d53aa46f9c6f5414` is a finalized `upgrade(bytes)` call whose raw calldata source body matches `1a26...` and `92A777...`; it preserved the populated v1 state before the later matrix.
 - `0x1e484b14483fdfbf7b8df0a283572201dfaa3d092f697064d01b22ea71969169` was an accidental Studio code upgrade from a stale editor buffer. It finalized with `MAJORITY_AGREE` and temporarily installed source SHA `322F3278...`; the incident is disclosed and retained, not treated as an approved release.
 - The Studio buffer was then replaced through the visible editor with the exact local source. `0xef831609be9fb78aa866e94c69c665aabe02698bcab659f9cc3be9ce6522cd99` finalized as a code upgrade with exact `92A777...` source bytes. Two queued exact-source code upgrades, `0xb5a5b98820b1aa876d0513df51bbe230d61275a9b6ef18484a412e77081f7eac` and `0x067cf62b52aadae5750461dba29113e8f4e83969cf76cbb06db0806fd08afd4a`, later also finalized with the same exact source; they do not change source parity.
-- The final Studio observer readback after the exact-source upgrade reports source `552627...`, active canonical 2, candidate 8 published/effective, and the locked upgrader address. The post-release readback after the external objection reports objection count `2` and event count `61`; the objection transaction and readback are recorded above.
+- The final Studio observer readback after the exact-source upgrade reports source `552627...`, active canonical 2, candidate 8 published/effective, and the locked upgrader address. The post-release readback after the current exact-release external objection reports objection count `4` and event count `63`; the objection transaction and readback are recorded above.
 
-No local-state inference is used to mark a live row PASS. GitHub rendering, Vercel production, and primary browser smoke are verified. The user-owned external-wallet E2E on the exact repaired package, submission, and experience-ledger update remain gated on the fresh final reviewer approval and user completion confirmation.
+No local-state inference is used to mark a live row PASS. GitHub rendering, Vercel production, primary browser smoke, and the current exact-release external-wallet objection/readback are verified. Reload/disconnect confirmation, submission, and experience-ledger update remain gated on the fresh final reviewer approval and user completion confirmation.
