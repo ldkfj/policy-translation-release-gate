@@ -97,6 +97,23 @@ export function classifyReceipt(receipt: Record<string, unknown> | null | undefi
   const finality = String(consensusData?.finality || consensusDataAlt?.finality || '').toUpperCase();
   const consensusStatus = String(receipt.consensusStatus || consensusData?.status || consensusDataAlt?.status || '').toUpperCase();
 
+  // Current GenLayer Studionet responses expose the authoritative execution
+  // result inside the leader receipt rather than at transaction top level.
+  const leaderReceipts =
+    consensusData?.leader_receipt ||
+    consensusDataAlt?.leader_receipt ||
+    consensusData?.leaderReceipt ||
+    consensusDataAlt?.leaderReceipt;
+  const leaderReceipt = Array.isArray(leaderReceipts)
+    ? leaderReceipts.find((item) => item && typeof item === 'object' && String((item as Record<string, unknown>).mode || '').toLowerCase() === 'leader')
+      || leaderReceipts.find((item) => item && typeof item === 'object')
+    : leaderReceipts && typeof leaderReceipts === 'object'
+      ? leaderReceipts
+      : undefined;
+  const leaderExecutionResult = leaderReceipt && typeof leaderReceipt === 'object'
+    ? String((leaderReceipt as Record<string, unknown>).execution_result || (leaderReceipt as Record<string, unknown>).executionResult || '').toUpperCase()
+    : '';
+
   const execResultName = String(receipt.txExecutionResultName || receipt.execution_result || receipt.executionResult || '').toUpperCase();
   const execResultNum = receipt.txExecutionResult;
   const resultName = String(receipt.resultName || '').toUpperCase();
@@ -113,6 +130,7 @@ export function classifyReceipt(receipt: Record<string, unknown> | null | undefi
   const isExplicitError =
     execResultName === 'FINISHED_WITH_ERROR' ||
     execResultName === 'ERROR' ||
+    leaderExecutionResult === 'ERROR' ||
     execResultNum === 2 ||
     rawStatus === 'FAILED' ||
     rawStatus === 'REVERTED' ||
@@ -122,6 +140,7 @@ export function classifyReceipt(receipt: Record<string, unknown> | null | undefi
   const isExplicitSuccess =
     execResultName === 'FINISHED_WITH_RETURN' ||
     execResultName === 'SUCCESS' ||
+    leaderExecutionResult === 'SUCCESS' ||
     execResultNum === 1 ||
     resultName === 'SUCCESS';
 

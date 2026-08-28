@@ -60,6 +60,26 @@ describe('Transaction Service & Safety Invariants', () => {
       });
     });
 
+    it('uses the finalized leader receipt when SDK omits top-level execution result', () => {
+      const result = classifyReceipt({
+        status: 7,
+        statusName: 'FINALIZED',
+        result: 6,
+        resultName: 'MAJORITY_AGREE',
+        consensus_data: {
+          leader_receipt: [{
+            mode: 'leader',
+            execution_result: 'SUCCESS',
+            result: { status: 'return' },
+          }],
+        },
+      });
+
+      expect(result.isDecided).toBe(true);
+      expect(result.isSuccess).toBe(true);
+      expect(result.isError).toBe(false);
+    });
+
     it('classifies finalized execution error as terminal failure', () => {
       const receipt = {
         status: 'FINALIZED',
