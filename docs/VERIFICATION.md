@@ -18,9 +18,9 @@ This document is the compact judge-facing verification record for Policy Transla
 - Deployment class: UPGRADABLE native Root Slot
 - Locked publisher/upgrader: 0x34b92E6553eaCA11A00A9d86d75d8a7881779D78
 
-The deployed source readback is the lowercase form of the exact SHA above. The release package commit is the Git commit containing this verification record; the final public URL and commit are recorded in the release handoff after GitHub push.
+The deployed source readback is the lowercase form of the exact SHA above. Contract evidence remains bound to executable revision `5d50...`; the production frontend repair is bound to public commit `e3bf7776dfbce3a43577607ad0fe9942e24973ee`.
 
-The first verified Vercel production deployment was `dpl_6oHYx5goXzAdUGSsRm4MxkU9Men9` in team `gam9`; the stable production alias above is the judge-facing URL. Primary live review confirmed the correct title, contract/Explorer link, disconnected wallet state, six journeys, and successful wallet-free profile/canonical/upgrader reads.
+The final verified Vercel production deployment is `dpl_22X9hMYHuh6Qcztbg7Q2QbSGPMkC` in team `gam9`; immutable URL `https://policy-translation-release-gate-jonggdfyu-gam9.vercel.app`; the stable production alias above is the judge-facing URL. Primary live review confirmed the correct title, contract/Explorer link, disconnected wallet state, all six journeys, 2 canonical revisions, 16 candidates, published candidate 8, consumer resolution data, audit/upgrader data, and no console warnings or errors. The cross-journey read-dedup cancellation defect was fixed at `e3bf777...` and its production transition regression passed.
 
 ## Exact-source upgrade and threshold proof
 
@@ -47,7 +47,7 @@ The complete transaction matrix, including expected failures, disagreement contr
 
 - Contract regression: pending package 71 passed; live-source historical matrix 66 passed.
 - Frontend typecheck: passed.
-- Frontend regression: 99 passed across 10 suites.
+- Frontend regression: 100 passed across 10 suites, including cross-journey cancellation isolation.
 - Production Vite build: passed with the disclosed 815.19 kB minified-chunk warning.
 - genvm-lint check, schema, and typecheck: passed; 25 methods, 13 views, 12 writes, zero constructor parameters.
 - Python compilation: passed.
@@ -60,4 +60,4 @@ Public reads are wallet-free. Writes require explicit EIP-6963 selection of Meta
 
 ## Release gates still required
 
-The final Vercel URL, user-executed external-wallet E2E result, post-push GitHub rendering check, and anonymous POST_GITHUB_VERCEL_FINAL verdict must be added before DUAL_APPROVED. No form submission is made by this project.
+The user-executed external-wallet E2E result and anonymous POST_GITHUB_VERCEL_FINAL verdict must be added before DUAL_APPROVED. GitHub public rendering and the final Vercel URL have been verified. No form submission is made by this project.

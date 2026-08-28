@@ -25,7 +25,7 @@ Explorer: https://explorer-studio.genlayer.com/address/0xf41A330869Cb9FDCCD8fbd7
 
 The live source bytes and readback above are bound to `5d50...`/`552627...`. Historical rows remain disclosed; current decisive proof rows below were executed after the exact-source upgrade.
 
-Current checks for the pending package are: contract tests `71/71`; frontend typecheck pass; frontend tests `99/99` across 10 files; frontend production build pass with the existing minified-chunk warning; `genvm-lint check` pass with schema `25` methods (`13` views, `12` writes), zero constructor parameters; `genvm-lint typecheck` pass; Python compilation pass. The linter's optional newer runner warning is disclosed and no dependency/header change was made.
+Current checks are: contract tests `71/71`; frontend typecheck pass; frontend tests `100/100` across 10 files; frontend production build pass with the existing minified-chunk warning; `genvm-lint check` pass with schema `25` methods (`13` views, `12` writes), zero constructor parameters; `genvm-lint typecheck` pass; Python compilation pass. The frontend-only cancellation-isolation repair is public at `e3bf7776dfbce3a43577607ad0fe9942e24973ee`; it does not alter the contract source or invalidate this Studionet evidence.
 
 All state-changing operations in this evidence were submitted through Studio UI. The observer script only performs read-only RPC calls and stores raw transaction/readback JSON under `.task/live-evidence/`.
 
@@ -66,4 +66,4 @@ The first populated-state top-button upgrade, `0x1e484b14483fdfbf7b8df0a28357220
 
 The exact local source was then loaded into the visible Studio editor and restored. Public `upgrade(bytes)` transaction `0xe676236385c4d3eefd5739acb2fce782c839c79e596cbf85b140b689e91a65d0` finalized `SUCCESS / MAJORITY_AGREE`; its raw calldata source body hashes exactly to `92A777...`. Studio code-upgrade transactions `0xef831609be9fb78aa866e94c69c665aabe02698bcab659f9cc3be9ce6522cd99`, `0xb5a5b98820b1aa876d0513df51bbe230d61275a9b6ef18484a412e77081f7eac`, and `0x067cf62b52aadae5750461dba29113e8f4e83969cf76cbb06db0806fd08afd4a` also finalized with exact 63,417-byte source payloads. The final observer readback proves source parity and preserved canonical/candidate/binding state.
 
-No project-source GitHub push, Vercel deployment, final MetaMask/OKX/Rabby web E2E, submission, or experience-ledger update has occurred. The live matrix is complete, but release remains gated on the required reviewer checkpoint and final external-wallet web E2E.
+Project source is public at `https://github.com/ldkfj/policy-translation-release-gate`. The verified production frontend is deployment `dpl_22X9hMYHuh6Qcztbg7Q2QbSGPMkC` at `https://policy-translation-release-gate.vercel.app`. Final MetaMask/OKX/Rabby web E2E, the final reviewer checkpoint, submission, and experience-ledger update have not occurred.
