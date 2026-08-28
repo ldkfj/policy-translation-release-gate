@@ -128,6 +128,31 @@ describe('EIP-6963 Wallet Discovery & Provider Isolation', () => {
       expect(discovered[0].provider).toBe(updatedProvider);
     });
 
+    it('deduplicates repeated announcements by provider object identity', () => {
+      manager.init();
+
+      let discovered: EIP6963ProviderDetail[] = [];
+      manager.subscribe((list) => {
+        discovered = list;
+      });
+
+      const provider: EIP1193Provider = { request: vi.fn() };
+      const announce = (uuid: string) => window.dispatchEvent(new CustomEvent('eip6963:announceProvider', {
+        detail: {
+          info: { uuid, name: 'MetaMask', icon: '', rdns: 'io.metamask' },
+          provider,
+        },
+      }));
+
+      announce('first-uuid');
+      announce('first-uuid');
+      announce('second-uuid');
+
+      expect(discovered).toHaveLength(1);
+      expect(discovered[0].info.uuid).toBe('first-uuid');
+      expect(discovered[0].provider).toBe(provider);
+    });
+
     it('ignores unsupported wallets announced via EIP-6963', () => {
       manager.init();
 

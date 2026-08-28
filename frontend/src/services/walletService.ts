@@ -39,11 +39,12 @@ export function recognizeSupportedWallet(
 
 export class WalletDiscoveryManager {
   private providers: Map<string, EIP6963ProviderDetail> = new Map();
+  private providerUuids: WeakMap<object, string> = new WeakMap();
   private listeners: Set<(providers: EIP6963ProviderDetail[]) => void> = new Set();
   private handler: ((event: Event) => void) | null = null;
 
   public init(): void {
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined' || this.handler) return;
 
     this.handler = (event: Event) => {
       const customEvent = event as EIP6963AnnounceProviderEvent;
@@ -71,7 +72,20 @@ export class WalletDiscoveryManager {
         return;
       }
 
-      // Re-announcement updates stored provider details rather than preserving stale instances
+      const providerObject = provider as object;
+      const existingUuid = this.providerUuids.get(providerObject);
+      if (existingUuid && existingUuid !== info.uuid) {
+        // The same provider object must not appear as multiple chooser options.
+        return;
+      }
+
+      const existing = this.providers.get(info.uuid);
+      if (existing && existing.provider !== provider) {
+        this.providerUuids.delete(existing.provider as object);
+      }
+
+      // UUID re-announcements update details; provider identity prevents duplicate options.
+      this.providerUuids.set(providerObject, info.uuid);
       this.providers.set(info.uuid, { info, provider });
       this.notify();
     };
@@ -98,6 +112,7 @@ export class WalletDiscoveryManager {
       this.handler = null;
     }
     this.providers.clear();
+    this.providerUuids = new WeakMap();
     this.listeners.clear();
   }
 
