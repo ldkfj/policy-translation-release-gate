@@ -7,23 +7,23 @@ Explorer: https://explorer-studio.genlayer.com/address/0xf41A330869Cb9FDCCD8fbd7
 
 ## Live executable revision and review binding
 
-- Live executable Git revision: `1a26dccf6ca8a69eb5ebd6812184d40cdbd2a1b0`
+- Live executable Git revision: `5d50e4fc8f2f6f77bc09fb8a7fc205021d7bc09e`
 - Contract source: `contracts/policy_translation_release_gate.py`
-- Exact source: `63,417` UTF-8 bytes; SHA-256 `92A77792DBD393E7DAFBA5C6127791E2D9C04999A5B3B826354782FB0B0DE35F`
-- Final on-chain source readback: `92a77792dbd393e7dafba5c6127791e2d9c04999a5b3b826354782fb0b0de35f`
+- Exact source: `66,182` UTF-8 bytes; SHA-256 `55262740969342C0721A6DC6A4282708E86B7B74D2C71363B7BC2305FA169738`
+- Final on-chain source readback: `55262740969342c0721a6dc6a4282708e86b7b74d2c71363b7bc2305fa169738`
 - Locked publisher/upgrader: `0x34b92E6553eaCA11A00A9d86d75d8a7881779D78`
 - Independent localizer: `0xeF5D2119416A2f5afa35dCFA209766EFC1BE5902`
 - Independent consumer/auditor: `0x22A2906BB59A1DFaEEAD6148eba7dB24d6F22FB1`
 - Anonymous reviewer Task: `codex://threads/01a0393a-00d9-7bd2-a5b2-60278c55bb1a`
 
-## Pending PRE_DEPLOY package (not live)
+## Exact-source review and upgrade
 
 - Executable source commit: `5d50e4fc8f2f6f77bc09fb8a7fc205021d7bc09e`
 - Source: `66,182` UTF-8 bytes; SHA-256 `55262740969342C0721A6DC6A4282708E86B7B74D2C71363B7BC2305FA169738`
 - Specification snapshot: `.task/SPECIFICATION.md`; SHA-256 `7AFC0B370CCAC0408B6D6F548081F4D3286717CC11561EE1FD29C6A782D0FF71`
-- Review status: fresh PRE_DEPLOY `CHANGES REQUIRED`; no deployment authorization.
+- Review status: fresh PRE_DEPLOY `APPROVED`; upgrade receipt `0x8c805cec74b97873f9c3eae942937561d20ddf2d963b99099cc584d02b39c7a9`, `FINALIZED / SUCCESS / MAJORITY_AGREE`.
 
-The live source bytes and readback above are bound to `1a26...`/`92A777...`. The pending package is a local repair for provider-throttling taxonomy and has no live transaction evidence. Live transaction rows below must not be interpreted as proof for the pending source.
+The live source bytes and readback above are bound to `5d50...`/`552627...`. Historical rows remain disclosed; current decisive proof rows below were executed after the exact-source upgrade.
 
 Current checks for the pending package are: contract tests `71/71`; frontend typecheck pass; frontend tests `99/99` across 10 files; frontend production build pass with the existing minified-chunk warning; `genvm-lint check` pass with schema `25` methods (`13` views, `12` writes), zero constructor parameters; `genvm-lint typecheck` pass; Python compilation pass. The linter's optional newer runner warning is disclosed and no dependency/header change was made.
 
@@ -33,7 +33,7 @@ All state-changing operations in this evidence were submitted through Studio UI.
 
 The final readback after all upgrade records settled is in `.task/live-evidence/latest-readback.json`:
 
-- Profile: initialized `true`; owner `pcong5239`; repo `policy-translation-release-gate-fixtures`; admin `0x34b92E6553eaCA11A00A9d86d75d8a7881779D78`; active canonical `2`; canonical count `2`; candidate count `8`; objection count `1`; event count `37`.
+- Profile: initialized `true`; owner `pcong5239`; repo `policy-translation-release-gate-fixtures`; admin `0x34b92E6553eaCA11A00A9d86d75d8a7881779D78`; active canonical `2`; canonical count `2`; candidate count `16`; objection count `1`; event count `60`.
 - Active canonical: id `2`, path `canonical-v2.md`, state `ACTIVE`, digest `5F18FA0632DCE5765BC4241676C80D45D9B72F7E18B123AC99456C169C8E71EB`.
 - Canonical 1 is `SUPERSEDED`; canonical 2 is `ACTIVE`.
 - Candidate 1 is `STALE_BY_CANONICAL_REVISION`; candidate 8 is `PUBLISHED` for canonical 2/es.
@@ -53,6 +53,8 @@ The complete case-by-case matrix and all full transaction hashes are maintained 
 | Independent objection | `0xe42348136c15bb4b47a8055ad7793c7362c196fdabe5b5d5d5902c08c2be04a2` | `FINALIZED / SUCCESS`; objection 1 retained on candidate 2 |
 | Corrected obligation drift | `0xc811aace94aa1786495e01054e28455e0415968252819c8a78f48a0fc75a5163` | `FINALIZED / SUCCESS / MAJORITY_AGREE`; outcome `OBLIGATION_DRIFT`, changed `deadlines, obligations`, candidate 2 revision required |
 | Bounded right-loss recovery | `0xe9ce6150c7c756f54e2e34067999dd04dc0040314de237fb9e92dc8dfcc3da32` | `FINALIZED / SUCCESS / MAJORITY_AGREE`; outcome `RIGHT_OR_EXCEPTION_LOSS`, candidate 3 revision required |
+| Exact-source upgrade | `0x8c805cec74b97873f9c3eae942937561d20ddf2d963b99099cc584d02b39c7a9` | `FINALIZED / SUCCESS / MAJORITY_AGREE`; source readback exactly `552627...` and populated state preserved |
+| Corrected threshold/deadline proof | `0x4dd7d69da71528ede89a644262d109ceb423bc69960824a00a7b5e456ea8df17` | `FINALIZED / SUCCESS / MAJORITY_AGREE`; `AVAILABLE/AVAILABLE`, 3/3, 10000 bps, exactly `deadlines, thresholds`, outcome `SCOPE_OR_THRESHOLD_DRIFT`, candidate 16 revision required |
 | Missing evidence | `0xed692396eb786a085665702f9990251a5ad5e9aac361ee17e22c37602882903d` | `FINALIZED / SUCCESS / MAJORITY_AGREE`; translation `MISSING`, outcome `NOT_COMPARABLE`, coverage 0 |
 | Canonical supersession | `0x80d26af1f626784e858277ee2b03e0fdb4816ad5ede1186ee791764bdcc0498a`, `0x645cb057cccfe5d38b5b3085a3620851bc8a012e8205418cd10a4ea964a493a0` | canonical 1 superseded; canonical 2 active; old candidate/binding ineffective |
 | Successor publish and rebind | `0x377623858e6401e4758b3aa17b3b84957bd2509a65941351d56640e32f12637f`, `0x12b68bb763bf716076442353257fbfa4cbc4e23b7d79a2032ca0fd41e5650bf4`, `0x75bc1518001692b1f642709a09396afa034033cf179bc7ba7e0c12cc9b2c3b7e` | candidate 8 published and independently rebound/effective |

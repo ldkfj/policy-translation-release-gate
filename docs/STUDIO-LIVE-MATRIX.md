@@ -1,6 +1,6 @@
 # Studio Live Matrix
 
-Status: live Studionet matrix completed on the exact currently deployed executable source. A pending source repair has not been deployed; POST_DEPLOY_TEST and release gates remain pending fresh reviewer approval, the required threshold proof, and final web E2E.
+Status: exact-source upgrade and required Studionet matrix are complete. POST_DEPLOY_TEST reviewer approval remains pending before GitHub/Vercel release.
 
 Date: `2026-08-28`
 Network: GenLayer Studionet, chain `61999`, full-consensus mode.
@@ -9,27 +9,27 @@ Explorer: https://explorer-studio.genlayer.com/address/0xf41A330869Cb9FDCCD8fbd7
 
 ## Live executable binding
 
-- Git revision: `1a26dccf6ca8a69eb5ebd6812184d40cdbd2a1b0`
+- Git revision: `5d50e4fc8f2f6f77bc09fb8a7fc205021d7bc09e`
 - Contract source: `contracts/policy_translation_release_gate.py`
-- Exact UTF-8 source length: `63,417` bytes
-- Exact source SHA-256: `92A77792DBD393E7DAFBA5C6127791E2D9C04999A5B3B826354782FB0B0DE35F`
-- Final observer code readback: `92a77792dbd393e7dafba5c6127791e2d9c04999a5b3b826354782fb0b0de35f`
+- Exact UTF-8 source length: `66,182` bytes
+- Exact source SHA-256: `55262740969342C0721A6DC6A4282708E86B7B74D2C71363B7BC2305FA169738`
+- Final observer code readback: `55262740969342c0721a6dc6a4282708e86b7b74d2c71363b7bc2305fa169738`
 - Locked Studio publisher/upgrader: `0x34b92E6553eaCA11A00A9d86d75d8a7881779D78`
 - Independent localizer: `0xeF5D2119416A2f5afa35dCFA209766EFC1BE5902`
 - Independent consumer/auditor: `0x22A2906BB59A1DFaEEAD6148eba7dB24d6F22FB1`
 
-## Pending PRE_DEPLOY package (not live)
+## Review and upgrade binding
 
 - Executable source commit: `5d50e4fc8f2f6f77bc09fb8a7fc205021d7bc09e`
 - Source: `66,182` UTF-8 bytes; SHA-256 `55262740969342C0721A6DC6A4282708E86B7B74D2C71363B7BC2305FA169738`
 - Specification snapshot SHA-256: `7AFC0B370CCAC0408B6D6F548081F4D3286717CC11561EE1FD29C6A782D0FF71`
-- Fresh PRE_DEPLOY status: `CHANGES REQUIRED`; no upgrade transaction sent.
+- Fresh PRE_DEPLOY status: `APPROVED`; exact-source upgrade `0x8c805cec74b97873f9c3eae942937561d20ddf2d963b99099cc584d02b39c7a9` finalized `SUCCESS / MAJORITY_AGREE`.
 
-The live matrix and every on-chain readback in this file are bound to live source `1a26...`/`92A777...`. The pending package has local regression only: contract `71/71`, frontend `99/99`, lint/schema/typecheck/validate/compile/build pass. It cannot be treated as live evidence until the review and upgrade gates pass.
+The current live evidence is bound to source `5d50...`/`552627...`. Local regression remains contract `71/71`, frontend `99/99`, lint/schema/typecheck/validate/compile/build pass.
 
 ## Immutable fixture manifest
 
-The public fixture repository is fixture-only: [pcong5239/policy-translation-release-gate-fixtures](https://github.com/pcong5239/policy-translation-release-gate-fixtures), commit `3c7431f10d5349c35e82ea400d84442c53b441f0`. Threshold v2 was later published in the same fixture repository at commit `c832c16b1c1a6d1c2b697d1fb2adeafe1600e278`; this does not authorize project-source release.
+The public fixture repository is fixture-only: [pcong5239/policy-translation-release-gate-fixtures](https://github.com/pcong5239/policy-translation-release-gate-fixtures). The corrected threshold fixture is immutable at commit `957a4521f155d24cfc8291a98782314c78239f8b`; this does not authorize project-source release.
 
 | Fixture path | SHA-256 | Live purpose |
 |---|---|---|
@@ -42,6 +42,7 @@ The public fixture repository is fixture-only: [pcong5239/policy-translation-rel
 | `es-equivalent-v2.md` | `50FD2C1E2A8B2F963CFC6FEC76AEF0DCF846E026A5B735E98D1E2875D29585E4` | successor equivalent |
 | `es-threshold-drift-v1.md` | `44901DF08E1C3F8F6597E230B1E4B5F6B7C6BCF305B1BE1E19FD02D2C48DFB03` | validator/environment invalidity control |
 | `es-threshold-drift-v2.md` | `44901DF08E1C3F8F6597E230B1E4B5F6B7C6BCF305B1BE1E19FD02D2C48DFB03` | successor threshold invalidity control |
+| `es-threshold-drift-v3.md` | `A00C15AB7A6296BC58C13F6AD264DE6F2BA40206689C35FDCF4A8B1B1D2906EA` | corrected threshold/deadline-only live PASS fixture |
 | `missing-evidence-v1.md` | all-zero declared digest | missing-evidence control; intentionally unavailable |
 
 ## Executed matrix
@@ -72,6 +73,7 @@ Every row below was sent through Studio UI and independently checked with read-o
 | Scope fixture | `0x90dd5c6a9558f3f6d969f8ed84b3c22e65d8369186672931073d7c48b25361d4`, `0xbf163009d584bf14e7789daac195334e55f12a101ba44de07006f6d166184f56`, `0x557618e0a797f469030207f1fca9738eb4a0660055b278b9650e92966edc17f0` | `FINALIZED / MAJORITY_DISAGREE`; retained because fixture also alters rights |
 | Missing evidence | `0xd6866d54c71c6643d1a6ece9f5836a20cbeac376fe592628d3b30028b102b088`, `0x7ae0daeb04cfedd8abd0a7beb744742626f2ae1801db92d3b63e309151162445`, `0xed692396eb786a085665702f9990251a5ad5e9aac361ee17e22c37602882903d` | register/freeze `SUCCESS`; assessment `NOT_COMPARABLE`, translation `MISSING`, coverage 0, candidate 6 `REVISION_REQUIRED` |
 | Threshold v1/v2 environment control | `0x8dcad0cd96318aa7cc3ca0f5fed0d5ce5aa9cf549919d8b56a1625758659da27`, `0xd8864f938f15662df0bf9577a2f7bb7404914221e51d9c1095b6a5d6a744643e`, `0x7d8cfd5e78aa906882e4620fa1ae58ce2dea9448cc651aa0bbd5ff4917943459`, `0x6051ce81e83633b863ccbf4911d860cf203c948b1c840ec7957a4f3b80e4a9dd`, `0xd9f3ae2ad5623e7fb04d10b4bf1e17af2f25b6aa3059b965b2d423ab0799a74a`, `0x1426e3a01d29e4d855453d3014c7a7bd8bbda92edc5a3945889bd32e4540ff6d` | both assess transactions `NOT_COMPARABLE`, canonical/translation `INVALID`, coverage 0; retained as validator external-fetch/environment evidence, not a threshold PASS claim |
+| Corrected threshold/deadline proof | register `0x75fcd92fb919e9eeb2844b197fe34fc8af575f0777baa22956c012a03c8c9148`; idempotent duplicate no-op `0xea257a86ff1b908b12bba82359916c6f991b3da64068854ae88eb1a35e9beadc`; freeze `0xc0232192b8b8ff48183519c4b488455e152d776a311864b557bc408474da8508`; assess `0x4dd7d69da71528ede89a644262d109ceb423bc69960824a00a7b5e456ea8df17` | assess `FINALIZED / SUCCESS / MAJORITY_AGREE`; `AVAILABLE/AVAILABLE`, 3/3, 10000 bps, changed exactly `deadlines, thresholds`; `SCOPE_OR_THRESHOLD_DRIFT`; candidate 16 `REVISION_REQUIRED` |
 
 ### Negative controls and canonical supersession
 

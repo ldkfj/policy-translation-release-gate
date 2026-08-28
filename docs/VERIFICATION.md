@@ -5,9 +5,9 @@ This document is the compact judge-facing verification record for Policy Transla
 ## Exact source and live contract
 
 - Executable source: contracts/policy_translation_release_gate.py
-- Exact executable Git revision: 1a26dccf6ca8a69eb5ebd6812184d40cdbd2a1b0
-- Exact source length: 63,417 UTF-8 bytes
-- Exact source SHA-256: 92A77792DBD393E7DAFBA5C6127791E2D9C04999A5B3B826354782FB0B0DE35F
+- Exact executable Git revision: `5d50e4fc8f2f6f77bc09fb8a7fc205021d7bc09e`
+- Exact source length: 66,182 UTF-8 bytes
+- Exact source SHA-256: `55262740969342C0721A6DC6A4282708E86B7B74D2C71363B7BC2305FA169738`
 - Network: GenLayer Studionet, chain 61999
 - Contract: 0xf41A330869Cb9FDCCD8fbd7Ce7f83F5042908A75
 - Explorer: https://explorer-studio.genlayer.com/address/0xf41A330869Cb9FDCCD8fbd7Ce7f83F5042908A75
@@ -18,26 +18,23 @@ This document is the compact judge-facing verification record for Policy Transla
 
 The deployed source readback is the lowercase form of the exact SHA above. The release package commit is the Git commit containing this verification record; the final public URL and commit are recorded in the release handoff after GitHub push.
 
-## Pending PRE_DEPLOY package
+## Exact-source upgrade and threshold proof
 
-- Executable source commit: `5d50e4fc8f2f6f77bc09fb8a7fc205021d7bc09e`
-- Pending source length: `66,182` UTF-8 bytes
-- Pending source SHA-256: `55262740969342C0721A6DC6A4282708E86B7B74D2C71363B7BC2305FA169738`
-- Pending specification snapshot SHA-256: `7AFC0B370CCAC0408B6D6F548081F4D3286717CC11561EE1FD29C6A782D0FF71`
-- Status: fresh PRE_DEPLOY `CHANGES REQUIRED`; not deployed and not authorized for upgrade.
-
-All live state, transaction rows, and deployed-source readbacks in this verification record remain explicitly bound to the live `1a26...` source and `92A777...` hash. They are not evidence for the pending package.
+- Specification snapshot SHA-256: `7AFC0B370CCAC0408B6D6F548081F4D3286717CC11561EE1FD29C6A782D0FF71`.
+- PRE_DEPLOY verdict: `APPROVED` for the exact source, address, network and locked account.
+- Upgrade `0x8c805cec74b97873f9c3eae942937561d20ddf2d963b99099cc584d02b39c7a9`: `FINALIZED / SUCCESS / MAJORITY_AGREE`; on-chain source readback `55262740969342c0721a6dc6a4282708e86b7b74d2c71363b7bc2305fa169738`.
+- Threshold proof `0x4dd7d69da71528ede89a644262d109ceb423bc69960824a00a7b5e456ea8df17`: `FINALIZED / SUCCESS / MAJORITY_AGREE`; candidate 16 became `REVISION_REQUIRED`, evidence `AVAILABLE/AVAILABLE`, 3/3 sections, 10000 bps, changed dimensions exactly `deadlines, thresholds`, outcome `SCOPE_OR_THRESHOLD_DRIFT`.
 
 ## Live state readback
 
 The final read-only Studionet observer readback records:
 
 - initialized profile; active canonical revision 2; canonical revision 1 SUPERSEDED;
-- 8 translation candidates and 1 recorded objection;
+- 16 translation candidates and 1 recorded objection;
 - candidate 8 PUBLISHED for canonical 2 and locale es;
 - candidate 8 assessment MATERIALLY_EQUIVALENT, 3/3 sections, 10000 bps coverage, and all 7 consequence dimensions EQUIVALENT;
 - studio-consumer/es bound to candidate 8 and effective;
-- 37 contract events;
+- 60 contract events;
 - get_upgrader() equal to the locked authority.
 
 The complete transaction matrix, including expected failures, disagreement controls, invalid external-fetch controls, source restoration, and authoritative readbacks, is in [STUDIO-LIVE-MATRIX.md](STUDIO-LIVE-MATRIX.md). The narrative evidence is in [STUDIO-EVIDENCE.md](STUDIO-EVIDENCE.md). Recovery and incident handling are in [DEPLOYMENT-RECOVERY.md](DEPLOYMENT-RECOVERY.md).

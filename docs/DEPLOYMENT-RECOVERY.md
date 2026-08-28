@@ -1,6 +1,6 @@
 # Deployment and Recovery Manifest
 
-Status: exact-source live recovery and the bounded Studio matrix are complete for the currently deployed source. A blocker-driven source repair is staged as a pending PRE_DEPLOY package and has not been upgraded or deployed. The project remains before project-source GitHub release, Vercel deployment, final external-wallet E2E, and DUAL_APPROVED submission closure.
+Status: the approved blocker-driven source repair is deployed and its bounded Studio threshold proof is complete. The project remains before POST_DEPLOY_TEST approval, project-source GitHub release, Vercel deployment, final external-wallet E2E, and DUAL_APPROVED submission closure.
 
 ## Locked deployment configuration
 
@@ -8,9 +8,8 @@ Status: exact-source live recovery and the bounded Studio matrix are complete fo
 - Contract address: `0xf41A330869Cb9FDCCD8fbd7Ce7f83F5042908A75`.
 - Explorer: https://explorer-studio.genlayer.com/address/0xf41A330869Cb9FDCCD8fbd7Ce7f83F5042908A75
 - Contract source: `contracts/policy_translation_release_gate.py`.
-- Exact live executable Git revision: `1a26dccf6ca8a69eb5ebd6812184d40cdbd2a1b0`.
-- Exact source: `63,417` UTF-8 bytes; SHA-256 `92A77792DBD393E7DAFBA5C6127791E2D9C04999A5B3B826354782FB0B0DE35F`.
-- Pending PRE_DEPLOY source package (not deployed): executable source commit `5d50e4fc8f2f6f77bc09fb8a7fc205021d7bc09e`, source `66,182` UTF-8 bytes, SHA-256 `55262740969342C0721A6DC6A4282708E86B7B74D2C71363B7BC2305FA169738`.
+- Exact live executable Git revision: `5d50e4fc8f2f6f77bc09fb8a7fc205021d7bc09e`.
+- Exact source: `66,182` UTF-8 bytes; SHA-256 `55262740969342C0721A6DC6A4282708E86B7B74D2C71363B7BC2305FA169738`.
 - Pending specification snapshot: `.task/SPECIFICATION.md`, SHA-256 `7AFC0B370CCAC0408B6D6F548081F4D3286717CC11561EE1FD29C6A782D0FF71`.
 - Constructor arguments: none.
 - Classification: `UPGRADABLE`, using the native Root Slot code replacement path.
@@ -23,7 +22,7 @@ The original deployment transaction is retained as historical evidence: `0xc9b34
 
 ## Review and local verification
 
-The live `1a26...` source was reviewed and approved at the earlier PRE_DEPLOY checkpoint in reviewer Task `codex://threads/01a0393a-00d9-7bd2-a5b2-60278c55bb1a`. The pending source package rooted at `5d50...` received `CHANGES REQUIRED` at fresh PRE_DEPLOY because its source/spec binding was stale; it is not approved or deployed. The network, contract address, constructor shape and locked account remain unchanged.
+The `5d50...` source first received `CHANGES REQUIRED` because its source/spec binding was stale. After that binding was corrected, the reviewer Task `codex://threads/01a0393a-00d9-7bd2-a5b2-60278c55bb1a` returned fresh PRE_DEPLOY `APPROVED` for the exact source, network, address and locked account. Upgrade `0x8c805cec74b97873f9c3eae942937561d20ddf2d963b99099cc584d02b39c7a9` finalized successfully and exact source/state readback passed.
 
 Current checks on the exact local source:
 
@@ -41,6 +40,8 @@ Current checks on the exact local source:
 3. The visible Studio editor was replaced with the exact local source. `0xef831609be9fb78aa866e94c69c665aabe02698bcab659f9cc3be9ce6522cd99` finalized as an exact-source Studio code upgrade.
 4. Queued exact-source Studio upgrades `0xb5a5b98820b1aa876d0513df51bbe230d61275a9b6ef18484a412e77081f7eac` and `0x067cf62b52aadae5750461dba29113e8f4e83969cf76cbb06db0806fd08afd4a` later finalized too; raw `new_code` payloads are each exactly 63,417 bytes with SHA `92A777...`.
 5. The final read-only observer run after the queue settled returned source `92a777...`, active canonical 2, candidate 8 `PUBLISHED`, effective consumer binding, preserved objection/event records and the locked upgrader address.
+6. The approved repair upgrade `0x8c805cec74b97873f9c3eae942937561d20ddf2d963b99099cc584d02b39c7a9` finalized `SUCCESS / MAJORITY_AGREE`, installed exact source `552627...`, and preserved active canonical 2, candidate 8 published/effective, objections and upgrader authority.
+7. Corrected immutable fixture commit `957a4521f155d24cfc8291a98782314c78239f8b` removed unintended rights drift from the threshold control. Register `0x75fcd92...`, freeze `0xc023219...`, and assess `0x4dd7d69...` proved `SCOPE_OR_THRESHOLD_DRIFT` with exact changed dimensions `deadlines, thresholds`; one disclosed duplicate register `0xea257a8...` was an idempotent no-op returning candidate 16 with counts unchanged.
 
 The prior public exact-source upgrade `0xe676236385c4d3eefd5739acb2fce782c839c79e596cbf85b140b689e91a65d0` is also retained: `FINALIZED`, `SUCCESS`, `MAJORITY_AGREE`; its raw calldata source body matches the approved source exactly and its contract event is the final `UPGRADE` event in the readback.
 
@@ -48,7 +49,7 @@ The prior public exact-source upgrade `0xe676236385c4d3eefd5739acb2fce782c839c79
 
 - Do not change the source, dependency header, constructor, chain, contract address, upgrade classification or locked account without a new exact-source review.
 - If a transaction is pending or ambiguous, retain its full hash and reconcile finality and execution before sending another transaction. Never duplicate an unknown transaction.
-- All live transaction rows and on-chain readbacks in this manifest are bound to the live `1a26...` source and `92A777...` hash. The pending `5d50...` source must not be described as deployed until a fresh PRE_DEPLOY approval, one authorized upgrade, and exact on-chain source readback are complete.
+- Current release evidence is bound to live source `5d50...` and hash `552627...`; the older `1a26...`/`92A777...` rows are historical evidence only.
 - If the Studio UI resets while chain state and the locked account remain available, reconnect the locked account, import the recorded address, load the exact recorded source, and verify source/state before any upgrade.
 - If the locked Studio authority is unavailable, do not claim upgrade recovery. A replacement deployment requires the recorded source/constructor manifest, a complete live matrix and new release links.
 - If Studionet state resets, the old state cannot be recovered; redeploy from the exact source and rerun all required live cases.
