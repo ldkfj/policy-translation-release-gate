@@ -156,4 +156,27 @@ describe('RPC Budget Executor, Deduplication & Safe Caching', () => {
     await blocker;
     await expect(obsolete).rejects.toThrow(/aborted/i);
   });
+
+  it('does not share a cancelled in-flight promise across journeys', async () => {
+    let calls = 0;
+    let releaseFirst!: () => void;
+    const firstBlocked = new Promise<void>((resolve) => { releaseFirst = resolve; });
+
+    const overview = executor.execute('shared-profile', async () => {
+      calls++;
+      await firstBlocked;
+      return 'overview';
+    }, { journey: 'overview' });
+    const localizer = executor.execute('shared-profile', async () => {
+      calls++;
+      return 'localizer';
+    }, { journey: 'localizer' });
+
+    executor.cancelJourney('overview');
+    releaseFirst();
+
+    await expect(overview).rejects.toThrow(/inactive journey/i);
+    await expect(localizer).resolves.toBe('localizer');
+    expect(calls).toBe(2);
+  });
 });

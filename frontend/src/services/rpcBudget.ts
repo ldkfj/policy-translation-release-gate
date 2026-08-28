@@ -88,6 +88,7 @@ export class RpcBudgetExecutor {
     const now = Date.now();
     const journey = options?.journey;
     const generation = journey ? (this.journeyGeneration.get(journey) ?? 0) : 0;
+    const inFlightKey = `${journey ?? 'shared'}:${key}`;
 
     // 1. Check Safe Cache (does NOT consume journey network budget)
     if (!options?.bypassCache) {
@@ -99,9 +100,9 @@ export class RpcBudgetExecutor {
     }
 
     // 2. Check In-Flight Deduplication (does NOT consume extra journey network budget)
-    if (this.inFlight.has(key)) {
+    if (this.inFlight.has(inFlightKey)) {
       this.metrics.dedupHits++;
-      return this.inFlight.get(key) as Promise<T>;
+      return this.inFlight.get(inFlightKey) as Promise<T>;
     }
 
     // Check immediate abortion
@@ -116,7 +117,7 @@ export class RpcBudgetExecutor {
           options?.signal?.aborted ||
           (journey !== undefined && (this.journeyGeneration.get(journey) ?? 0) !== generation)
         ) {
-          this.inFlight.delete(key);
+          this.inFlight.delete(inFlightKey);
           reject(new DOMException('RPC call aborted while queued.', 'AbortError'));
           return;
         }
@@ -167,7 +168,7 @@ export class RpcBudgetExecutor {
         } finally {
           this.activeConcurrency--;
           this.metrics.activeConcurrency = this.activeConcurrency;
-          this.inFlight.delete(key);
+          this.inFlight.delete(inFlightKey);
         }
       };
 
@@ -175,7 +176,7 @@ export class RpcBudgetExecutor {
       this.processQueue();
     });
 
-    this.inFlight.set(key, promise);
+    this.inFlight.set(inFlightKey, promise);
     return promise;
   }
 
