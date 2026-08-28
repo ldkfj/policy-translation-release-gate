@@ -42,6 +42,24 @@ describe('Transaction Service & Safety Invariants', () => {
       expect(result.isError).toBe(false);
     });
 
+    it('classifies the actual GenLayer transaction shape returned by getTransaction', () => {
+      const result = classifyReceipt({
+        status: 7,
+        statusName: 'FINALIZED',
+        result: 6,
+        resultName: 'MAJORITY_AGREE',
+        txExecutionResult: 1,
+        txExecutionResultName: 'FINISHED_WITH_RETURN',
+      });
+
+      expect(result).toEqual({
+        isDecided: true,
+        isSuccess: true,
+        isError: false,
+        statusName: 'FINALIZED',
+      });
+    });
+
     it('classifies finalized execution error as terminal failure', () => {
       const receipt = {
         status: 'FINALIZED',

@@ -65,6 +65,7 @@ export interface ReceiptClassification {
 }
 
 const PENDING_OP_KEY = 'genlayer_ptrg_pending_operation_v2';
+type GenLayerTransactionHash = `0x${string}` & { length: 66 };
 
 export function testStorageCapability(): boolean {
   if (typeof window === 'undefined' || !window.localStorage) return false;
@@ -87,7 +88,10 @@ export function classifyReceipt(receipt: Record<string, unknown> | null | undefi
     return { isDecided: false, isSuccess: false, isError: false, statusName: 'UNKNOWN' };
   }
 
-  const rawStatus = String(receipt.status || receipt.statusName || '').toUpperCase();
+  // GenLayer's transaction status is exposed as both a numeric `status` and a
+  // decoded `statusName`; the generic EVM receipt status (`success`) is not
+  // sufficient to establish Studionet finality.
+  const rawStatus = String(receipt.statusName || receipt.status || '').toUpperCase();
   const consensusData = receipt.consensus_data as Record<string, unknown> | undefined;
   const consensusDataAlt = receipt.consensusData as Record<string, unknown> | undefined;
   const finality = String(consensusData?.finality || consensusDataAlt?.finality || '').toUpperCase();
@@ -451,9 +455,10 @@ export class TransactionService {
 
       try {
         const receipt = await rpcExecutor.execute(
-          `receipt:${txHash}`,
-          async () => (await client.getTransactionReceipt({
-            hash: txHash as `0x${string}`,
+          `transaction:${txHash}`,
+          async () => (await client.getTransaction({
+            // The exact 64-hex validation above establishes the branded SDK hash shape.
+            hash: txHash as unknown as GenLayerTransactionHash,
           })) as Record<string, unknown> | null,
           { bypassCache: true, journey: 'transaction' }
         );
