@@ -1,6 +1,6 @@
 # Deployment and Recovery Manifest
 
-Status: the approved exact-source contract repair, bounded Studio proof, GitHub release, Vercel release, primary browser smoke, current exact-release external-wallet objection/readback, and user reload/disconnect are complete. The project remains before fresh POST_GITHUB_VERCEL_FINAL approval and DUAL_APPROVED submission closure.
+Status: the exact-source Studio upgrade, bounded post-upgrade proof, and POST_DEPLOY_TEST approval are complete. The existing GitHub/Vercel/frontend evidence remains available; the refreshed package remains before POST_GITHUB_VERCEL_FINAL and DUAL_APPROVED submission closure.
 
 ## Locked deployment configuration
 
@@ -8,9 +8,10 @@ Status: the approved exact-source contract repair, bounded Studio proof, GitHub 
 - Contract address: `0xf41A330869Cb9FDCCD8fbd7Ce7f83F5042908A75`.
 - Explorer: https://explorer-studio.genlayer.com/address/0xf41A330869Cb9FDCCD8fbd7Ce7f83F5042908A75
 - Contract source: `contracts/policy_translation_release_gate.py`.
-- Exact live executable Git revision: `5d50e4fc8f2f6f77bc09fb8a7fc205021d7bc09e`.
-- Exact source: `66,182` UTF-8 bytes; SHA-256 `55262740969342C0721A6DC6A4282708E86B7B74D2C71363B7BC2305FA169738`.
-- Pending specification snapshot: `.task/SPECIFICATION.md`, SHA-256 `7AFC0B370CCAC0408B6D6F548081F4D3286717CC11561EE1FD29C6A782D0FF71`.
+- Exact live executable Git revision: `06d067ca97db7086643a678c02986169cc391e6e`.
+- Metadata follow-up: `5d413a886f44f1a363d3bc561b815bff845c00`.
+- Exact source: `74,639` UTF-8 bytes; SHA-256 `B6784931EED81B7EE33E48814CF53DABF6BAE2FA21B57EB914CCE7415C60EBA1`.
+- Exact specification snapshot: `.task/SPECIFICATION.md`, SHA-256 `6C4A036CE4248BD967071AA52A9CEC87336DBE23CEF96A49D36A9B56563ED8EF`.
 - Constructor arguments: none.
 - Classification: `UPGRADABLE`, using the native Root Slot code replacement path.
 - Locked Studio deployer/upgrader: `0x34b92E6553eaCA11A00A9d86d75d8a7881779D78`.
@@ -20,27 +21,27 @@ Status: the approved exact-source contract repair, bounded Studio proof, GitHub 
 
 The original deployment transaction is retained as historical evidence: `0xc9b344962bc468aed13375b4430ae6b434bcaebfb6af2e55fc8ec5a9a1b3f202`. The current exact source is established by the finalized upgrades and on-chain source readback below, not by the stale original-deployment record.
 
-## Pending PRE_DEPLOY correction manifest (not deployed)
+## PRE_DEPLOY correction manifest (now deployed)
 
-This manifest is the exact package awaiting fresh PRE_DEPLOY approval. It is not live and does not authorize an upgrade.
+This manifest records the exact package approved at PRE_DEPLOY and now installed on the target. It does not authorize another upgrade.
 
-- Exact pending revision: `06d067ca97db7086643a678c02986169cc391e6e`.
-- Pending source: `74,639` UTF-8 bytes; SHA-256 `B6784931EED81B7EE33E48814CF53DABF6BAE2FA21B57EB914CCE7415C60EBA1`.
-- Pending specification: `.task/SPECIFICATION.md`, SHA-256 `6C4A036CE4248BD967071AA52A9CEC87336DBE23CEF96A49D36A9B56563ED8EF`.
+- Exact revision: `06d067ca97db7086643a678c02986169cc391e6e` (metadata follow-up `5d413a886f44f1a363d3bc561b815bff845c00`).
+- Exact source: `74,639` UTF-8 bytes; SHA-256 `B6784931EED81B7EE33E48814CF53DABF6BAE2FA21B57EB914CCE7415C60EBA1`.
+- Exact specification: `.task/SPECIFICATION.md`, SHA-256 `6C4A036CE4248BD967071AA52A9CEC87336DBE23CEF96A49D36A9B56563ED8EF`.
 - Upgrade target: the same contract `0xf41A330869Cb9FDCCD8fbd7Ce7f83F5042908A75` on Studionet `61999`, using the locked upgrader above.
 - Storage compatibility: every legacy storage field remains in its original order. `consumer_binding_owners` is appended after the legacy `events` field; no existing record is rewritten. Existing ownerless bindings remain readable/effective. A non-admin cannot update an ownerless legacy key; the publisher admin may initialize/recover its owner on first update.
 - Verification basis: the contract suite includes an exact append-only layout assertion and a populated-state Root Slot upgrade preservation test covering publisher profile, active canonical, published candidate, consumer binding and effective-locale state.
 
-The deployed source and evidence listed below remain historical until this pending package is separately approved, upgraded, and read back on-chain.
+The prior `5d50...`/`552627...` deployment is historical. The live source and evidence below are bound to this exact `06d...`/`B678...` package.
 
 ## Review and local verification
 
-The `5d50...` source first received `CHANGES REQUIRED` because its source/spec binding was stale. After that binding was corrected, the anonymous co-review AI returned fresh PRE_DEPLOY `APPROVED` for the exact source, network, address and locked account. Upgrade `0x8c805cec74b97873f9c3eae942937561d20ddf2d963b99099cc584d02b39c7a9` finalized successfully and exact source/state readback passed.
+The anonymous co-review AI returned fresh PRE_DEPLOY `APPROVED` for the exact `06d...` executable source, network, address and locked account. Upgrade `0x5f5579eabab78edee329a9cdcb7f4cbbd7ac3c9d7cb11ffade526d26b7538100` finalized successfully and exact source/state readback passed. The same reviewer returned POST_DEPLOY_TEST `APPROVED` after independent verification.
 
 Current checks on the exact local source:
 
 - Live-source historical Python contract tests: `66 passed`.
-- Exact application package `2c07257acd2e3299adc5bff20a3aee7dfd108455`: Python contract tests `71 passed`; frontend typecheck pass; `103 passed` across 10 Vitest files; Vite production build pass.
+- Exact application baseline `2c07257acd2e3299adc5bff20a3aee7dfd108455`: Python contract tests `73 passed`; frontend typecheck pass; `103 passed` across 10 Vitest files; Vite production build pass.
 - `genvm-lint check`: pass; schema `25` methods (`13` views, `12` writes), zero constructor parameters.
 - `genvm-lint typecheck`: pass.
 - Python compilation: pass.
@@ -53,9 +54,10 @@ Current checks on the exact local source:
 3. The visible Studio editor was replaced with the exact local source. `0xef831609be9fb78aa866e94c69c665aabe02698bcab659f9cc3be9ce6522cd99` finalized as an exact-source Studio code upgrade.
 4. Queued exact-source Studio upgrades `0xb5a5b98820b1aa876d0513df51bbe230d61275a9b6ef18484a412e77081f7eac` and `0x067cf62b52aadae5750461dba29113e8f4e83969cf76cbb06db0806fd08afd4a` later finalized too; raw `new_code` payloads are each exactly 63,417 bytes with SHA `92A777...`.
 5. The final read-only observer run after the queue settled returned source `92a777...`, active canonical 2, candidate 8 `PUBLISHED`, effective consumer binding, preserved objection/event records and the locked upgrader address.
-6. The approved repair upgrade `0x8c805cec74b97873f9c3eae942937561d20ddf2d963b99099cc584d02b39c7a9` finalized `SUCCESS / MAJORITY_AGREE`, installed exact source `552627...`, and preserved active canonical 2, candidate 8 published/effective, objections and upgrader authority.
+6. The approved repair upgrade `0x8c805cec74b97873f9c3eae942937561d20ddf2d963b99099cc584d02b39c7a9` finalized `SUCCESS / MAJORITY_AGREE`, installed the prior exact source `552627...`, and preserved active canonical 2, candidate 8 published/effective, objections and upgrader authority.
 7. Corrected immutable fixture commit `957a4521f155d24cfc8291a98782314c78239f8b` removed unintended rights drift from the threshold control. Register `0x75fcd92...`, freeze `0xc023219...`, and assess `0x4dd7d69...` proved `SCOPE_OR_THRESHOLD_DRIFT` with exact changed dimensions `deadlines, thresholds`; one disclosed duplicate register `0xea257a8...` was an idempotent no-op returning candidate 16 with counts unchanged.
-8. A prior-release external-wallet Vercel E2E recorded objection ID `2` for candidate `16` in transaction `0x4db8f73dca4e2d1852a8522b9d138c46e2855e079583be2e26b8323ac552a001`. The current exact-release E2E recorded objection ID `4` in transaction `0xe1b67acf6607c50fd9301d56ebb9bca25c799d2d7562cf9f694449e8d5dc1e7b`; authoritative readback returned objection count `4` and event count `63`. User reload/disconnect confirmation is `PASS`.
+8. The external-wallet Vercel E2E recorded objection ID `4` in transaction `0xe1b67acf6607c50fd9301d56ebb9bca25c799d2d7562cf9f694449e8d5dc1e7b`; authoritative readback returned objection count `4` and event count `63`. User reload/disconnect confirmation is `PASS`; the frontend bundle is unchanged by the current contract/evidence-only delta.
+9. After the current exact-source upgrade, fresh candidate 18 registration `0xfcd08c100bb435f5b26ce3c1b7f420bdccc89e480708ef87eb014047f3d95200`, freeze `0xe5b7e1f9fcd3eae9b674c989f84249a3c4d48d6b64357327faf6f88708944f70`, and assessment `0x8ca4c78a0168658d49f1544dbb9a3d833809c32645c67a6b40db07af4446770e` finalized with majority agreement. Readback proved `AVAILABLE/AVAILABLE`, 3/3 sections, 10000 bps, exact `deadlines, thresholds`, and `SCOPE_OR_THRESHOLD_DRIFT`.
 
 The prior public exact-source upgrade `0xe676236385c4d3eefd5739acb2fce782c839c79e596cbf85b140b689e91a65d0` is also retained: `FINALIZED`, `SUCCESS`, `MAJORITY_AGREE`; its raw calldata source body matches the approved source exactly and its contract event is the final `UPGRADE` event in the readback.
 
@@ -63,7 +65,7 @@ The prior public exact-source upgrade `0xe676236385c4d3eefd5739acb2fce782c839c79
 
 - Do not change the source, dependency header, constructor, chain, contract address, upgrade classification or locked account without a new exact-source review.
 - If a transaction is pending or ambiguous, retain its full hash and reconcile finality and execution before sending another transaction. Never duplicate an unknown transaction.
-- Current release evidence is bound to live source `5d50...` and hash `552627...`; the older `1a26...`/`92A777...` rows are historical evidence only.
+- Current release evidence is bound to live source `06d...` and hash `B678...`; the older `5d50...`/`552627...`, `1a26...`/`92A777...` rows are historical evidence only.
 - If the Studio UI resets while chain state and the locked account remain available, reconnect the locked account, import the recorded address, load the exact recorded source, and verify source/state before any upgrade.
 - If the locked Studio authority is unavailable, do not claim upgrade recovery. A replacement deployment requires the recorded source/constructor manifest, a complete live matrix and new release links.
 - If Studionet state resets, the old state cannot be recovered; redeploy from the exact source and rerun all required live cases.

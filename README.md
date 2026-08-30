@@ -10,7 +10,7 @@ Policy Translation Release Gate is a GenLayer Studionet application that prevent
 - Network: [GenLayer Studionet](https://studio.genlayer.com/) (61999)
 - Fixture repository: [pcong5239/policy-translation-release-gate-fixtures](https://github.com/pcong5239/policy-translation-release-gate-fixtures)
 
-The live contract is bound to executable source commit `5d50e4fc8f2f6f77bc09fb8a7fc205021d7bc09e`, source SHA-256 `55262740969342C0721A6DC6A4282708E86B7B74D2C71363B7BC2305FA169738` (66,182 UTF-8 bytes), and the matching on-chain code readback. The final release package records the exact documentation revision and live evidence in docs/VERIFICATION.md.
+The live contract is bound to executable source commit `06d067ca97db7086643a678c02986169cc391e6e`, source SHA-256 `B6784931EED81B7EE33E48814CF53DABF6BAE2FA21B57EB914CCE7415C60EBA1` (74,639 UTF-8 bytes), and the matching on-chain code readback. The final release package records the exact documentation revision and live evidence in docs/VERIFICATION.md.
 
 The exact final application/test package is public commit `2c07257acd2e3299adc5bff20a3aee7dfd108455`. It contains the production frontend repairs, GenLayer transaction-finality recovery, and regression coverage used by the verified Vercel deployment.
 
@@ -37,7 +37,7 @@ The frontend exposes six connected journeys:
 5. **Consumer** binds a namespace and locale to a published candidate, then resolves an exact published locale.
 6. **Public Audit** records objections, displays paginated objections and contract events, and shows the locked upgrade authority.
 
-The deployed instance has canonical revision 2 active and candidate 8 published for es; the exact state and transaction matrix are in docs/STUDIO-LIVE-MATRIX.md.
+The deployed instance has canonical revision 2 active, candidate 8 published for es, and the fresh candidate 18 threshold-drift proof recorded after the upgrade; the exact state and transaction matrix are in docs/STUDIO-LIVE-MATRIX.md.
 
 ## Architecture
 
@@ -85,7 +85,7 @@ npm run test:run
 npm run build
 ~~~
 
-The exact deployed package records 71 contract tests, 103 frontend tests across 10 suites, clean typecheck, successful production build, genvm-lint check/schema/typecheck/validate passes, and successful Python compilation. The Vite build reports a disclosed minified-chunk size warning; it does not change correctness or source parity. The exact-source upgrade, threshold proof, and current exact-release external-wallet objection are recorded in the live transaction matrix.
+The exact deployed package records 73 contract tests, 103 frontend tests across 10 suites, clean typecheck, successful production build, genvm-lint check/schema/typecheck/validate passes, and successful Python compilation. The Vite build reports a disclosed minified-chunk size warning; it does not change correctness or source parity. The exact-source upgrade, fresh threshold proof, and preserved external-wallet objection evidence are recorded in the live transaction matrix.
 
 ## Deployment
 
@@ -103,4 +103,4 @@ The contract runs on GenLayer Studionet chain 61999 at [the verified Explorer ad
 
 - The deployed instance intentionally binds publisher/admin and Root Slot upgrade authority to the selected Studio account. Publisher-only registration and publication writes therefore require that authority; a fresh external wallet can use the public reads and non-admin journeys but must not import the Studio account.
 - Historical threshold fixtures that also removed a deletion/restriction right are retained as negative controls. Corrected immutable fixture `es-threshold-drift-v3.md` produced a live `SCOPE_OR_THRESHOLD_DRIFT` result with only `deadlines` and `thresholds` changed.
-- The final stable Vercel URL is `https://policy-translation-release-gate.vercel.app`. The current exact-release external-wallet objection and reload/disconnect behavior are verified; the fresh final reviewer is the remaining release gate documented in `docs/VERIFICATION.md`.
+- The final stable Vercel URL is `https://policy-translation-release-gate.vercel.app`. Existing external-wallet objection and reload/disconnect evidence is retained with its tested frontend scope; refreshed final-package review remains documented in `docs/VERIFICATION.md`.

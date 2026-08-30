@@ -1,32 +1,33 @@
 # Studio Live Matrix
 
-Status: exact-source upgrade, required Studionet matrix, GitHub release, Vercel release, primary browser smoke, current exact-release external-wallet objection/readback, and user reload/disconnect are complete. Fresh POST_GITHUB_VERCEL_FINAL review remains pending.
+Status: exact-source upgrade, required Studionet matrix, and POST_DEPLOY_TEST approval are complete. Existing GitHub/Vercel/browser evidence remains available; refreshed POST_GITHUB_VERCEL_FINAL review remains pending.
 
-Date: `2026-08-29`
+Date: `2026-08-30`
 Network: GenLayer Studionet, chain `61999`, full-consensus mode.
 Contract: `0xf41A330869Cb9FDCCD8fbd7Ce7f83F5042908A75`
 Explorer: https://explorer-studio.genlayer.com/address/0xf41A330869Cb9FDCCD8fbd7Ce7f83F5042908A75
 
 ## Live executable binding
 
-- Git revision: `5d50e4fc8f2f6f77bc09fb8a7fc205021d7bc09e`
+- Git revision: `06d067ca97db7086643a678c02986169cc391e6e`
+- Metadata follow-up: `5d413a886f44f1a363d3bc561b815bff845c00`
 - Contract source: `contracts/policy_translation_release_gate.py`
-- Exact UTF-8 source length: `66,182` bytes
-- Exact source SHA-256: `55262740969342C0721A6DC6A4282708E86B7B74D2C71363B7BC2305FA169738`
-- Final observer code readback: `55262740969342c0721a6dc6a4282708e86b7b74d2c71363b7bc2305fa169738`
+- Exact UTF-8 source length: `74,639` bytes
+- Exact source SHA-256: `B6784931EED81B7EE33E48814CF53DABF6BAE2FA21B57EB914CCE7415C60EBA1`
+- Final observer code readback: `b6784931eed81b7ee33e48814cf53dabf6bae2fa21b57eb914cce7415c60eba1`
 - Locked Studio publisher/upgrader: `0x34b92E6553eaCA11A00A9d86d75d8a7881779D78`
 - Independent localizer: `0xeF5D2119416A2f5afa35dCFA209766EFC1BE5902`
 - Independent consumer/auditor: `0x22A2906BB59A1DFaEEAD6148eba7dB24d6F22FB1`
 
 ## Review and upgrade binding
 
-- Executable source commit: `5d50e4fc8f2f6f77bc09fb8a7fc205021d7bc09e`
-- Source: `66,182` UTF-8 bytes; SHA-256 `55262740969342C0721A6DC6A4282708E86B7B74D2C71363B7BC2305FA169738`
-- Specification snapshot SHA-256: `7AFC0B370CCAC0408B6D6F548081F4D3286717CC11561EE1FD29C6A782D0FF71`
-- Fresh PRE_DEPLOY status: `APPROVED`; exact-source upgrade `0x8c805cec74b97873f9c3eae942937561d20ddf2d963b99099cc584d02b39c7a9` finalized `SUCCESS / MAJORITY_AGREE`.
+- Executable source commit: `06d067ca97db7086643a678c02986169cc391e6e`
+- Source: `74,639` UTF-8 bytes; SHA-256 `B6784931EED81B7EE33E48814CF53DABF6BAE2FA21B57EB914CCE7415C60EBA1`
+- Specification snapshot SHA-256: `6C4A036CE4248BD967071AA52A9CEC87336DBE23CEF96A49D36A9B56563ED8EF`
+- Fresh PRE_DEPLOY status: `APPROVED`; exact-source upgrade `0x5f5579eabab78edee329a9cdcb7f4cbbd7ac3c9d7cb11ffade526d26b7538100` finalized `SUCCESS / MAJORITY_AGREE`; POST_DEPLOY_TEST `APPROVED`.
 - Final application/test package: `2c07257acd2e3299adc5bff20a3aee7dfd108455`.
 
-The current live evidence is bound to source `5d50...`/`552627...`. Local regression is contract `71/71`, frontend `103/103`, lint/schema/typecheck/validate/compile/build pass.
+The current live evidence is bound to source `06d...`/`B678...`. Local regression is contract `73/73`, frontend `103/103`, lint/schema/typecheck/validate/compile/build pass.
 
 ## Immutable fixture manifest
 
@@ -75,6 +76,8 @@ Every row below was sent through Studio UI and independently checked with read-o
 | Missing evidence | `0xd6866d54c71c6643d1a6ece9f5836a20cbeac376fe592628d3b30028b102b088`, `0x7ae0daeb04cfedd8abd0a7beb744742626f2ae1801db92d3b63e309151162445`, `0xed692396eb786a085665702f9990251a5ad5e9aac361ee17e22c37602882903d` | register/freeze `SUCCESS`; assessment `NOT_COMPARABLE`, translation `MISSING`, coverage 0, candidate 6 `REVISION_REQUIRED` |
 | Threshold v1/v2 environment control | `0x8dcad0cd96318aa7cc3ca0f5fed0d5ce5aa9cf549919d8b56a1625758659da27`, `0xd8864f938f15662df0bf9577a2f7bb7404914221e51d9c1095b6a5d6a744643e`, `0x7d8cfd5e78aa906882e4620fa1ae58ce2dea9448cc651aa0bbd5ff4917943459`, `0x6051ce81e83633b863ccbf4911d860cf203c948b1c840ec7957a4f3b80e4a9dd`, `0xd9f3ae2ad5623e7fb04d10b4bf1e17af2f25b6aa3059b965b2d423ab0799a74a`, `0x1426e3a01d29e4d855453d3014c7a7bd8bbda92edc5a3945889bd32e4540ff6d` | both assess transactions `NOT_COMPARABLE`, canonical/translation `INVALID`, coverage 0; retained as validator external-fetch/environment evidence, not a threshold PASS claim |
 | Corrected threshold/deadline proof | register `0x75fcd92fb919e9eeb2844b197fe34fc8af575f0777baa22956c012a03c8c9148`; idempotent duplicate no-op `0xea257a86ff1b908b12bba82359916c6f991b3da64068854ae88eb1a35e9beadc`; freeze `0xc0232192b8b8ff48183519c4b488455e152d776a311864b557bc408474da8508`; assess `0x4dd7d69da71528ede89a644262d109ceb423bc69960824a00a7b5e456ea8df17` | assess `FINALIZED / SUCCESS / MAJORITY_AGREE`; `AVAILABLE/AVAILABLE`, 3/3, 10000 bps, changed exactly `deadlines, thresholds`; `SCOPE_OR_THRESHOLD_DRIFT`; candidate 16 `REVISION_REQUIRED` |
+| Post-upgrade unresolved control | register `0x1ad33440fad343da3b0f4b171db0eccd7db53a94b2eceb5049a4cd13a279dfd5`; freeze `0x76586596838c15d504401e0f73dd44c7fb3fd133d358c1c9be0ab9773ce09e5b`; assess `0x51d3e42899f2f3d4cb80e456d1be76f161687fcda4c0b0d14da67ed4da5a0fa9` | all finalized; assessment `UNRESOLVED` due evidence unavailable; candidate 17 `HOLD_UNRESOLVED`; retained as bounded infrastructure control |
+| Fresh post-upgrade threshold/deadline proof | register `0xfcd08c100bb435f5b26ce3c1b7f420bdccc89e480708ef87eb014047f3d95200`; freeze `0xe5b7e1f9fcd3eae9b674c989f84249a3c4d48d6b64357327faf6f88708944f70`; assess `0x8ca4c78a0168658d49f1544dbb9a3d833809c32645c67a6b40db07af4446770e` | all `FINALIZED / SUCCESS / MAJORITY_AGREE`; candidate 18 `REVISION_REQUIRED`; `AVAILABLE/AVAILABLE`, 3/3, 10000 bps, changed exactly `deadlines, thresholds`; `SCOPE_OR_THRESHOLD_DRIFT` |
 
 ### Negative controls and canonical supersession
 
@@ -95,7 +98,7 @@ Every row below was sent through Studio UI and independently checked with read-o
 | Case | Evidence | Result |
 |---|---|---|
 | Public GitHub release | https://github.com/ldkfj/policy-translation-release-gate | public repository rendering and exact application package commit `2c07257acd2e3299adc5bff20a3aee7dfd108455` verified |
-| Final Vercel production | `dpl_AcLC5FenPms81vhyZwh1eJTdG9Dh`; https://policy-translation-release-gate.vercel.app | `READY`; configured contract; six journeys load; no console errors or warnings |
+| Final Vercel production baseline | `dpl_AcLC5FenPms81vhyZwh1eJTdG9Dh`; https://policy-translation-release-gate.vercel.app | `READY`; configured contract; six journeys load; frontend scope unchanged by current contract/evidence delta |
 | Prior-release external-wallet objection | [`0x4db8f73dca4e2d1852a8522b9d138c46e2855e079583be2e26b8323ac552a001`](https://explorer-studio.genlayer.com/tx/0x4db8f73dca4e2d1852a8522b9d138c46e2855e079583be2e26b8323ac552a001) | `FINALIZED / SUCCESS / MAJORITY_AGREE`; objection ID `2`; candidate 16 page total `1`; executed before the final provider-identity repair |
 | Current exact-release external-wallet objection | [`0xe1b67acf6607c50fd9301d56ebb9bca25c799d2d7562cf9f694449e8d5dc1e7b`](https://explorer-studio.genlayer.com/tx/0xe1b67acf6607c50fd9301d56ebb9bca25c799d2d7562cf9f694449e8d5dc1e7b) | `FINALIZED / SUCCESS / MAJORITY_AGREE`; objection ID `4`; candidate 16 page total `3`; authoritative UI readback passed on exact current release |
 | Primary browser smoke | final Vercel release `dpl_AcLC5FenPms81vhyZwh1eJTdG9Dh` | `PASS`; all six read journeys load; current wallet objection finalized/read back; user reload/disconnect `PASS` |
@@ -105,6 +108,6 @@ Every row below was sent through Studio UI and independently checked with read-o
 - `0x94e49246bd439f521c931fe45682fcc9f8a15b0a48b0c378d53aa46f9c6f5414` is a finalized `upgrade(bytes)` call whose raw calldata source body matches `1a26...` and `92A777...`; it preserved the populated v1 state before the later matrix.
 - `0x1e484b14483fdfbf7b8df0a283572201dfaa3d092f697064d01b22ea71969169` was an accidental Studio code upgrade from a stale editor buffer. It finalized with `MAJORITY_AGREE` and temporarily installed source SHA `322F3278...`; the incident is disclosed and retained, not treated as an approved release.
 - The Studio buffer was then replaced through the visible editor with the exact local source. `0xef831609be9fb78aa866e94c69c665aabe02698bcab659f9cc3be9ce6522cd99` finalized as a code upgrade with exact `92A777...` source bytes. Two queued exact-source code upgrades, `0xb5a5b98820b1aa876d0513df51bbe230d61275a9b6ef18484a412e77081f7eac` and `0x067cf62b52aadae5750461dba29113e8f4e83969cf76cbb06db0806fd08afd4a`, later also finalized with the same exact source; they do not change source parity.
-- The final Studio observer readback after the exact-source upgrade reports source `552627...`, active canonical 2, candidate 8 published/effective, and the locked upgrader address. The post-release readback after the current exact-release external objection reports objection count `4` and event count `63`; the objection transaction and readback are recorded above.
+- The historical Studio observer readback after the prior exact-source upgrade reported source `552627...`, active canonical 2, candidate 8 published/effective, and the locked upgrader address. The current post-upgrade observer readback reports source `B678...`, active canonical 2, candidate 8 published/effective, candidate 18 threshold proof, objection count `4`, event count `69`, and the locked upgrader address; the current transactions and readback are recorded above.
 
-No local-state inference is used to mark a live row PASS. GitHub rendering, Vercel production, primary browser smoke, current exact-release external-wallet objection/readback, and user reload/disconnect are verified. Submission and experience-ledger update remain gated on the fresh final reviewer approval and user completion confirmation.
+No local-state inference is used to mark a live row PASS. GitHub rendering, Vercel production, primary browser smoke, external-wallet objection/readback, and user reload/disconnect are verified within the unchanged frontend scope. Submission and experience-ledger update remain gated on POST_GITHUB_VERCEL_FINAL, DUAL_APPROVED, and user completion confirmation.
