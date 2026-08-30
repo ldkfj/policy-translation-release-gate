@@ -407,6 +407,161 @@ def _compute_consequence_fingerprint(consequence_payload: dict[str, typing.Any])
     return hashlib.sha256(canonical_json.encode("utf-8")).hexdigest()
 
 
+def _assessment_fingerprint_payload(result: dict[str, typing.Any]) -> dict[str, typing.Any]:
+    return {
+        "canonical_status": result.get("canonical_status"),
+        "translation_status": result.get("translation_status"),
+        "canonical_commit": result.get("canonical_commit"),
+        "translation_commit": result.get("translation_commit"),
+        "canonical_digest": result.get("canonical_digest"),
+        "translation_digest": result.get("translation_digest"),
+        "canonical_section_ids": result.get("canonical_section_ids"),
+        "translation_section_ids": result.get("translation_section_ids"),
+        "matched_section_count": result.get("matched_section_count"),
+        "canonical_section_count": result.get("canonical_section_count"),
+        "translation_section_count": result.get("translation_section_count"),
+        "coverage_bps": result.get("coverage_bps"),
+        "section_results": result.get("section_results"),
+        "changed_dimensions": result.get("changed_dimensions"),
+        "outcome": result.get("outcome"),
+    }
+
+
+def _assessment_substance(result: dict[str, typing.Any]) -> typing.Optional[dict[str, typing.Any]]:
+    """Validate a result and return its convergence-tolerant decision signature.
+
+    Exact evidence identity and aggregate consequence bands must converge. The
+    section-level location of a changed band, free-form reason, and derived
+    fingerprint may vary across independent LLM executions.
+    """
+    if not isinstance(result, dict):
+        return None
+
+    required = {
+        "canonical_status", "translation_status", "canonical_commit", "translation_commit",
+        "canonical_digest", "translation_digest", "canonical_section_ids", "translation_section_ids",
+        "matched_section_count", "canonical_section_count", "translation_section_count", "coverage_bps",
+        "section_results", "changed_dimensions", "outcome", "fingerprint", "reason",
+    }
+    if set(result.keys()) != required:
+        return None
+
+    statuses = {"AVAILABLE", "MISSING", "INVALID", "UNAVAILABLE"}
+    if result["canonical_status"] not in statuses or result["translation_status"] not in statuses:
+        return None
+    if not isinstance(result["reason"], str) or not 0 < len(result["reason"]) <= 1000:
+        return None
+    if not isinstance(result["fingerprint"], str) or len(result["fingerprint"]) != 64:
+        return None
+
+    can_ids = result["canonical_section_ids"]
+    trn_ids = result["translation_section_ids"]
+    changed_dimensions = result["changed_dimensions"]
+    section_results = result["section_results"]
+    if not isinstance(can_ids, list) or not isinstance(trn_ids, list) or not isinstance(changed_dimensions, list):
+        return None
+    if not isinstance(section_results, list):
+        return None
+    if len(set(can_ids)) != len(can_ids) or len(set(trn_ids)) != len(trn_ids):
+        return None
+    if any(not isinstance(value, str) for value in can_ids + trn_ids):
+        return None
+    if any(value not in CONSEQUENCE_DIMENSIONS for value in changed_dimensions):
+        return None
+    if changed_dimensions != sorted(set(changed_dimensions)):
+        return None
+
+    if any(not isinstance(result.get(field), int) for field in (
+        "matched_section_count", "canonical_section_count", "translation_section_count", "coverage_bps"
+    )):
+        return None
+
+    comparable = result["canonical_status"] == "AVAILABLE" and result["translation_status"] == "AVAILABLE"
+    normalized_sections: list[dict[str, str]] = []
+    dimension_counts: dict[str, list[int]] = {
+        dimension: [0, 0, 0] for dimension in CONSEQUENCE_DIMENSIONS
+    }
+
+    if comparable and set(can_ids) == set(trn_ids) and result["coverage_bps"] == 10000 and not section_results:
+        if result["outcome"] != "UNRESOLVED" or changed_dimensions:
+            return None
+    elif comparable and set(can_ids) == set(trn_ids) and result["coverage_bps"] == 10000:
+        if len(section_results) != len(can_ids):
+            return None
+        seen_sections: set[str] = set()
+        for section in section_results:
+            if not isinstance(section, dict) or set(section.keys()) != {"section_id", *CONSEQUENCE_DIMENSIONS}:
+                return None
+            section_id = section["section_id"]
+            if not isinstance(section_id, str) or section_id not in can_ids or section_id in seen_sections:
+                return None
+            seen_sections.add(section_id)
+            normalized = {"section_id": section_id}
+            for dimension in CONSEQUENCE_DIMENSIONS:
+                value = section[dimension]
+                if not isinstance(value, str):
+                    return None
+                value = value.strip().upper()
+                if value == "NOT_APPLICABLE":
+                    value = "EQUIVALENT"
+                if value == "LOST" and dimension not in ("rights", "exceptions"):
+                    value = "CHANGED"
+                if value not in ("EQUIVALENT", "CHANGED", "LOST"):
+                    return None
+                normalized[dimension] = value
+                dimension_counts[dimension][("EQUIVALENT", "CHANGED", "LOST").index(value)] += 1
+            normalized_sections.append(normalized)
+        if seen_sections != set(can_ids):
+            return None
+    elif section_results or changed_dimensions:
+        return None
+
+    derived_changed = sorted(
+        dimension for dimension, counts in dimension_counts.items() if counts[1] or counts[2]
+    )
+    if not comparable or set(can_ids) != set(trn_ids) or result["coverage_bps"] != 10000:
+        expected_outcome = "UNRESOLVED" if "UNAVAILABLE" in (result["canonical_status"], result["translation_status"]) else "NOT_COMPARABLE"
+        derived_changed = []
+    elif result["outcome"] == "UNRESOLVED":
+        expected_outcome = "UNRESOLVED"
+    elif any(dimension_counts[d][1] or dimension_counts[d][2] for d in ("rights", "exceptions")):
+        expected_outcome = "RIGHT_OR_EXCEPTION_LOSS"
+    elif any(dimension_counts[d][1] or dimension_counts[d][2] for d in ("obligations", "prohibitions")):
+        expected_outcome = "OBLIGATION_DRIFT"
+    elif derived_changed:
+        expected_outcome = "SCOPE_OR_THRESHOLD_DRIFT"
+    else:
+        expected_outcome = "MATERIALLY_EQUIVALENT"
+
+    if result["outcome"] != expected_outcome or changed_dimensions != derived_changed:
+        return None
+
+    # Keep the fingerprint self-authenticating without requiring independent
+    # LLM executions to produce the same section-level or textual result.
+    if result["fingerprint"] != _compute_consequence_fingerprint(_assessment_fingerprint_payload(result)):
+        return None
+
+    identity_fields = (
+        "canonical_status", "translation_status", "canonical_commit", "translation_commit",
+        "canonical_digest", "translation_digest", "canonical_section_ids", "translation_section_ids",
+        "matched_section_count", "canonical_section_count", "translation_section_count", "coverage_bps",
+    )
+    return {
+        "identity": tuple(result[field] for field in identity_fields),
+        "outcome": expected_outcome,
+        "changed_dimensions": tuple(derived_changed),
+        "dimension_counts": tuple(
+            (dimension, tuple(dimension_counts[dimension])) for dimension in CONSEQUENCE_DIMENSIONS
+        ),
+    }
+
+
+def _validator_accepts_assessment(leader_result: dict[str, typing.Any], validator_result: dict[str, typing.Any]) -> bool:
+    leader_substance = _assessment_substance(leader_result)
+    validator_substance = _assessment_substance(validator_result)
+    return leader_substance is not None and leader_substance == validator_substance
+
+
 # ---------------------------------------------------------------------------
 # Nondeterministic Assessment Logic
 # ---------------------------------------------------------------------------
@@ -794,6 +949,7 @@ class PolicyTranslationReleaseGate(gl.Contract):
     translation_candidates: TreeMap[u32, TranslationCandidate]
     assessments: TreeMap[u32, AssessmentRecord]
     consumer_bindings: TreeMap[str, ConsumerBindingRecord]
+    consumer_binding_owners: TreeMap[str, Address]
     published_candidates: TreeMap[str, u32]  # key: "canonical_id:locale" -> candidate_id
     dedup_candidates: TreeMap[str, u32]      # key: "canonical_id:locale:commit:path" -> candidate_id
     locales_count_per_canonical: TreeMap[u32, u32]
@@ -1154,10 +1310,6 @@ class PolicyTranslationReleaseGate(gl.Contract):
         def validator_fn(leader_result: gl.vm.Result) -> bool:
             try:
                 lr = gl.vm.unpack_result(leader_result)
-                if not isinstance(lr, dict):
-                    return False
-
-                # Re-derive substance independently
                 my_res = _derive_assessment(
                     owner_val,
                     repo_val,
@@ -1168,37 +1320,7 @@ class PolicyTranslationReleaseGate(gl.Contract):
                     trn_path_val,
                     trn_digest_val,
                 )
-
-                # Strict consequence-bearing equality
-                check_keys = [
-                    "canonical_status",
-                    "translation_status",
-                    "canonical_commit",
-                    "translation_commit",
-                    "canonical_digest",
-                    "translation_digest",
-                    "canonical_section_ids",
-                    "translation_section_ids",
-                    "matched_section_count",
-                    "canonical_section_count",
-                    "translation_section_count",
-                    "coverage_bps",
-                    "section_results",
-                    "changed_dimensions",
-                    "outcome",
-                    "fingerprint",
-                    "reason",
-                ]
-                for k in check_keys:
-                    if lr.get(k) != my_res.get(k):
-                        return False
-
-                # Bounded reason check
-                reason_val = lr.get("reason", "")
-                if not isinstance(reason_val, str) or len(reason_val) == 0 or len(reason_val) > 1000:
-                    return False
-
-                return True
+                return _validator_accepts_assessment(lr, my_res)
             except Exception:
                 return False
 
@@ -1295,9 +1417,6 @@ class PolicyTranslationReleaseGate(gl.Contract):
         def validator_fn(leader_result: gl.vm.Result) -> bool:
             try:
                 lr = gl.vm.unpack_result(leader_result)
-                if not isinstance(lr, dict):
-                    return False
-
                 my_res = _derive_assessment(
                     owner_val,
                     repo_val,
@@ -1308,35 +1427,7 @@ class PolicyTranslationReleaseGate(gl.Contract):
                     trn_path_val,
                     trn_digest_val,
                 )
-
-                check_keys = [
-                    "canonical_status",
-                    "translation_status",
-                    "canonical_commit",
-                    "translation_commit",
-                    "canonical_digest",
-                    "translation_digest",
-                    "canonical_section_ids",
-                    "translation_section_ids",
-                    "matched_section_count",
-                    "canonical_section_count",
-                    "translation_section_count",
-                    "coverage_bps",
-                    "section_results",
-                    "changed_dimensions",
-                    "outcome",
-                    "fingerprint",
-                    "reason",
-                ]
-                for k in check_keys:
-                    if lr.get(k) != my_res.get(k):
-                        return False
-
-                reason_val = lr.get("reason", "")
-                if not isinstance(reason_val, str) or len(reason_val) == 0 or len(reason_val) > 1000:
-                    return False
-
-                return True
+                return _validator_accepts_assessment(lr, my_res)
             except Exception:
                 return False
 
@@ -1476,7 +1567,27 @@ class PolicyTranslationReleaseGate(gl.Contract):
         if cand.locale != loc_clean:
             raise gl.vm.UserError("LOCALE_MISMATCH")
 
+        can_rev = self.canonical_revisions[cand.canonical_id]
+        pub_key = f"{int(cand.canonical_id)}:{loc_clean}"
+        if (
+            cand.state != "PUBLISHED"
+            or can_rev.state != "ACTIVE"
+            or pub_key not in self.published_candidates
+            or self.published_candidates[pub_key] != candidate_id
+        ):
+            raise gl.vm.UserError("CANDIDATE_NOT_PUBLISHED")
+
         key = f"{ns_clean}:{loc_clean}"
+        if key in self.consumer_bindings:
+            if key not in self.consumer_binding_owners:
+                if gl.message.sender_address != self.publisher_admin:
+                    raise gl.vm.UserError("UNAUTHORIZED_BINDING_OWNER")
+                self.consumer_binding_owners[key] = self.publisher_admin
+            elif self.consumer_binding_owners[key] != gl.message.sender_address:
+                raise gl.vm.UserError("UNAUTHORIZED_BINDING_OWNER")
+        else:
+            self.consumer_binding_owners[key] = gl.message.sender_address
+
         rec = ConsumerBindingRecord(ns_clean, loc_clean, candidate_id, _get_current_timestamp())
         self.consumer_bindings[key] = rec
 

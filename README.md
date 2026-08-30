@@ -34,7 +34,7 @@ The frontend exposes six connected journeys:
 2. **Localizer** registers a translation candidate, updates its draft metadata, and freezes it for assessment.
 3. **Assess** triggers GenLayer intelligent validator consensus, displays all 17 result fields and seven dimensional statuses, and supports bounded recovery of unresolved assessments.
 4. **Publish** applies the release gate. A candidate can become PUBLISHED only after an accepted assessment and active-canonical checks.
-5. **Consumer** binds a namespace and locale to a published candidate, then resolves exact and base-locale fallbacks.
+5. **Consumer** binds a namespace and locale to a published candidate, then resolves an exact published locale.
 6. **Public Audit** records objections, displays paginated objections and contract events, and shows the locked upgrade authority.
 
 The deployed instance has canonical revision 2 active and candidate 8 published for es; the exact state and transaction matrix are in docs/STUDIO-LIVE-MATRIX.md.

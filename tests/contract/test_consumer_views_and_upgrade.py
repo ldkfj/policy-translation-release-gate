@@ -40,6 +40,10 @@ def test_consumer_binding_and_effective_locale_lifecycle(
     eff_before = contract.get_effective_locale("es")
     assert eff_before["is_effective"] is False
 
+    set_caller(consumer_address, timestamp=base_time + 25)
+    with pytest.raises(gl.vm.UserError, match="CANDIDATE_NOT_PUBLISHED"):
+        contract.bind_consumer("web-app", "es", u32(t1))
+
     # Publish
     set_caller(admin_address, timestamp=base_time + 30)
     contract.publish_translation(u32(t1))
@@ -62,6 +66,14 @@ def test_consumer_binding_and_effective_locale_lifecycle(
     assert binding["candidate_id"] == t1
     assert binding["candidate_state"] == "PUBLISHED"
     assert binding["bound_at"] == bind_time
+
+    # Only the original namespace owner or publisher admin may update a binding.
+    set_caller(Address("0x5555555555555555555555555555555555555555"), timestamp=bind_time + 1)
+    with pytest.raises(gl.vm.UserError, match="UNAUTHORIZED_BINDING_OWNER"):
+        contract.bind_consumer("web-app", "es", u32(t1))
+
+    set_caller(consumer_address, timestamp=bind_time + 2)
+    contract.bind_consumer("web-app", "es", u32(t1))
 
     # Canonical supersession invalidates effective locale and consumer binding
     set_caller(admin_address, timestamp=base_time + 50)

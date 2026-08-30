@@ -145,7 +145,7 @@ def test_validator_rejects_altered_fingerprint_or_section_coverage(
     assert contract.get_translation_candidate(u32(t1))["state"] == "FROZEN"
 
 
-def test_validator_rejects_unverified_reason(
+def test_validator_accepts_independent_bounded_reason(
     contract_factory, admin_address, localizer_address, web_mock,
     sample_canonical_doc, sample_translation_doc
 ):
@@ -165,13 +165,72 @@ def test_validator_rejects_unverified_reason(
     web_mock.register("https://api.github.com/repos/acme-corp/privacy-policy/commits/" + "2" * 40, status=200, body=json.dumps({"sha": "2" * 40}).encode("utf-8"))
     web_mock.register("https://raw.githubusercontent.com/acme-corp/privacy-policy/" + "2" * 40 + "/terms_es.md", status=200, body=sample_translation_doc.encode("utf-8"))
 
-    def run_nondet_bad_reason(leader_fn, validator_fn):
+    def run_nondet_independent_reason(leader_fn, validator_fn):
         result = leader_fn()
         result["reason"] = "Unsupported reviewer-facing explanation."
-        assert validator_fn(gl.vm.Return(result)) is False
-        raise gl.vm.UserError("VALIDATOR_CONSENSUS_REJECTED")
+        assert validator_fn(gl.vm.Return(result)) is True
+        return result
 
-    gl.vm.run_nondet_unsafe = run_nondet_bad_reason
-    with pytest.raises(gl.vm.UserError):
-        contract.assess_translation(u32(t1))
-    assert contract.get_translation_candidate(u32(t1))["state"] == "FROZEN"
+    gl.vm.run_nondet_unsafe = run_nondet_independent_reason
+    contract.assess_translation(u32(t1))
+    assert contract.get_translation_candidate(u32(t1))["state"] == "ACCEPTED"
+
+
+def test_validator_accepts_convergent_substance_with_independent_section_localization(
+    contract_factory, admin_address, localizer_address, web_mock, prompt_mock,
+    sample_canonical_doc, sample_translation_doc
+):
+    """Independent LLM runs may localize the same material band to different sections."""
+    contract = contract_factory()
+    set_caller(admin_address)
+    c_digest = hashlib.sha256(sample_canonical_doc.encode("utf-8")).hexdigest()
+    t_digest = hashlib.sha256(sample_translation_doc.encode("utf-8")).hexdigest()
+    c1 = contract.register_canonical("convergent-c", "1" * 40, "terms.md", c_digest)
+    contract.activate_canonical(u32(c1))
+    set_caller(localizer_address)
+    t1 = contract.register_translation("convergent-t", u32(c1), "es", "2" * 40, "terms_es.md", t_digest)
+    contract.freeze_translation(u32(t1))
+
+    web_mock.register(
+        "https://api.github.com/repos/acme-corp/privacy-policy/commits/" + "1" * 40,
+        status=200, body=json.dumps({"sha": "1" * 40}).encode("utf-8")
+    )
+    web_mock.register(
+        "https://raw.githubusercontent.com/acme-corp/privacy-policy/" + "1" * 40 + "/terms.md",
+        status=200, body=sample_canonical_doc.encode("utf-8")
+    )
+    web_mock.register(
+        "https://api.github.com/repos/acme-corp/privacy-policy/commits/" + "2" * 40,
+        status=200, body=json.dumps({"sha": "2" * 40}).encode("utf-8")
+    )
+    web_mock.register(
+        "https://raw.githubusercontent.com/acme-corp/privacy-policy/" + "2" * 40 + "/terms_es.md",
+        status=200, body=sample_translation_doc.encode("utf-8")
+    )
+
+    default_dims = dict(prompt_mock.default_dims)
+    changed_dims = dict(default_dims)
+    changed_dims["obligations"] = "CHANGED"
+    call_count = {"value": 0}
+
+    def independently_varying_prompt(prompt: str, response_format: str = "json", images=None):
+        section_id = "sec1" if "Section ID: sec1" in prompt else "sec2"
+        leader_run = call_count["value"] < 2
+        call_count["value"] += 1
+        if (leader_run and section_id == "sec1") or (not leader_run and section_id == "sec2"):
+            return dict(changed_dims)
+        return dict(default_dims)
+
+    gl.nondet.exec_prompt = independently_varying_prompt
+
+    def run_with_independent_validator(leader_fn, validator_fn):
+        leader_result = leader_fn()
+        assert validator_fn(gl.vm.Return(leader_result)) is True
+        return leader_result
+
+    gl.vm.run_nondet_unsafe = run_with_independent_validator
+    contract.assess_translation(u32(t1))
+
+    assessment = contract.get_assessment(u32(t1))
+    assert assessment["outcome"] == "OBLIGATION_DRIFT"
+    assert assessment["changed_dimensions"] == ["obligations"]

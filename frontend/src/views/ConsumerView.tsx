@@ -250,7 +250,7 @@ export const ConsumerView: React.FC = () => {
       <div className="card">
         <h2 className="card-title">Effective Locale Fallback Resolution Engine</h2>
         <p className="card-desc">
-          Query the on-chain locale resolution chain to resolve regional dialects (e.g. <code>es-MX</code>, <code>fr-CA</code>) down to exact or base-language published translations.
+          Query the on-chain locale registry for an exact published translation (for example, <code>es-MX</code> or <code>fr-CA</code>).
         </p>
 
         <form onSubmit={handleQueryEffectiveLocale} style={{ marginBottom: 20 }}>
@@ -344,7 +344,7 @@ export const ConsumerView: React.FC = () => {
               </div>
             ) : (
               <div style={{ color: 'var(--text-secondary)' }}>
-                No published translation found for locale <strong>{queryLocale}</strong> or its fallback base.
+                No published translation found for exact locale <strong>{queryLocale}</strong>.
               </div>
             )}
           </div>
