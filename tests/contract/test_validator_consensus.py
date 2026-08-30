@@ -145,7 +145,7 @@ def test_validator_rejects_altered_fingerprint_or_section_coverage(
     assert contract.get_translation_candidate(u32(t1))["state"] == "FROZEN"
 
 
-def test_validator_accepts_independent_bounded_reason(
+def test_validator_rejects_ungrounded_reason(
     contract_factory, admin_address, localizer_address, web_mock,
     sample_canonical_doc, sample_translation_doc
 ):
@@ -165,15 +165,16 @@ def test_validator_accepts_independent_bounded_reason(
     web_mock.register("https://api.github.com/repos/acme-corp/privacy-policy/commits/" + "2" * 40, status=200, body=json.dumps({"sha": "2" * 40}).encode("utf-8"))
     web_mock.register("https://raw.githubusercontent.com/acme-corp/privacy-policy/" + "2" * 40 + "/terms_es.md", status=200, body=sample_translation_doc.encode("utf-8"))
 
-    def run_nondet_independent_reason(leader_fn, validator_fn):
+    def run_nondet_ungrounded_reason(leader_fn, validator_fn):
         result = leader_fn()
         result["reason"] = "Unsupported reviewer-facing explanation."
-        assert validator_fn(gl.vm.Return(result)) is True
-        return result
+        assert validator_fn(gl.vm.Return(result)) is False
+        raise gl.vm.UserError("VALIDATOR_CONSENSUS_REJECTED")
 
-    gl.vm.run_nondet_unsafe = run_nondet_independent_reason
-    contract.assess_translation(u32(t1))
-    assert contract.get_translation_candidate(u32(t1))["state"] == "ACCEPTED"
+    gl.vm.run_nondet_unsafe = run_nondet_ungrounded_reason
+    with pytest.raises(gl.vm.UserError, match="VALIDATOR_CONSENSUS_REJECTED"):
+        contract.assess_translation(u32(t1))
+    assert contract.get_translation_candidate(u32(t1))["state"] == "FROZEN"
 
 
 def test_validator_accepts_convergent_substance_with_independent_section_localization(

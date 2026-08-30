@@ -1,7 +1,9 @@
 """Tests for consumer namespace binding, effective locale lookup, views, and Root Slot upgradability with bytes ABI."""
 
-import json
+import ast
 import hashlib
+import json
+from pathlib import Path
 import pytest
 import genlayer.gl as gl
 from genlayer import Address, u32
@@ -113,8 +115,49 @@ def test_nonce_result_and_events_views(contract_factory, admin_address):
     assert events["items"][1]["timestamp"] == base_time + 10
 
 
-def test_upgradability_bytes_abi_and_root_slot_pattern(contract_factory, admin_address, localizer_address):
+def test_consumer_binding_owner_storage_is_append_only():
+    source_path = Path(__file__).resolve().parents[2] / "contracts" / "policy_translation_release_gate.py"
+    tree = ast.parse(source_path.read_text(encoding="utf-8"))
+    contract_node = next(node for node in tree.body if isinstance(node, ast.ClassDef) and node.name == "PolicyTranslationReleaseGate")
+    fields = [node.target.id for node in contract_node.body if isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name)]
+    legacy_fields = [
+        "publisher_admin", "owner", "repo", "policy_version", "initialized",
+        "active_canonical_id", "canonical_count", "candidate_count", "objection_count", "event_count",
+        "canonical_revisions", "translation_candidates", "assessments", "consumer_bindings",
+        "published_candidates", "dedup_candidates", "locales_count_per_canonical", "nonces",
+        "objections", "events",
+    ]
+    assert fields[:len(legacy_fields)] == legacy_fields
+    assert fields[-1] == "consumer_binding_owners"
+
+
+def test_upgradability_preserves_populated_state_with_bytes_abi(
+    contract_factory, admin_address, localizer_address, consumer_address,
+    web_mock, setup_nondet, sample_canonical_doc, sample_translation_doc
+):
     contract = contract_factory()
+
+    c_digest = hashlib.sha256(sample_canonical_doc.encode("utf-8")).hexdigest()
+    t_digest = hashlib.sha256(sample_translation_doc.encode("utf-8")).hexdigest()
+    set_caller(admin_address, timestamp=1700000010)
+    c1 = contract.register_canonical("populated-c", "1" * 40, "terms.md", c_digest)
+    contract.activate_canonical(u32(c1))
+    set_caller(localizer_address, timestamp=1700000020)
+    t1 = contract.register_translation("populated-t", u32(c1), "es", "2" * 40, "terms_es.md", t_digest)
+    contract.freeze_translation(u32(t1))
+    web_mock.register("https://api.github.com/repos/acme-corp/privacy-policy/commits/" + "1" * 40, status=200, body=json.dumps({"sha": "1" * 40}).encode("utf-8"))
+    web_mock.register("https://raw.githubusercontent.com/acme-corp/privacy-policy/" + "1" * 40 + "/terms.md", status=200, body=sample_canonical_doc.encode("utf-8"))
+    web_mock.register("https://api.github.com/repos/acme-corp/privacy-policy/commits/" + "2" * 40, status=200, body=json.dumps({"sha": "2" * 40}).encode("utf-8"))
+    web_mock.register("https://raw.githubusercontent.com/acme-corp/privacy-policy/" + "2" * 40 + "/terms_es.md", status=200, body=sample_translation_doc.encode("utf-8"))
+    contract.assess_translation(u32(t1))
+    set_caller(admin_address, timestamp=1700000030)
+    contract.publish_translation(u32(t1))
+    set_caller(consumer_address, timestamp=1700000040)
+    contract.bind_consumer("populated-app", "es", u32(t1))
+
+    before_binding = contract.get_consumer_binding("populated-app", "es")
+    before_effective = contract.get_effective_locale("es")
+    before_profile = contract.get_publisher_profile()
 
     # Verify upgrader view matches admin
     upgrader = contract.get_upgrader()
@@ -138,3 +181,7 @@ def test_upgradability_bytes_abi_and_root_slot_pattern(contract_factory, admin_a
     assert profile["repo"] == "privacy-policy"
     assert profile["admin"].lower() == admin_address.as_hex.lower()
     assert profile["initialized"] is True
+    after_profile = contract.get_publisher_profile()
+    assert after_profile == {**before_profile, "event_count": before_profile["event_count"] + 1}
+    assert contract.get_consumer_binding("populated-app", "es") == before_binding
+    assert contract.get_effective_locale("es") == before_effective

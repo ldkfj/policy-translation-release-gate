@@ -431,8 +431,9 @@ def _assessment_substance(result: dict[str, typing.Any]) -> typing.Optional[dict
     """Validate a result and return its convergence-tolerant decision signature.
 
     Exact evidence identity and aggregate consequence bands must converge. The
-    section-level location of a changed band, free-form reason, and derived
-    fingerprint may vary across independent LLM executions.
+    section-level location of a changed band and derived fingerprint may vary
+    across independent LLM executions. The stored reason is deterministic,
+    bounded audit text derived from the fetched evidence and agreed outcome.
     """
     if not isinstance(result, dict):
         return None
@@ -534,6 +535,37 @@ def _assessment_substance(result: dict[str, typing.Any]) -> typing.Optional[dict
         expected_outcome = "MATERIALLY_EQUIVALENT"
 
     if result["outcome"] != expected_outcome or changed_dimensions != derived_changed:
+        return None
+
+    can_status = result["canonical_status"]
+    trn_status = result["translation_status"]
+    if expected_outcome == "UNRESOLVED" and "UNAVAILABLE" in (can_status, trn_status):
+        expected_reason = f"Evidence unavailable: canonical={can_status}, translation={trn_status}."
+        reason_grounded = result["reason"] == expected_reason
+    elif expected_outcome == "NOT_COMPARABLE" and (can_status in ("MISSING", "INVALID") or trn_status in ("MISSING", "INVALID")):
+        expected_reason = f"Evidence not comparable: canonical={can_status}, translation={trn_status}."
+        reason_grounded = result["reason"] == expected_reason
+    elif expected_outcome == "NOT_COMPARABLE":
+        expected_reason = (
+            f"Structural section mismatch: canonical={can_ids}, translation={trn_ids}, "
+            f"coverage={result['coverage_bps']}bps."
+        )
+        reason_grounded = result["reason"] == expected_reason
+    elif expected_outcome == "UNRESOLVED":
+        prefix = "LLM evaluation failed or returned malformed schema for section '"
+        suffix = "'."
+        failed_section = result["reason"][len(prefix):-len(suffix)] if result["reason"].startswith(prefix) and result["reason"].endswith(suffix) else ""
+        reason_grounded = bool(failed_section) and failed_section in set(can_ids + trn_ids)
+    else:
+        expected_reasons = {
+            "MATERIALLY_EQUIVALENT": "Translation is materially equivalent across all 7 normative dimensions.",
+            "OBLIGATION_DRIFT": "Material obligation or prohibition drift detected.",
+            "RIGHT_OR_EXCEPTION_LOSS": "Material right or exception loss detected.",
+            "SCOPE_OR_THRESHOLD_DRIFT": "Scope, threshold, or deadline drift detected.",
+        }
+        reason_grounded = result["reason"] == expected_reasons[expected_outcome]
+
+    if not reason_grounded:
         return None
 
     # Keep the fingerprint self-authenticating without requiring independent
@@ -949,7 +981,6 @@ class PolicyTranslationReleaseGate(gl.Contract):
     translation_candidates: TreeMap[u32, TranslationCandidate]
     assessments: TreeMap[u32, AssessmentRecord]
     consumer_bindings: TreeMap[str, ConsumerBindingRecord]
-    consumer_binding_owners: TreeMap[str, Address]
     published_candidates: TreeMap[str, u32]  # key: "canonical_id:locale" -> candidate_id
     dedup_candidates: TreeMap[str, u32]      # key: "canonical_id:locale:commit:path" -> candidate_id
     locales_count_per_canonical: TreeMap[u32, u32]
@@ -957,6 +988,9 @@ class PolicyTranslationReleaseGate(gl.Contract):
 
     objections: DynArray[ObjectionRecord]
     events: DynArray[EventRecord]
+    # Append-only upgrade field. Legacy consumer bindings have no owner entry
+    # and are claimable/recoverable only by publisher_admin on first update.
+    consumer_binding_owners: TreeMap[str, Address]
 
     def __init__(self) -> None:
         self.publisher_admin = gl.message.sender_address

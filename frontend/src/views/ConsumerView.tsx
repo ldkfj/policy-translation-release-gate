@@ -248,7 +248,7 @@ export const ConsumerView: React.FC = () => {
 
       {/* 2. Effective Locale Resolution Engine */}
       <div className="card">
-        <h2 className="card-title">Effective Locale Fallback Resolution Engine</h2>
+        <h2 className="card-title">Exact Published Locale Lookup</h2>
         <p className="card-desc">
           Query the on-chain locale registry for an exact published translation (for example, <code>es-MX</code> or <code>fr-CA</code>).
         </p>
