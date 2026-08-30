@@ -24,9 +24,9 @@ The original deployment transaction is retained as historical evidence: `0xc9b34
 
 This manifest is the exact package awaiting fresh PRE_DEPLOY approval. It is not live and does not authorize an upgrade.
 
-- Exact pending revision: `67935b5bf210b3594c61e6dde449c3bab6ca511e`.
+- Exact pending revision: `06d067ca97db7086643a678c02986169cc391e6e`.
 - Pending source: `74,639` UTF-8 bytes; SHA-256 `B6784931EED81B7EE33E48814CF53DABF6BAE2FA21B57EB914CCE7415C60EBA1`.
-- Pending specification: `.task/SPECIFICATION.md`, SHA-256 `D03AF54CEA343EFF2026229718300DE44EC991901BA312308B981F9D87229604`.
+- Pending specification: `.task/SPECIFICATION.md`, SHA-256 `6C4A036CE4248BD967071AA52A9CEC87336DBE23CEF96A49D36A9B56563ED8EF`.
 - Upgrade target: the same contract `0xf41A330869Cb9FDCCD8fbd7Ce7f83F5042908A75` on Studionet `61999`, using the locked upgrader above.
 - Storage compatibility: every legacy storage field remains in its original order. `consumer_binding_owners` is appended after the legacy `events` field; no existing record is rewritten. Existing ownerless bindings remain readable/effective. A non-admin cannot update an ownerless legacy key; the publisher admin may initialize/recover its owner on first update.
 - Verification basis: the contract suite includes an exact append-only layout assertion and a populated-state Root Slot upgrade preservation test covering publisher profile, active canonical, published candidate, consumer binding and effective-locale state.
